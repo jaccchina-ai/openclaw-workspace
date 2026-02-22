@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.0",
+  "description": "OpenClaw Workspace Task Registry - 唯一任务定义源",
+  "created_date": "2026-02-22",
+  "last_updated": "2026-02-22",
+  "owner": "James Dong",
+  "rules": "如聊天内容与Registry冲突，以Registry为准",
+  "tasks": [
+    {
+      "id": "T01",
+      "name": "龙头战法选股任务",
+      "version": "1.0.2",
+      "description": "基于龙头战法的自动化选股系统，集成API数据获取、技术指标筛选、基本面筛选、龙头股识别，支持多格式输出与告警。",
+      "status": "active",
+      "location": "tasks/T01",
+      "created_date": "2026-02-22",
+      "last_updated": "2026-02-22",
+      "dependencies": [
+        "a-share-short-decision",
+        "python>=3.8",
+        "pandas",
+        "numpy",
+        "requests",
+        "pyyaml"
+      ],
+      "schedule": null,
+      "output_formats": [
+        "table",
+        "json",
+        "csv"
+      ],
+      "alert_system": true,
+      "configuration_file": "config.yaml",
+      "entry_point": "main.py",
+      "documentation": "tasks/T01/README.md",
+      "tags": [
+        "选股",
+        "龙头战法",
+        "A股",
+        "量化"
+      ]
+    },
+    {
+      "id": "T99",
+      "name": "复盘任务（策略复盘与优化）",
+      "version": "1.2.0",
+      "description": "定期复盘A股短线策略表现，自动计算胜率与平均收益率，集成宏观监控数据动态调整选股阈值，实现策略持续优化。",
+      "status": "active",
+      "location": "skills/a-share-short-decision",
+      "created_date": "2026-02-20",
+      "last_updated": "2026-02-21",
+      "dependencies": [
+        "akshare",
+        "pandas",
+        "numpy",
+        "macro-monitor"
+      ],
+      "schedule": "首次运行: 2026-03-14 15:00 (at任务)",
+      "output_formats": [
+        "json",
+        "report"
+      ],
+      "alert_system": false,
+      "configuration_file": "config.json",
+      "entry_point": "run_review.sh",
+      "documentation": "skills/a-share-short-decision/TASK.md",
+      "tags": [
+        "复盘",
+        "策略优化",
+        "A股",
+        "回测"
+      ],
+      "integrations": {
+        "macro_monitor": {
+          "enabled": true,
+          "weight_adjustment": true,
+          "sector_screening": true
+        }
+      }
+    },
+    {
+      "id": "T100",
+      "name": "宏观监控独立报告任务",
+      "version": "1.0.2",
+      "description": "每日自动收集国内外宏观数据、板块轮动、新闻情感，生成综合报告并发送至飞书群，为投资决策提供宏观视角。",
+      "status": "active",
+      "location": "skills/macro-monitor",
+      "created_date": "2026-02-20",
+      "last_updated": "2026-02-21",
+      "dependencies": [
+        "akshare",
+        "pandas",
+        "numpy",
+        "scikit-learn",
+        "browser工具"
+      ],
+      "schedule": "每日 22:00 (北京时间) via cron",
+      "output_formats": [
+        "飞书群消息",
+        "json",
+        "log"
+      ],
+      "alert_system": true,
+      "configuration_file": "无独立配置文件",
+      "entry_point": "run_monitor.py",
+      "documentation": "skills/macro-monitor/TASK.md",
+      "tags": [
+        "宏观监控",
+        "数据收集",
+        "新闻分析",
+        "板块轮动"
+      ],
+      "target_audience": "飞书群: chat:oc_ff08c55a23630937869cd222dad0bf14",
+      "data_sources": [
+        "akshare (国内宏观)",
+        "Trading Economics (国际)",
+        "财联社 (新闻)",
+        "华尔街见闻 (新闻)"
+      ]
+    }
+  ]
+}
