@@ -1,0 +1,51 @@
+# T01 龙头战法选股配置
+
+# 版本信息
+version: "1.0.2"
+last_updated: "2026-02-22"
+
+# API 设置
+api:
+  # 待补充：API 端点、密钥等
+  endpoint: ""
+  api_key: ""
+  timeout: 30
+
+# 数据源
+data_sources:
+  # 可配置多个数据源，如 tushare、akshare 等
+  tushare:
+    token: ""
+  akshare:
+    enabled: false
+
+# 选股策略参数
+strategy:
+  # 技术指标
+  technical:
+    ma_periods: [5, 10, 20, 60]
+    volume_ratio_threshold: 1.5
+    # 待补充更多指标
+
+  # 基本面条件
+  fundamental:
+    min_market_cap: 50  # 亿元
+    max_pe: 50
+    min_roe: 10  # %
+    # 待补充
+
+  # 龙头战法特定参数
+  dragon_head:
+    sector_rotation_lookback: 20  # 板块轮动观察期（交易日）
+    leading_stock_min_rise: 30    # 龙头股最小涨幅（%）
+    # 待补充
+
+# 输出设置
+output:
+  top_n: 10
+  alert_thresholds:
+    price_change: 5      # 价格波动超过5%告警
+    volume_spike: 200    # 成交量放大200%
+  format: "table"        # table / json / csv
+  save_to_file: true
+  file_path: "./output/results_{date}.csv"
