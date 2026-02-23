@@ -55,7 +55,7 @@
       "status": "active",
       "location": "skills/a-share-short-decision",
       "created_date": "2026-02-20",
-      "last_updated": "2026-02-21",
+      "last_updated": "2026-02-24",
       "dependencies": [
         "akshare",
         "pandas",
@@ -83,7 +83,14 @@
           "weight_adjustment": true,
           "sector_screening": true
         }
-      }
+      },
+      "snapshots": [
+        {
+          "version": "1.2.0",
+          "snapshot_file": "snapshots/snapshot_T99_v1.2.0_20260224_064137.json",
+          "created_at": "2026-02-24T06:41:37.475198"
+        }
+      ]
     },
     {
       "id": "T100",
