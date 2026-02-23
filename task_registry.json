@@ -2,19 +2,19 @@
   "schema_version": "1.0",
   "description": "OpenClaw Workspace Task Registry - 唯一任务定义源",
   "created_date": "2026-02-22",
-  "last_updated": "2026-02-22",
+  "last_updated": "2026-02-23",
   "owner": "James Dong",
   "rules": "如聊天内容与Registry冲突，以Registry为准",
   "tasks": [
     {
       "id": "T01",
       "name": "龙头战法选股任务",
-      "version": "1.0.2",
+      "version": "1.2.0",
       "description": "基于龙头战法的自动化选股系统，集成API数据获取、技术指标筛选、基本面筛选、龙头股识别，支持多格式输出与告警。",
       "status": "active",
       "location": "tasks/T01",
       "created_date": "2026-02-22",
-      "last_updated": "2026-02-22",
+      "last_updated": "2026-02-23",
       "dependencies": [
         "a-share-short-decision",
         "python>=3.8",

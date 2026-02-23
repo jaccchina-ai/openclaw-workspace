@@ -1,44 +1,81 @@
 # T01 龙头战法选股配置
 
 # 版本信息
-version: "1.0.0"
-last_updated: "2026-02-22"
+version: "1.2.0"
+last_updated: "2026-02-23"
 
 # API 设置
 api:
-  # 待补充：API 端点、密钥等
-  endpoint: ""
-  api_key: ""
+  # tushare API配置
+  endpoint: "http://api.tushare.pro"
+  api_key: "870008d508d2b0e57ecf2ccc586c23c4ecc37522f5e93890fb3d56ab"
   timeout: 30
 
 # 数据源
 data_sources:
-  # 可配置多个数据源，如 tushare、akshare 等
+  # 使用tushare，只使用东方财富(DC)数据源
   tushare:
-    token: ""
+    token: "870008d508d2b0e57ecf2ccc586c23c4ecc37522f5e93890fb3d56ab"
+    data_source: "DC"  # 东方财富数据源
+    enabled: true
   akshare:
     enabled: false
 
-# 选股策略参数
+# 选股策略参数 - 涨停股评分系统
 strategy:
-  # 技术指标
-  technical:
-    ma_periods: [5, 10, 20, 60]
-    volume_ratio_threshold: 1.5
-    # 待补充更多指标
-
-  # 基本面条件
-  fundamental:
-    min_market_cap: 50  # 亿元
-    max_pe: 50
-    min_roe: 10  # %
-    # 待补充
-
-  # 龙头战法特定参数
-  dragon_head:
-    sector_rotation_lookback: 20  # 板块轮动观察期（交易日）
-    leading_stock_min_rise: 30    # 龙头股最小涨幅（%）
-    # 待补充
+  # 运行时间安排
+  schedule:
+    daily_screening_time: "20:00"  # T日晚上8点筛选
+    morning_review_time: "09:25"   # T+1日早上9:25竞价分析
+    push_time: "09:30"             # T+1日早上9:30前推送
+  
+  # T日涨停股评分因子权重 (总分100分)
+  t_day_scoring:
+    # 涨停时间评分 (越早越好，满分30分)
+    first_limit_time: 30
+    
+    # 封单质量评分 (满分25分)
+    buy_to_sell_ratio: 10          # 分成比 (买一/卖一)
+    order_amount_to_circ_mv: 15    # 封单金额/流通市值
+    
+    # 流动性评分 (满分20分)
+    turnover_rate: 5               # 换手率
+    turnover_rate_to_20ma: 10      # 换手率/20日均换手率
+    volume_ratio: 5                # 量比
+    
+    # 资金流评分 (满分15分)
+    main_net_amount: 5             # 主力净额
+    main_net_ratio: 5              # 主力净占比
+    medium_net_amount: 5           # 中单净额
+    
+    # 市场热度评分 (满分10分)
+    is_hot_sector: 10              # 是否属于热点行业板块
+  
+  # T+1日竞价评分因子权重 (总分100分)
+  t1_auction_scoring:
+    open_change_pct: 35            # 开盘涨幅 (35分)
+    auction_volume_to_t_volume: 25 # 竞价成交量/T日成交量比值 (25分) - 新增指标
+    auction_volume_ratio: 20       # 竞价量比 (20分)
+    auction_turnover_rate: 0       # 竞价换手率 (0分) - 权重设为0，数据质量不佳
+    auction_amount: 20             # 竞价金额 (20分)
+  
+  # 风控参数
+  risk_control:
+    # 大盘指数位置判断
+    index_5ma_relation: true       # 是否考虑大盘5日均线位置
+    index_above_5ma_weight: 1.0    # 大盘在5日线上方时的权重乘数
+    index_below_5ma_weight: 0.7    # 大盘在5日线下方时的权重乘数
+    
+    # 仓位控制
+    max_position_per_stock: 0.2    # 单只股票最大仓位(20%)
+    min_total_score: 60            # 最低总分要求
+  
+  # 输出配置
+  output:
+    top_n_candidates: 5            # T日选出前5名观察标的
+    final_recommendation_count: 3  # T+1日最终推荐数量
+    include_reasons: true          # 包含推荐理由
+    include_position: true         # 包含仓位建议
 
 # 输出设置
 output:
@@ -49,3 +86,96 @@ output:
   format: "table"        # table / json / csv
   save_to_file: true
   file_path: "./output/results_{date}.csv"
+
+# 数据存储与机器学习配置
+data_storage:
+  # 数据库配置
+  database:
+    type: "sqlite"       # 使用SQLite轻量级数据库
+    path: "./data/t01_database.db"
+    auto_backup: true
+    backup_path: "./data/backups/"
+    
+  # 数据表结构
+  tables:
+    recommendations: "t01_recommendations"     # 推荐记录表
+    trades: "t01_trades"                       # 交易记录表
+    performance: "t01_performance"             # 表现统计表
+    factors: "t01_factors"                     # 因子数据表
+    learning_logs: "t01_learning_logs"         # 学习日志表
+  
+  # 数据保留策略
+  retention:
+    recommendations: 365   # 推荐记录保留365天
+    trades: 730            # 交易记录保留730天
+    performance: 1095      # 表现统计保留1095天
+
+# 胜率统计配置
+performance_tracking:
+  # 交易规则
+  buy_time: "T+1日09:30"   # 买入时间
+  sell_time: "T+2日15:00"  # 卖出时间
+  buy_price: "开盘价"       # 买入价格
+  sell_price: "收盘价"      # 卖出价格
+  
+  # 胜率计算
+  min_trades_for_statistics: 20   # 最少交易次数才开始统计
+  confidence_interval: 0.95       # 置信区间
+  
+  # 绩效指标
+  metrics:
+    - win_rate                    # 胜率
+    - average_return              # 平均收益率
+    - sharpe_ratio                # 夏普比率
+    - max_drawdown                # 最大回撤
+    - profit_factor               # 盈亏因子
+
+# 机器学习与AI优化配置
+machine_learning:
+  # 学习模式
+  mode: "reinforcement"  # reinforcement / supervised / unsupervised
+  enabled: true
+  min_data_points: 100   # 开始机器学习所需最小数据点数
+  
+  # 模型配置
+  models:
+    factor_importance: "random_forest"    # 因子重要性分析
+    win_prediction: "xgboost"             # 胜率预测
+    portfolio_optimization: "genetic"     # 组合优化
+    
+  # 训练参数
+  training:
+    test_size: 0.2        # 测试集比例
+    cross_validation: 5   # 交叉验证折数
+    early_stopping: 10    # 早停轮数
+    
+  # 因子发现
+  factor_discovery:
+    enabled: true
+    max_factors: 50       # 最大因子数量
+    correlation_threshold: 0.8  # 因子相关性阈值
+    min_improvement: 0.01 # 最小改进阈值
+    
+  # 自我进化
+  self_evolution:
+    enabled: true
+    review_interval: 30   # 每30天回顾一次
+    optimization_cycles: 3 # 每次回顾优化3轮
+
+# 系统优化配置
+system_optimization:
+  # 自动化优化
+  auto_optimize: true
+  optimize_frequency: "weekly"  # 优化频率
+  
+  # 参数调整范围
+  parameter_tuning:
+    score_weights: true    # 调整评分权重
+    thresholds: true       # 调整阈值
+    risk_parameters: true  # 调整风险参数
+    
+  # 优化目标
+  optimization_goals:
+    - max_win_rate         # 最大化胜率
+    - max_sharpe_ratio     # 最大化夏普比率
+    - min_drawdown         # 最小化回撤
