@@ -93,15 +93,36 @@ class VersionSnapshotCreator:
     
     def _get_task_info(self, task_id: str) -> Dict[str, Any]:
         """获取任务信息"""
-        task_path = self.workspace_root / "tasks" / task_id
+        # 首先从Task Registry获取任务位置
+        registry_file = self.workspace_root / "task_registry.json"
+        task_path = None
+        version_from_registry = None
+        
+        if registry_file.exists():
+            try:
+                with open(registry_file, 'r', encoding='utf-8') as f:
+                    registry = json.load(f)
+                
+                for task in registry.get('tasks', []):
+                    if task.get('id') == task_id:
+                        location = task.get('location', '')
+                        if location:
+                            task_path = self.workspace_root / location
+                            version_from_registry = task.get('version')
+                            break
+            except Exception as e:
+                logger.warning(f"读取Registry失败: {e}")
+        
+        # 如果Registry中没有找到，尝试默认路径
+        if task_path is None or not task_path.exists():
+            # 尝试tasks目录
+            task_path = self.workspace_root / "tasks" / task_id
+        
+        # 如果tasks目录不存在，尝试skills目录
+        if not task_path.exists():
+            task_path = self.workspace_root / "skills" / task_id
         
         if not task_path.exists():
-            # 可能是skill中的任务
-            skill_path = self.workspace_root / "skills"
-            for skill_dir in skill_path.iterdir():
-                if skill_dir.is_dir():
-                    # 检查是否有匹配的任务
-                    pass
             raise ValueError(f"任务目录不存在: {task_path}")
         
         # 查找配置文件
@@ -112,6 +133,7 @@ class VersionSnapshotCreator:
         ]
         
         config = {}
+        config_file_found = None
         for config_file in config_files:
             if config_file.exists():
                 try:
@@ -123,12 +145,13 @@ class VersionSnapshotCreator:
                             config = json.load(f)
                     
                     if config:
+                        config_file_found = config_file
                         break
                 except Exception as e:
                     logger.warning(f"读取配置文件失败 {config_file}: {e}")
         
-        # 获取版本号
-        version = config.get('version', '1.0.0')
+        # 获取版本号：优先使用Registry中的版本，其次配置文件中的版本
+        version = version_from_registry or config.get('version', '1.0.0')
         
         # 扫描任务文件
         task_files = []
@@ -141,8 +164,10 @@ class VersionSnapshotCreator:
             'path': str(task_path.relative_to(self.workspace_root)),
             'version': version,
             'config': config,
+            'config_file': str(config_file_found) if config_file_found else None,
             'files': task_files,
-            'file_count': len(task_files)
+            'file_count': len(task_files),
+            'source': 'registry' if version_from_registry else 'config_file'
         }
     
     def _get_git_info(self) -> Dict[str, Any]:

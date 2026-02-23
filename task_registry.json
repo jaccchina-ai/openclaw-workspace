@@ -14,7 +14,7 @@
       "status": "active",
       "location": "tasks/T01",
       "created_date": "2026-02-22",
-      "last_updated": "2026-02-23",
+      "last_updated": "2026-02-24",
       "dependencies": [
         "a-share-short-decision",
         "python>=3.8",
@@ -38,6 +38,13 @@
         "龙头战法",
         "A股",
         "量化"
+      ],
+      "snapshots": [
+        {
+          "version": "1.2.0",
+          "snapshot_file": "snapshots/snapshot_T01_v1.2.0_20260224_062118.json",
+          "created_at": "2026-02-24T06:21:19.210989"
+        }
       ]
     },
     {
