@@ -11,6 +11,8 @@ import json
 import logging
 import schedule
 import time
+import os
+import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 import pandas as pd
@@ -668,6 +670,70 @@ class T01Scheduler:
         schedule.every().day.at("09:25").do(t1_job)
         return t1_job
     
+    def send_feishu_message(self, message: str, target: str = None):
+        """发送飞书消息
+        
+        Args:
+            message: 消息内容
+            target: 目标（飞书群ID或个人ID），默认为None（发送到默认对话）
+        """
+        try:
+            # 构建命令
+            cmd = ["openclaw", "message", "--channel", "feishu"]
+            
+            if target:
+                cmd.extend(["--target", target])
+            
+            cmd.extend(["--message", message])
+            
+            # 执行命令
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            
+            if result.returncode == 0:
+                self.logger.info(f"✅ 飞书消息发送成功: {message[:50]}...")
+                return True
+            else:
+                self.logger.error(f"❌ 飞书消息发送失败: {result.stderr}")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"发送飞书消息异常: {e}")
+            return False
+    
+    def schedule_morning_message(self):
+        """调度早上9点消息任务 (每个交易日早上9点)"""
+        self.logger.info("调度早上9点消息任务: 每个交易日09:00")
+        
+        def morning_job():
+            """早上9点消息任务"""
+            self.logger.info("⏰ 执行早上9点消息任务")
+            
+            # 获取当日日期
+            today = datetime.now().strftime('%Y%m%d')
+            
+            # 检查是否为交易日
+            try:
+                cal = self.pro.trade_cal(exchange='SSE', start_date=today, end_date=today)
+                is_trading_day = not cal.empty and cal.iloc[0]['is_open'] == 1
+                
+                if is_trading_day:
+                    # 发送早上9点消息
+                    message = "即将开市，请做好准备。"
+                    success = self.send_feishu_message(message)
+                    
+                    if success:
+                        self.logger.info(f"✅ 早上9点消息发送成功: {today}")
+                    else:
+                        self.logger.error(f"❌ 早上9点消息发送失败: {today}")
+                else:
+                    self.logger.info(f"📅 今日 {today} 不是交易日，跳过早上9点消息")
+            except Exception as e:
+                self.logger.error(f"早上9点消息任务异常: {e}")
+        
+        # 调度任务
+        schedule.every().day.at("09:00").do(morning_job)
+        return morning_job
+    
     def run_once(self, mode: str = 'test'):
         """
         运行一次任务 (用于测试或手动执行)
@@ -756,6 +822,7 @@ class T01Scheduler:
         # 调度任务
         t_day_job = self.schedule_t_day_task()
         t1_job = self.schedule_t1_task()
+        morning_job = self.schedule_morning_message()
         
         self.logger.info("调度器已启动，进入主循环...")
         self.logger.info("按 Ctrl+C 停止")
