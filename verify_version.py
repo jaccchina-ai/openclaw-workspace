@@ -115,7 +115,31 @@ class VersionVerifier:
             'passed': False
         }
         
-        task_path = self.workspace_root / "tasks" / task_id
+        # 首先从Task Registry获取任务位置
+        registry_file = self.workspace_root / "task_registry.json"
+        task_path = None
+        
+        if registry_file.exists():
+            try:
+                with open(registry_file, 'r', encoding='utf-8') as f:
+                    registry = json.load(f)
+                
+                for task in registry.get('tasks', []):
+                    if task.get('id') == task_id:
+                        location = task.get('location', '')
+                        if location:
+                            task_path = self.workspace_root / location
+                            break
+            except Exception as e:
+                logger.warning(f"读取Registry失败: {e}")
+        
+        # 如果Registry中没有找到，尝试默认路径
+        if task_path is None or not task_path.exists():
+            task_path = self.workspace_root / "tasks" / task_id
+        
+        if not task_path.exists():
+            task_path = self.workspace_root / "skills" / task_id
+        
         if not task_path.exists():
             check_result['error'] = f"任务目录不存在: {task_path}"
             return check_result
@@ -236,7 +260,31 @@ class VersionVerifier:
             'passed': False
         }
         
-        task_path = self.workspace_root / "tasks" / task_id
+        # 首先从Task Registry获取任务位置
+        registry_file = self.workspace_root / "task_registry.json"
+        task_path = None
+        
+        if registry_file.exists():
+            try:
+                with open(registry_file, 'r', encoding='utf-8') as f:
+                    registry = json.load(f)
+                
+                for task in registry.get('tasks', []):
+                    if task.get('id') == task_id:
+                        location = task.get('location', '')
+                        if location:
+                            task_path = self.workspace_root / location
+                            break
+            except Exception as e:
+                logger.warning(f"读取Registry失败: {e}")
+        
+        # 如果Registry中没有找到，尝试默认路径
+        if task_path is None or not task_path.exists():
+            task_path = self.workspace_root / "tasks" / task_id
+        
+        if not task_path.exists():
+            task_path = self.workspace_root / "skills" / task_id
+        
         if not task_path.exists():
             check_result['error'] = f"任务目录不存在: {task_path}"
             return check_result
@@ -251,12 +299,38 @@ class VersionVerifier:
                 task_path / "limit_up_strategy_new.py",
                 task_path / "scheduler.py"
             ]
+        elif task_id == "T99":
+            # T99在skills目录下，使用config.json
+            critical_files = [
+                task_path / "config.json",
+                task_path / "_meta.json",
+                task_path / "scheduler.yaml"
+            ]
+        elif task_id == "T100":
+            # T100在skills目录下，使用_meta.json
+            critical_files = [
+                task_path / "_meta.json"
+            ]
         else:
             # 通用检查
-            critical_files = [
+            config_files = [
                 task_path / "config.yaml",
-                task_path / "main.py"
+                task_path / "config.json",
+                task_path / "_meta.json"
             ]
+            # 只添加存在的配置文件
+            for config_file in config_files:
+                if config_file.exists():
+                    critical_files.append(config_file)
+            
+            # 添加main.py如果存在
+            main_file = task_path / "main.py"
+            if main_file.exists():
+                critical_files.append(main_file)
+        
+        # 如果没有任何关键文件，添加任务目录本身作为检查
+        if not critical_files:
+            critical_files = [task_path]
         
         missing_files = []
         existing_files = []

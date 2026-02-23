@@ -29,6 +29,39 @@ class DisasterRecovery:
         self.snapshots_dir = self.workspace_root / "snapshots"
         self.backup_dir = self.workspace_root / "backups"
         self.backup_dir.mkdir(exist_ok=True)
+    
+    def _get_task_path(self, task_id: str) -> Path:
+        """获取任务路径（支持tasks和skills目录）"""
+        # 首先从Task Registry获取任务位置
+        registry_file = self.workspace_root / "task_registry.json"
+        
+        if registry_file.exists():
+            try:
+                with open(registry_file, 'r', encoding='utf-8') as f:
+                    registry = json.load(f)
+                
+                for task in registry.get('tasks', []):
+                    if task.get('id') == task_id:
+                        location = task.get('location', '')
+                        if location:
+                            task_path = self.workspace_root / location
+                            if task_path.exists():
+                                return task_path
+            except Exception as e:
+                logger.warning(f"读取Registry失败: {e}")
+        
+        # 如果Registry中没有找到，尝试默认路径
+        task_path = self.workspace_root / "tasks" / task_id
+        if task_path.exists():
+            return task_path
+        
+        # 尝试skills目录
+        task_path = self.workspace_root / "skills" / task_id
+        if task_path.exists():
+            return task_path
+        
+        # 如果都不存在，返回默认的tasks路径（调用方需要处理不存在的情况）
+        return self.workspace_root / "tasks" / task_id
         
     def rollback_to_version(self, task_id: str, target_version: str, 
                           backup_current: bool = True) -> Dict[str, Any]:
@@ -215,7 +248,7 @@ class DisasterRecovery:
         backup_path = self.backup_dir / backup_name
         
         # 备份任务目录
-        task_path = self.workspace_root / "tasks" / task_id
+        task_path = self._get_task_path(task_id)
         if task_path.exists():
             shutil.copytree(task_path, backup_path / "task", dirs_exist_ok=True)
         
@@ -234,6 +267,7 @@ class DisasterRecovery:
             'task_id': task_id,
             'backup_time': datetime.now().isoformat(),
             'backup_reason': 'disaster_recovery',
+            'task_path': str(task_path.relative_to(self.workspace_root)) if task_path.exists() else None,
             'files_backed_up': []
         }
         
@@ -381,14 +415,18 @@ class DisasterRecovery:
             'checks_failed': []
         }
         
-        # 1. 验证版本号
-        task_path = self.workspace_root / "tasks" / task_id
+        # 1. 获取任务路径
+        task_path = self._get_task_path(task_id)
+        
+        # 2. 验证版本号
         config_files = [
             task_path / "config.yaml",
-            task_path / "config.json"
+            task_path / "config.json",
+            task_path / "_meta.json"
         ]
         
         actual_version = None
+        config_file_found = None
         for config_file in config_files:
             if config_file.exists():
                 try:
@@ -401,15 +439,24 @@ class DisasterRecovery:
                     
                     if config and 'version' in config:
                         actual_version = config['version']
+                        config_file_found = config_file
                         break
                 except Exception as e:
                     logger.warning(f"读取配置文件失败: {e}")
         
         verification['actual_version'] = actual_version or 'unknown'
+        verification['config_file'] = str(config_file_found) if config_file_found else None
         
         if actual_version == target_version:
             verification['checks_passed'].append('version_match')
             logger.info(f"✅ 版本验证通过: {actual_version}")
+        elif actual_version is None:
+            verification['checks_failed'].append({
+                'check': 'version_match',
+                'expected': target_version,
+                'actual': '未找到版本信息'
+            })
+            logger.warning(f"❌ 未找到版本信息")
         else:
             verification['checks_failed'].append({
                 'check': 'version_match',
@@ -418,12 +465,47 @@ class DisasterRecovery:
             })
             logger.warning(f"❌ 版本不匹配: 期望 {target_version}, 实际 {actual_version}")
         
-        # 2. 验证关键文件存在
-        required_files = [
-            task_path / "config.yaml",
-            task_path / "main.py",
-            task_path / "limit_up_strategy_new.py"  # T01特定
-        ]
+        # 3. 验证关键文件存在
+        required_files = []
+        
+        # 根据任务类型定义关键文件
+        if task_id == "T01":
+            required_files = [
+                task_path / "config.yaml",
+                task_path / "main.py",
+                task_path / "limit_up_strategy_new.py",
+                task_path / "scheduler.py"
+            ]
+        elif task_id == "T99":
+            required_files = [
+                task_path / "config.json",
+                task_path / "_meta.json",
+                task_path / "scheduler.yaml"
+            ]
+        elif task_id == "T100":
+            required_files = [
+                task_path / "_meta.json"
+            ]
+        else:
+            # 通用检查
+            config_files_to_check = [
+                task_path / "config.yaml",
+                task_path / "config.json",
+                task_path / "_meta.json"
+            ]
+            # 只添加存在的配置文件
+            for config_file in config_files_to_check:
+                if config_file.exists():
+                    required_files.append(config_file)
+            
+            # 添加main.py如果存在
+            main_file = task_path / "main.py"
+            if main_file.exists():
+                required_files.append(main_file)
+        
+        # 如果没有任何关键文件，添加任务目录本身作为检查
+        if not required_files:
+            required_files = [task_path]
         
         for required_file in required_files:
             if required_file.exists():
@@ -434,7 +516,7 @@ class DisasterRecovery:
                     'file': str(required_file)
                 })
         
-        # 3. 验证Task Registry
+        # 4. 验证Task Registry
         registry_file = self.workspace_root / "task_registry.json"
         if registry_file.exists():
             try:
@@ -458,19 +540,23 @@ class DisasterRecovery:
             except Exception as e:
                 logger.warning(f"验证Registry失败: {e}")
         
-        # 4. 简单功能测试（可选）
-        try:
-            # 尝试导入主要模块
-            sys.path.insert(0, str(task_path.parent))
-            import importlib
-            module_name = task_path.name
-            importlib.import_module(f"{module_name}.main")
-            verification['checks_passed'].append('module_importable')
-        except Exception as e:
-            verification['checks_failed'].append({
-                'check': 'module_importable',
-                'error': str(e)
-            })
+        # 5. 简单功能测试（可选）- 仅对Python任务
+        if task_path.exists() and (task_path / "main.py").exists():
+            try:
+                # 尝试导入主要模块
+                sys.path.insert(0, str(task_path.parent))
+                import importlib
+                module_name = task_path.name
+                importlib.import_module(f"{module_name}.main")
+                verification['checks_passed'].append('module_importable')
+            except Exception as e:
+                verification['checks_failed'].append({
+                    'check': 'module_importable',
+                    'error': str(e)
+                })
+        else:
+            # 非Python任务或没有main.py，跳过此检查
+            verification['checks_passed'].append('module_importable_skipped')
         
         # 总结
         total_checks = len(verification['checks_passed']) + len(verification['checks_failed'])

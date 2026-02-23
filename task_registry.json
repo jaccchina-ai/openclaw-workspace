@@ -100,7 +100,7 @@
       "status": "active",
       "location": "skills/macro-monitor",
       "created_date": "2026-02-20",
-      "last_updated": "2026-02-21",
+      "last_updated": "2026-02-24",
       "dependencies": [
         "akshare",
         "pandas",
@@ -130,6 +130,13 @@
         "Trading Economics (国际)",
         "财联社 (新闻)",
         "华尔街见闻 (新闻)"
+      ],
+      "snapshots": [
+        {
+          "version": "1.0.2",
+          "snapshot_file": "snapshots/snapshot_T100_v1.0.2_20260224_064141.json",
+          "created_at": "2026-02-24T06:41:41.799251"
+        }
       ]
     }
   ]
