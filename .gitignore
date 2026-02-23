@@ -1,0 +1,61 @@
+# 日志文件
+*.log
+logs/
+
+# 数据文件
+*.db
+*.sqlite
+*.csv
+*.jsonl
+data/
+
+# 缓存文件
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 环境文件
+.env
+.env.local
+.env.*.local
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+temp/
+tmp/
+
+# OpenClaw特定文件
+.openclaw/
+.clawhub/
+.pi/
+
+# 内存文件（每日记录）
+memory/*.md
+!memory/README.md
+
+# 技能缓存
+skills/*/node_modules/
+
+# 任务特定排除
+tasks/*/__pycache__/
+tasks/*/*.log
+tasks/*/state/
+tasks/*/output/
+
+# 但保留重要配置
+!task_registry.json
+!tasks/*/config.yaml
+!tasks/*/README.md
+!tasks/*/USER_GUIDE.md
+
+# 版本快照（由系统管理）
+snapshots/
+
+# 测试文件（可选保留）
+# !tasks/*/test_*.py
