@@ -21,17 +21,11 @@
       "market_block": 40
     },
     "macro": {
-      "weight": 0.45,
-      "sectors": [
-        "油气及炼化工程",
-        "油服工程",
-        "油田服务",
-        "磷肥及磷化工",
-        "玻纤制造"
-      ],
-      "score": 48,
+      "weight": 0.6,
+      "sectors": [],
+      "score": 54,
       "trend": "neutral",
-      "last_updated": "2026-02-24 14:30:27",
+      "last_updated": "2026-02-25 14:30:40",
       "t100_influence": 1.0,
       "t100_data_available": false,
       "t100_composite_index": null,
