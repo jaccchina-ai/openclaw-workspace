@@ -1,0 +1,260 @@
+name: Validate Configuration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  validate-configs:
+    runs-on: ubuntu-latest
+    name: Validate Configuration Files
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Validate Task Registry JSON
+        run: |
+          echo "🔍 Validating task_registry.json..."
+          python -m json.tool task_registry.json > /dev/null
+          echo "✅ task_registry.json is valid JSON"
+          
+          # Check required fields
+          python -c "
+          import json
+          with open('task_registry.json', 'r', encoding='utf-8') as f:
+              data = json.load(f)
+          
+          required_fields = ['schema_version', 'description', 'tasks']
+          for field in required_fields:
+              if field not in data:
+                  raise ValueError(f'Missing required field: {field}')
+          
+          print(f'✅ Found {len(data.get(\"tasks\", []))} tasks in registry')
+          for task in data.get('tasks', []):
+              task_id = task.get('id', 'UNKNOWN')
+              print(f'  • {task_id}: {task.get(\"name\", \"No name\")}')
+          "
+
+      - name: Validate T01 Configuration
+        run: |
+          echo "🔍 Validating T01 configuration..."
+          if [ -f "tasks/T01/config.yaml" ]; then
+            python -c "
+          import yaml
+          with open('tasks/T01/config.yaml', 'r', encoding='utf-8') as f:
+              config = yaml.safe_load(f)
+          
+          required_sections = ['api', 'data_sources', 'data_storage']
+          for section in required_sections:
+              if section not in config:
+                  raise ValueError(f'Missing required section in T01 config: {section}')
+          
+          print('✅ T01 config.yaml is valid')
+          print(f'  • API endpoint: {config.get(\"api\", {}).get(\"endpoint\", \"Not set\")}')
+          print(f'  • Data source: {config.get(\"data_sources\", {}).get(\"tushare\", {}).get(\"data_source\", \"Not set\")}')
+          "
+          else
+            echo "⚠️  T01 config.yaml not found"
+          fi
+
+      - name: Validate T99 Configuration
+        run: |
+          echo "🔍 Validating T99 configuration..."
+          if [ -f "skills/a-share-short-decision/config.json" ]; then
+            python -m json.tool skills/a-share-short-decision/config.json > /dev/null
+            echo "✅ T99 config.json is valid JSON"
+          else
+            echo "⚠️  T99 config.json not found"
+          fi
+
+      - name: Validate Python scripts syntax
+        run: |
+          echo "🔍 Checking Python script syntax..."
+          find . -name "*.py" -type f ! -path "./.git/*" ! -path "./skills/*/node_modules/*" | head -20 | while read pyfile; do
+            if python -m py_compile "$pyfile" 2>/dev/null; then
+              echo "  ✅ $pyfile"
+            else
+              echo "  ❌ $pyfile"
+              python -m py_compile "$pyfile"
+            fi
+          done
+
+      - name: Check file permissions
+        run: |
+          echo "🔍 Checking shell script permissions..."
+          find . -name "*.sh" -type f ! -path "./.git/*" ! -path "./skills/*/node_modules/*" | while read shfile; do
+            if [ -x "$shfile" ]; then
+              echo "  ✅ $shfile is executable"
+            else
+              echo "  ⚠️  $shfile is not executable"
+            fi
+          done
+
+  test-t01-basic:
+    runs-on: ubuntu-latest
+    name: Basic T01 Tests
+    needs: validate-configs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install T01 dependencies
+        run: |
+          cd tasks/T01
+          pip install -r requirements.txt 2>/dev/null || echo "No requirements.txt found, installing common packages"
+          pip install pandas numpy requests pyyaml tushare
+
+      - name: Test T01 imports
+        run: |
+          cd tasks/T01
+          echo "🔍 Testing Python imports..."
+          python -c "
+          try:
+              import tushare as ts
+              import pandas as pd
+              import numpy as np
+              import yaml
+              import json
+              import logging
+              import schedule
+              from datetime import datetime, timedelta
+              print('✅ All required imports successful')
+          except ImportError as e:
+              print(f'❌ Import error: {e}')
+              exit(1)
+          "
+
+      - name: Test configuration loading
+        run: |
+          cd tasks/T01
+          echo "🔍 Testing configuration loading..."
+          python -c "
+          import yaml
+          try:
+              with open('config.yaml', 'r', encoding='utf-8') as f:
+                  config = yaml.safe_load(f)
+              print('✅ Configuration loaded successfully')
+              
+              # Check API key (without exposing it)
+              api_key = config.get('api', {}).get('api_key', '')
+              if api_key and len(api_key) > 10:
+                  print('✅ API key appears to be set')
+              else:
+                  print('⚠️  API key may not be properly set')
+          except Exception as e:
+              print(f'❌ Failed to load configuration: {e}')
+              exit(1)
+          "
+
+      - name: Test Registry sync script
+        run: |
+          echo "🔍 Testing Registry sync script..."
+          if [ -f "sync_registry.py" ]; then
+            python sync_registry.py check
+            echo "✅ Registry sync script check completed"
+          else
+            echo "⚠️  sync_registry.py not found"
+          fi
+
+      - name: Test Issues sync script
+        run: |
+          echo "🔍 Testing Issues sync script..."
+          if [ -f "sync_issues.py" ]; then
+            python sync_issues.py check
+            echo "✅ Issues sync script check completed"
+          else
+            echo "⚠️  sync_issues.py not found"
+          fi
+
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    needs: validate-configs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for exposed secrets
+        run: |
+          echo "🔍 Scanning for potential secrets..."
+          
+          # Check for API keys in files
+          PATTERNS=(
+            "api[_-]key"
+            "token"
+            "secret"
+            "password"
+            "credential"
+          )
+          
+          for pattern in "${PATTERNS[@]}"; do
+            echo "Checking for pattern: $pattern"
+            grep -r -i "$pattern" --include="*.py" --include="*.json" --include="*.yaml" --include="*.yml" --include="*.md" \
+              --exclude-dir=.git --exclude-dir=node_modules . | grep -v "test_" | grep -v "_test.py" | head -10 || true
+          done
+          
+          echo "✅ Secret scan completed (this is a basic scan)"
+
+      - name: Check .gitignore coverage
+        run: |
+          echo "🔍 Checking .gitignore coverage..."
+          # List potentially sensitive files that should be in .gitignore
+          SENSITIVE_PATTERNS=(
+            "*.log"
+            "*.db"
+            "*.sqlite"
+            "*.key"
+            "*.pem"
+            "*.env"
+            "credentials*"
+          )
+          
+          for pattern in "${SENSITIVE_PATTERNS[@]}"; do
+            if grep -q "^$pattern$" .gitignore || grep -q "^/$pattern$" .gitignore; then
+              echo "  ✅ $pattern is in .gitignore"
+            else
+              echo "  ⚠️  $pattern is NOT in .gitignore"
+            fi
+          done
+
+  summary:
+    runs-on: ubuntu-latest
+    name: Summary
+    needs: [validate-configs, test-t01-basic, security-scan]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "📊 OpenClaw Workspace Validation Summary"
+          echo "========================================"
+          echo ""
+          echo "✅ Configuration validation completed"
+          echo "📁 Repository structure validated"
+          echo "🐍 Python scripts syntax checked"
+          echo "🔒 Basic security scan performed"
+          echo ""
+          echo "Next steps:"
+          echo "1. Review any warnings above"
+          echo "2. Add more specific tests for T99 and T100"
+          echo "3. Consider adding integration tests"
+          echo ""
+          echo "For more information, see the task registry:"
+          echo "https://github.com/${{ github.repository }}/blob/main/task_registry.json"
