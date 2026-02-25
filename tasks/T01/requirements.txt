@@ -22,3 +22,6 @@ pylint>=2.15.0
 
 # 时间处理
 python-dateutil>=2.8.2
+
+# 任务调度
+schedule>=1.2.0

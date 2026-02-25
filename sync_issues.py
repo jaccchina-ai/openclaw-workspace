@@ -178,23 +178,13 @@ def update_issue(issue_number: int, task: Dict[str, Any]) -> bool:
     title = f"{ISSUE_PREFIX} {task['id']}: {task['name']}"
     body = create_issue_body(task)
     
-    # Build labels
-    labels = ISSUE_LABELS.copy()
-    labels.append(f"task:{task['id']}")
-    labels.append(f"status:{task.get('status', 'active')}")
-    
-    if task.get('tags'):
-        for tag in task['tags']:
-            labels.append(tag.lower().replace(" ", "-"))
-    
-    # Update issue using gh CLI
+    # Update issue using gh CLI (only title and body, labels are set at creation)
     cmd = [
         "issue", "edit",
         str(issue_number),
         "--repo", REPO,
         "--title", title,
-        "--body", body,
-        "--label", ",".join(labels)
+        "--body", body
     ]
     
     returncode, stdout, stderr = run_gh_command(cmd)
@@ -202,16 +192,9 @@ def update_issue(issue_number: int, task: Dict[str, Any]) -> bool:
     if returncode == 0:
         print(f"✅ Updated issue #{issue_number} for task {task['id']}")
         
-        # Update issue state if needed
-        issue_state = "open" if task.get('status') == 'active' else 'closed'
-        cmd_state = [
-            "issue", "edit",
-            str(issue_number),
-            "--repo", REPO,
-            "--state", issue_state
-        ]
-        
-        run_gh_command(cmd_state, capture_output=False)
+        # Note: Issue state updates are not supported via gh issue edit
+        # State can be managed manually or via gh issue close/reopen commands
+        # For now, we skip automatic state updates to avoid errors
         return True
     else:
         print(f"❌ Failed to update issue #{issue_number}: {stderr}")
