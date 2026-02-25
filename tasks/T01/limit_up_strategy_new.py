@@ -15,16 +15,30 @@ import sys
 
 # 尝试导入舆情分析模块
 try:
-    # 添加当前目录到路径，确保可以导入news_sentiment_test
+    # 添加当前目录到路径，确保可以导入舆情分析模块
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, current_dir)
-    from news_sentiment_test import NewsSentimentAnalyzer
-    HAS_SENTIMENT_MODULE = True
-except ImportError as e:
-    logger.warning(f"无法导入舆情分析模块: {e}")
-    HAS_SENTIMENT_MODULE = False
+    
+    # 优先尝试导入混合舆情分析器
+    try:
+        from hybrid_sentiment_analyzer import HybridSentimentAnalyzer
+        HAS_HYBRID_SENTIMENT_MODULE = True
+        HAS_SENTIMENT_MODULE = True
+        logger.info("混合舆情分析器模块可用")
+    except ImportError:
+        # 回退到原 Tavily 分析器
+        try:
+            from news_sentiment_test import NewsSentimentAnalyzer
+            HAS_HYBRID_SENTIMENT_MODULE = False
+            HAS_SENTIMENT_MODULE = True
+            logger.info("原 Tavily 舆情分析器模块可用")
+        except ImportError:
+            HAS_HYBRID_SENTIMENT_MODULE = False
+            HAS_SENTIMENT_MODULE = False
+            logger.info("舆情分析模块不可用")
 except Exception as e:
     logger.warning(f"初始化舆情分析模块失败: {e}")
+    HAS_HYBRID_SENTIMENT_MODULE = False
     HAS_SENTIMENT_MODULE = False
 
 logger = logging.getLogger(__name__)
@@ -65,23 +79,35 @@ class LimitUpScoringStrategyV2:
         self.sentiment_days_back = self.sentiment_config.get('days_back', 1)
         
         # 舆情分析器初始化
-        self.enable_sentiment = (HAS_SENTIMENT_MODULE and 
-                               os.environ.get('TAVILY_API_KEY') and 
-                               self.sentiment_enabled)
+        self.enable_sentiment = self.sentiment_enabled and HAS_SENTIMENT_MODULE
         self.sentiment_analyzer = None
         
         if self.enable_sentiment:
             try:
-                self.sentiment_analyzer = NewsSentimentAnalyzer()
-                logger.info(f"舆情分析器初始化成功，将对前{self.sentiment_top_n}名进行舆情分析")
+                # 优先使用混合舆情分析器
+                if HAS_HYBRID_SENTIMENT_MODULE:
+                    # 混合分析器不需要TAVILY_API_KEY，但如果有的话会使用
+                    self.sentiment_analyzer = HybridSentimentAnalyzer()
+                    analyzer_type = "混合舆情分析器"
+                else:
+                    # 回退到原 Tavily 分析器
+                    if os.environ.get('TAVILY_API_KEY'):
+                        self.sentiment_analyzer = NewsSentimentAnalyzer()
+                        analyzer_type = "Tavily 舆情分析器"
+                    else:
+                        logger.info("TAVILY_API_KEY未设置，Tavily 分析器不可用")
+                        self.enable_sentiment = False
+                        analyzer_type = None
+                
+                if self.sentiment_analyzer:
+                    logger.info(f"{analyzer_type}初始化成功，将对前{self.sentiment_top_n}名进行舆情分析")
+                
             except Exception as e:
                 logger.warning(f"舆情分析器初始化失败: {e}")
                 self.enable_sentiment = False
         else:
             if not HAS_SENTIMENT_MODULE:
                 logger.info("舆情分析模块不可用，跳过舆情分析")
-            elif not os.environ.get('TAVILY_API_KEY'):
-                logger.info("TAVILY_API_KEY未设置，跳过舆情分析")
             elif not self.sentiment_enabled:
                 logger.info("舆情分析功能已禁用")
         

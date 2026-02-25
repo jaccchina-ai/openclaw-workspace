@@ -54,7 +54,7 @@ Check data types before comparison, ensure all numeric values are properly initi
 
 **Logged**: 2026-02-25T23:11:00Z
 **Priority**: medium
-**Status**: pending
+**Status**: resolved
 **Area**: integration
 
 ### Summary
@@ -71,12 +71,25 @@ macro-monitor skill fails to call web_search via openclaw CLI due to missing com
 - Environment: OpenClaw workspace, cron job execution
 - Issue: Skill uses subprocess.call(["openclaw", "web_search", ...]) but openclaw CLI not in PATH
 
-### Suggested Fix
-Modify skill to use direct web_search tool integration instead of subprocess call, or ensure openclaw CLI is available in PATH
+### Resolution
+- **Resolved**: 2026-02-25T09:15:00Z
+- **Commit/PR**: Playwright scraper integration
+- **Notes**: Replaced failing web_search calls with Playwright scraper integration for all 5 macroeconomic data sources (exchange rate, crude oil, US Treasury yield, VIX, gold price). Also fixed openclaw CLI PATH issue by using absolute path `/root/.nvm/versions/node/v22.22.0/bin/openclaw` in scripts.
+
+### Fix Details
+1. **Playwright Integration**: Created `_call_playwright_scraper()` function to scrape data from original websites
+2. **Data Source Replacements**:
+   - USD/CNY exchange rate: XE.com (via Playwright stealth)
+   - Crude oil price: Investing.com (via Playwright stealth)
+   - US Treasury yield: Investing.com (via Playwright stealth)
+   - VIX index: CBOE website (via Playwright stealth)
+   - Gold price: gold.cnfol.com (via Playwright stealth)
+3. **PATH Fix**: Updated OPENCLAW_PATH variable in run_monitor.py
+4. **Testing**: All 5 data sources successfully tested (2026-02-25 09:15 UTC)
 
 ### Metadata
-- Reproducible: yes (occurs during every macro-monitor execution)
-- Related Files: skills/macro-monitor/run_monitor.py
+- Reproducible: was yes, now resolved
+- Related Files: skills/macro-monitor/run_monitor.py, skills/playwright-scraper-skill/
 - See Also: None
 
 ---

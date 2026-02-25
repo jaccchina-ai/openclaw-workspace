@@ -40,6 +40,10 @@
     "github": {
       "version": "1.0.0",
       "installedAt": 1771998968362
+    },
+    "playwright-scraper-skill": {
+      "version": "1.2.0",
+      "installedAt": 1772007093366
     }
   }
 }

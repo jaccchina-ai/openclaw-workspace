@@ -1,0 +1,101 @@
+{
+  "test_summary": {
+    "total_tests": 8,
+    "success_count": 5,
+    "partial_success_count": 3,
+    "failed_count": 0,
+    "error_count": 0,
+    "success_rate": 62.5,
+    "test_mode": "stealth",
+    "test_time": "2026-02-25 18:05:41",
+    "elapsed_time_total": 82.33729815483093
+  },
+  "detailed_results": {
+    "exchange_rate": {
+      "source_key": "exchange_rate",
+      "name": "美元兑人民币汇率",
+      "url": "https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=CNY",
+      "status": "success",
+      "value": 6.86851295,
+      "elapsed_time": 8.302746057510376,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=CNY\n📡 HTTP Status: 200\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013843478.png\n\n✅ 爬取完成！\n{\n  \"title\": \"1 USD to CNY - US Dollars to Chinese Yuan Renminbi Exchange Rate\",\n  \"url\": \"https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=CNY\",\n  \"htmlLength\": 321066,\n  \"contentPreview\": \"Get the App\\nToggle menu\\nCurrency converter\\nCurrency charts\\nGet rate alerts\\nS",
+      "parser_used": "_parse_exchange_rate"
+    },
+    "crude_oil": {
+      "source_key": "crude_oil",
+      "name": "布伦特原油价格",
+      "url": "https://www.investing.com/commodities/brent-oil",
+      "status": "partial_success",
+      "error": "数据解析失败，但网页访问成功",
+      "elapsed_time": 9.583305597305298,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://www.investing.com/commodities/brent-oil\n📡 HTTP Status: 200\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013853769.png\n\n✅ 爬取完成！\n{\n  \"title\": \"Brent Crude Oil Futures Price Today - Investing.com\",\n  \"url\": \"https://www.investing.com/commodities/brent-oil\",\n  \"htmlLength\": 1192344,\n  \"contentPreview\": \"Open in App\\nSign In\\nFree Sign Up\\nMarkets\\nIndices\\nStocks\\nCommodities\\nCryptocurrency\\nCurrencies\\nETFs\\nFutures\\nFunds\\nBonds\\nCertifi",
+      "parser_used": "_parse_crude_oil"
+    },
+    "treasury_yield": {
+      "source_key": "treasury_yield",
+      "name": "10年期美债收益率",
+      "url": "https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield",
+      "status": "partial_success",
+      "error": "数据解析失败，但网页访问成功",
+      "elapsed_time": 11.1558198928833,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield\n📡 HTTP Status: 200\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013865383.png\n\n✅ 爬取完成！\n{\n  \"title\": \"US 10 Year Treasury Yield - Investing.com\",\n  \"url\": \"https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield\",\n  \"htmlLength\": 1203633,\n  \"contentPreview\": \"Open in App\\nSign In\\nFree Sign Up\\nMarkets\\nIndices\\nStocks\\nCommodities\\nCryptocurrency\\nCurrencies\\nETFs\\nFutures\\nFun",
+      "parser_used": "_parse_treasury_yield"
+    },
+    "vix_index": {
+      "source_key": "vix_index",
+      "name": "VIX恐慌指数",
+      "url": "https://www.cboe.com/tradable_products/vix/",
+      "status": "success",
+      "value": 19.5,
+      "elapsed_time": 6.864154100418091,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://www.cboe.com/tradable_products/vix/\n📡 HTTP Status: 200\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013878511.png\n\n✅ 爬取完成！\n{\n  \"title\": \"VIX Volatility Products | Cboe\",\n  \"url\": \"https://www.cboe.com/tradable-products/vix\",\n  \"htmlLength\": 578083,\n  \"contentPreview\": \"Home\\nMore\\nVIX Volatility\\n\\nVIX\\n\\nCboe® Volatility Index\\n\\nWelcome to your go-to place for information about the VIX® complex, including VIX options and futures. Lear",
+      "parser_used": "_parse_vix_index"
+    },
+    "gold_price": {
+      "source_key": "gold_price",
+      "name": "黄金价格(人民币/克)",
+      "url": "https://gold.cnfol.com/",
+      "status": "partial_success",
+      "error": "数据解析失败，但网页访问成功",
+      "elapsed_time": 6.046251535415649,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://gold.cnfol.com/\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013887387.png\n\n✅ 爬取完成！\n{\n  \"title\": \"\",\n  \"url\": \"chrome-error://chromewebdata/\",\n  \"htmlLength\": 39,\n  \"contentPreview\": \"\",\n  \"cloudflare\": false,\n  \"screenshot\": \"./screenshot-1772013887387.png\",\n  \"data\": {\n    \"links\": []\n  },\n  \"elapsedSeconds\": \"5.44\"\n}\n",
+      "parser_used": "_parse_gold_price"
+    },
+    "sina_finance": {
+      "source_key": "sina_finance",
+      "name": "新浪财经首页",
+      "url": "https://finance.sina.com.cn",
+      "status": "success",
+      "value": true,
+      "elapsed_time": 16.734333992004395,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://finance.sina.com.cn\n📡 HTTP Status: 200\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013895412.png\n\n✅ 爬取完成！\n{\n  \"title\": \"新浪财经_金融信息服务商\",\n  \"url\": \"https://finance.sina.cn/?from=redirect\",\n  \"htmlLength\": 191271,\n  \"contentPreview\": \"手机新浪网\\n网站导航\\n有图\\nAPP下载\\n财经\\n快讯\\n直播\\n股票\\n美股\\n港股\\n基金\\n期货\\n黄金\\n外汇\\n行情\\n银行\\n保险\\n股市汇\\nESG\\n投诉\\n房产\\n 下拉刷新\\n为您推荐了15篇新闻, 下拉加载更多\\n上证\\n—.—\\n—.—\\n深成\\n—.—\\n—.—\\n恒指\\n—.—\\n—.—\\n道指\\n—.—\\n—.—\\n炒股开户\\n搜索股票 / 新闻\\n商务部就美国贸易代表针对中国",
+      "parser_used": "_parse_news_site"
+    },
+    "eastmoney": {
+      "source_key": "eastmoney",
+      "name": "东方财富首页",
+      "url": "https://www.eastmoney.com",
+      "status": "success",
+      "value": false,
+      "elapsed_time": 15.132293939590454,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://www.eastmoney.com\n📡 HTTP Status: 200\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013914173.png\n\n✅ 爬取完成！\n{\n  \"title\": \"东方财富手机APP官方下载-东方财富网\",\n  \"url\": \"https://wap.eastmoney.com/go.html?from=&refer=&random=0.8453152634888758\",\n  \"htmlLength\": 23700,\n  \"contentPreview\": \"跳过5\",\n  \"cloudflare\": false,\n  \"screenshot\": \"./screenshot-1772013914173.png\",\n  \"data\": {\n    \"links\": []\n  },\n  \"elapsedSeconds\": \"14.52\"\n}\n",
+      "parser_used": "_parse_news_site"
+    },
+    "cls": {
+      "source_key": "cls",
+      "name": "财联社首页",
+      "url": "https://www.cls.cn",
+      "status": "success",
+      "value": false,
+      "elapsed_time": 8.51839303970337,
+      "content_preview": "🕷️  啟動 Playwright Stealth 爬蟲...\n🔒 反爬模式: 無頭\n📱 導航到: https://www.cls.cn\n📡 HTTP Status: 200\n⏳ 等待 5000ms 讓內容載入...\n📸 截圖已儲存: ./screenshot-1772013931307.png\n\n✅ 爬取完成！\n{\n  \"title\": \"财联社\",\n  \"url\": \"https://s.cls.cn/openapp/open.html\",\n  \"htmlLength\": 22263,\n  \"contentPreview\": \"立即下载\",\n  \"cloudflare\": false,\n  \"screenshot\": \"./screenshot-1772013931307.png\",\n  \"data\": {\n    \"links\": []\n  },\n  \"elapsedSeconds\": \"7.91\"\n}\n",
+      "parser_used": "_parse_news_site"
+    }
+  },
+  "recommendations": [
+    "🔧 布伦特原油价格: 需要优化解析逻辑 - 数据解析失败，但网页访问成功",
+    "🔧 10年期美债收益率: 需要优化解析逻辑 - 数据解析失败，但网页访问成功",
+    "🔧 黄金价格(人民币/克): 需要优化解析逻辑 - 数据解析失败，但网页访问成功",
+    "🚨 整体成功率低于70%，建议检查网络连接和反爬虫策略"
+  ]
+}

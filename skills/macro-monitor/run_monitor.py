@@ -101,6 +101,106 @@ def _call_openclaw_tool(tool: str, args: list) -> dict | None:
         print(f"      调用 {tool} 异常: {e}")
         return None
 
+def _call_playwright_scraper(url: str, stealth: bool = True) -> dict | None:
+    """调用 Playwright 爬虫获取网页内容"""
+    try:
+        import subprocess
+        import json
+        import os
+        
+        # Playwright 技能路径
+        playwright_skill_dir = "/root/.openclaw/workspace/skills/playwright-scraper-skill"
+        
+        # 选择脚本：stealth 模式或 simple 模式
+        script_name = "playwright-stealth.js" if stealth else "playwright-simple.js"
+        script_path = os.path.join(playwright_skill_dir, "scripts", script_name)
+        
+        if not os.path.exists(script_path):
+            print(f"      Playwright 脚本不存在: {script_path}")
+            return None
+        
+        # 运行 Playwright 脚本
+        cmd = ["node", script_path, url]
+        result = subprocess.run(
+            cmd, 
+            cwd=playwright_skill_dir,
+            capture_output=True, 
+            text=True, 
+            timeout=60  # Playwright 可能需要更长时间
+        )
+        
+        if result.returncode == 0:
+            try:
+                return json.loads(result.stdout)
+            except json.JSONDecodeError as e:
+                print(f"      解析 Playwright 输出失败: {e}")
+                # 返回原始输出
+                return {"raw": result.stdout, "error": "json_parse_failed"}
+        else:
+            print(f"      Playwright 爬取失败: {result.stderr[:300]}")
+            # 如果 stealth 模式失败，尝试 simple 模式（如果当前不是 simple 模式）
+            if stealth:
+                print("      ⚠️ Stealth 模式失败，尝试 Simple 模式...")
+                return _call_playwright_scraper(url, stealth=False)
+            return None
+    except subprocess.TimeoutExpired:
+        print(f"      Playwright 爬取超时 (60秒)")
+        return None
+    except Exception as e:
+        print(f"      调用 Playwright 异常: {e}")
+        return None
+
+def _get_exchange_rate_via_playwright() -> float | None:
+    """通过 Playwright 爬取 XE.com 获取汇率"""
+    try:
+        url = "https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=CNY"
+        print(f"      尝试 Playwright 爬取 XE.com: {url}")
+        
+        result = _call_playwright_scraper(url, stealth=True)
+        if not result:
+            print("      Playwright 爬取返回空结果")
+            return None
+        
+        # 从 Playwright 结果中提取内容
+        content = ""
+        if "content" in result:
+            content = result["content"]
+        elif "raw" in result:
+            content = result["raw"]
+        else:
+            print("      Playwright 结果中没有内容字段")
+            return None
+        
+        # 使用与 web_fetch 相同的正则表达式解析
+        import re
+        matches = re.findall(r'(\d+\.\d+)\s*Chinese Yuan', content)
+        if not matches:
+            matches = re.findall(r'(\d+\.\d+)\s*CNY', content)
+        if not matches:
+            matches = re.findall(r'(\d+\.\d+)\s*人民币', content)
+        if not matches:
+            # 尝试其他模式
+            matches = re.findall(r'(\d+\.\d+)\s*元', content)
+        if not matches:
+            matches = re.findall(r'(\d+\.\d+)\s*USD\s*=\s*[\d,]+\s*CNY', content)
+        
+        if matches:
+            rate_float = float(matches[0])
+            print(f"      从 Playwright (XE.com) 获取汇率: {rate_float}")
+            return rate_float
+        else:
+            print("      无法从 Playwright 内容中解析汇率")
+            # 调试：保存内容以供分析
+            debug_path = "/tmp/xe_com_content.txt"
+            with open(debug_path, "w", encoding="utf-8") as f:
+                f.write(content[:5000])
+            print(f"      已保存内容到 {debug_path} (前5000字符)")
+            return None
+            
+    except Exception as e:
+        print(f"      Playwright 汇率获取异常: {e}")
+        return None
+
 def get_exchange_rate_fallback() -> float | None:
     """
     备用方案获取美元兑人民币汇率
@@ -133,23 +233,18 @@ def get_exchange_rate_fallback() -> float | None:
         except Exception as api_err:
             print(f"      免费API失败: {api_err}")
         
-        # 方法2：Tavily Search - 可靠性高，有上下文
+        # 方法2：Playwright 爬取 XE.com - 替代失效的 Tavily Search
         try:
-            result = _call_openclaw_tool("web_search", ["--query", "USD to CNY exchange rate today", "--count", "3"])
-            if result and "results" in result:
-                for res in result.get("results", []):
-                    snippet = res.get("snippet", "").lower()
-                    import re
-                    # 在摘要中查找汇率数字（格式如 7.24 CNY 或 7.24 人民币）
-                    matches = re.findall(r'(\d+\.\d+)\s*(?:cny|人民币|rmb)', snippet)
-                    if matches:
-                        rate_float = float(matches[0])
-                        print(f"      从 Tavily Search 获取汇率: {rate_float}")
-                        _set_to_cache(cache_key, rate_float)
-                        _record_fallback_usage("usd_cny", "Tavily Search")
-                        return rate_float
-        except Exception as search_err:
-            print(f"      Tavily Search 失败: {search_err}")
+            rate_float = _get_exchange_rate_via_playwright()
+            if rate_float is not None:
+                print(f"      从 Playwright (XE.com) 获取汇率: {rate_float}")
+                _set_to_cache(cache_key, rate_float)
+                _record_fallback_usage("usd_cny", "Playwright (XE.com)")
+                return rate_float
+            else:
+                print("      Playwright 汇率获取返回空值")
+        except Exception as play_err:
+            print(f"      Playwright 爬取失败: {play_err}")
         
         # 方法3：web_fetch 爬取 XE.com - 兜底方案
         try:
@@ -181,6 +276,63 @@ def get_exchange_rate_fallback() -> float | None:
         _record_fallback_usage("usd_cny", None, str(e))
         return None
 
+def _get_crude_oil_via_playwright() -> float | None:
+    """通过 Playwright 爬取 Investing.com 获取原油价格"""
+    try:
+        url = "https://www.investing.com/commodities/brent-oil"
+        print(f"      尝试 Playwright 爬取 Investing.com: {url}")
+        
+        result = _call_playwright_scraper(url, stealth=True)
+        if not result:
+            print("      Playwright 爬取返回空结果")
+            return None
+        
+        # 从 Playwright 结果中提取内容
+        content = ""
+        if "content" in result:
+            content = result["content"]
+        elif "raw" in result:
+            content = result["raw"]
+        else:
+            print("      Playwright 结果中没有内容字段")
+            return None
+        
+        # 解析原油价格
+        import re
+        # 尝试多种模式匹配价格
+        # 模式1：带美元符号的数字，如 $85.42
+        matches = re.findall(r'\$(\d+\.\d+)', content)
+        if not matches:
+            # 模式2：数字后跟"USD"或"美元"
+            matches = re.findall(r'(\d+\.\d+)\s*(?:USD|美元)', content)
+        if not matches:
+            # 模式3：仅数字（可能带逗号）
+            matches = re.findall(r'(\d{1,3}(?:,\d{3})*\.\d+|\d+\.\d+)', content)
+        if not matches:
+            # 模式4：尝试在"Brent"或"布伦特"附近查找数字
+            brent_section = re.search(r'(?i)(brent|布伦特).*?(\d+\.\d+)', content)
+            if brent_section:
+                matches = [brent_section.group(2)]
+        
+        if matches:
+            # 取第一个匹配项，去除逗号
+            price_str = matches[0].replace(',', '')
+            price_float = float(price_str)
+            print(f"      从 Playwright (Investing.com) 获取原油价格: ${price_float}")
+            return price_float
+        else:
+            print("      无法从 Playwright 内容中解析原油价格")
+            # 调试：保存内容以供分析
+            debug_path = "/tmp/investing_oil_content.txt"
+            with open(debug_path, "w", encoding="utf-8") as f:
+                f.write(content[:5000])
+            print(f"      已保存内容到 {debug_path} (前5000字符)")
+            return None
+            
+    except Exception as e:
+        print(f"      Playwright 原油价格获取异常: {e}")
+        return None
+
 def get_crude_oil_fallback() -> float | None:
     """
     备用方案获取原油价格（布伦特原油）
@@ -195,25 +347,18 @@ def get_crude_oil_fallback() -> float | None:
     try:
         print("    ├─ [Fallback] 尝试备用方案获取原油价格...")
         
-        # 方法1：Tavily Search - 最可靠，能获取最新价格
+        # 方法1：Playwright 爬取 Investing.com - 替代失效的 Tavily Search
         try:
-            result = _call_openclaw_tool("web_search", ["--query", "布伦特原油 当前价格 美元", "--count", "3"])
-            if result and "results" in result:
-                for res in result.get("results", []):
-                    snippet = res.get("snippet", "").lower()
-                    import re
-                    # 查找价格数字（格式如 $85.42 或 85.42美元）
-                    matches = re.findall(r'\$(\d+\.\d+)', snippet)
-                    if not matches:
-                        matches = re.findall(r'(\d+\.\d+)\s*美元', snippet)
-                    if matches:
-                        price = float(matches[0])
-                        print(f"      从 Tavily Search 获取原油价格: ${price}")
-                        _set_to_cache(cache_key, price)
-                        _record_fallback_usage("crude_oil", "Tavily Search")
-                        return price
-        except Exception as search_err:
-            print(f"      Tavily Search 失败: {search_err}")
+            oil_price = _get_crude_oil_via_playwright()
+            if oil_price is not None:
+                print(f"      从 Playwright (Investing.com) 获取原油价格: ${oil_price}")
+                _set_to_cache(cache_key, oil_price)
+                _record_fallback_usage("crude_oil", "Playwright (Investing.com)")
+                return oil_price
+            else:
+                print("      Playwright 原油价格获取返回空值")
+        except Exception as play_err:
+            print(f"      Playwright 爬取失败: {play_err}")
         
         # 方法2：免费API（Alpha Vantage 或类似，需要API key，暂时跳过）
         # 方法3：web_fetch 爬取 Investing.com
@@ -243,6 +388,63 @@ def get_crude_oil_fallback() -> float | None:
     except Exception as e:
         print(f"      原油备用方案失败: {e}")
         _record_fallback_usage("crude_oil", None, str(e))
+        return None
+
+def _get_treasury_yield_via_playwright() -> float | None:
+    """通过 Playwright 爬取 Investing.com 获取10年期美债收益率"""
+    try:
+        url = "https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield"
+        print(f"      尝试 Playwright 爬取 Investing.com: {url}")
+        
+        result = _call_playwright_scraper(url, stealth=True)
+        if not result:
+            print("      Playwright 爬取返回空结果")
+            return None
+        
+        # 从 Playwright 结果中提取内容
+        content = ""
+        if "content" in result:
+            content = result["content"]
+        elif "raw" in result:
+            content = result["raw"]
+        else:
+            print("      Playwright 结果中没有内容字段")
+            return None
+        
+        # 解析美债收益率
+        import re
+        # 尝试多种模式匹配收益率
+        # 模式1：百分比符号，如 4.25%
+        matches = re.findall(r'(\d+\.\d+)\s*%', content)
+        if not matches:
+            # 模式2：数字后跟"percent"或"收益率"或"yield"
+            matches = re.findall(r'(\d+\.\d+)\s*(?:percent|收益率|yield)', content, re.IGNORECASE)
+        if not matches:
+            # 模式3：仅数字，在合理范围内（美债收益率通常在0.5-10.0%）
+            all_numbers = re.findall(r'(\d{1,2}\.\d+)', content)
+            matches = [n for n in all_numbers if 0.5 <= float(n) <= 10.0]
+        if not matches:
+            # 模式4：尝试在"10-year"或"十年期"附近查找数字
+            ten_year_section = re.search(r'(?i)(10.?year|十年期|10年期).*?(\d+\.\d+)', content)
+            if ten_year_section:
+                matches = [ten_year_section.group(2)]
+        
+        if matches:
+            # 取第一个匹配项
+            yield_float = float(matches[0])
+            print(f"      从 Playwright (Investing.com) 获取10年期美债收益率: {yield_float}%")
+            return yield_float
+        else:
+            print("      无法从 Playwright 内容中解析美债收益率")
+            # 调试：保存内容以供分析
+            debug_path = "/tmp/investing_yield_content.txt"
+            with open(debug_path, "w", encoding="utf-8") as f:
+                f.write(content[:5000])
+            print(f"      已保存内容到 {debug_path} (前5000字符)")
+            return None
+            
+    except Exception as e:
+        print(f"      Playwright 美债收益率获取异常: {e}")
         return None
 
 def get_us_treasury_yield_fallback() -> float | None:
@@ -280,24 +482,18 @@ def get_us_treasury_yield_fallback() -> float | None:
         except Exception as api_err:
             print(f"      财政部API失败: {api_err}")
         
-        # 方法2：Tavily Search
+        # 方法2：Playwright 爬取 Investing.com - 替代失效的 Tavily Search
         try:
-            result = _call_openclaw_tool("web_search", ["--query", "10 year US Treasury yield today", "--count", "3"])
-            if result and "results" in result:
-                for res in result.get("results", []):
-                    snippet = res.get("snippet", "").lower()
-                    import re
-                    # 查找百分比数字（格式如 4.25% 或 4.25 percent）
-                    matches = re.findall(r'(\d+\.\d+)\s*%', snippet)
-                    if not matches:
-                        matches = re.findall(r'(\d+\.\d+)\s*percent', snippet)
-                    if matches:
-                        yield_value = float(matches[0])
-                        print(f"      从 Tavily Search 获取美债收益率: {yield_value}%")
-                        _set_to_cache(cache_key, yield_value)
-                        return yield_value
-        except Exception as search_err:
-            print(f"      Tavily Search 失败: {search_err}")
+            yield_value = _get_treasury_yield_via_playwright()
+            if yield_value is not None:
+                print(f"      从 Playwright (Investing.com) 获取美债收益率: {yield_value}%")
+                _set_to_cache(cache_key, yield_value)
+                _record_fallback_usage("us_10y_yield", "Playwright (Investing.com)")
+                return yield_value
+            else:
+                print("      Playwright 美债收益率获取返回空值")
+        except Exception as play_err:
+            print(f"      Playwright 爬取失败: {play_err}")
         
         # 方法3：web_fetch 爬取 Investing.com
         try:
@@ -324,6 +520,58 @@ def get_us_treasury_yield_fallback() -> float | None:
         _record_fallback_usage("us_10y_yield", None, str(e))
         return None
 
+def _get_vix_via_playwright() -> float | None:
+    """通过 Playwright 爬取 CBOE官网 获取VIX指数"""
+    try:
+        url = "https://www.cboe.com/tradable_products/vix/"
+        print(f"      尝试 Playwright 爬取 CBOE官网: {url}")
+        
+        result = _call_playwright_scraper(url, stealth=True)
+        if not result:
+            print("      Playwright 爬取返回空结果")
+            return None
+        
+        # 从 Playwright 结果中提取内容
+        content = ""
+        if "content" in result:
+            content = result["content"]
+        elif "raw" in result:
+            content = result["raw"]
+        else:
+            print("      Playwright 结果中没有内容字段")
+            return None
+        
+        # 解析VIX指数
+        import re
+        # 尝试多种模式匹配VIX值
+        # 模式1：直接匹配VIX后跟数字
+        matches = re.findall(r'VIX.*?(\d+\.\d+)', content, re.IGNORECASE)
+        if not matches:
+            # 模式2：数字后跟"VIX"
+            matches = re.findall(r'(\d+\.\d+)\s*VIX', content, re.IGNORECASE)
+        if not matches:
+            # 模式3：在合理范围内的任何数字
+            all_numbers = re.findall(r'(\d{1,2}\.\d+)', content)
+            matches = [n for n in all_numbers if 10 <= float(n) <= 50]  # 合理的VIX范围
+        
+        if matches:
+            # 取第一个匹配项
+            vix_float = float(matches[0])
+            print(f"      从 Playwright (CBOE官网) 获取VIX指数: {vix_float}")
+            return vix_float
+        else:
+            print("      无法从 Playwright 内容中解析VIX指数")
+            # 调试：保存内容以供分析
+            debug_path = "/tmp/cboe_vix_content.txt"
+            with open(debug_path, "w", encoding="utf-8") as f:
+                f.write(content[:5000])
+            print(f"      已保存内容到 {debug_path} (前5000字符)")
+            return None
+            
+    except Exception as e:
+        print(f"      Playwright VIX指数获取异常: {e}")
+        return None
+
 def get_vix_fallback() -> float | None:
     """
     备用方案获取 VIX 恐慌指数
@@ -338,23 +586,18 @@ def get_vix_fallback() -> float | None:
     try:
         print("    ├─ [Fallback] 尝试备用方案获取 VIX 指数...")
         
-        # 方法1：Tavily Search - 最快捷
+        # 方法1：Playwright 爬取 CBOE官网 - 替代失效的 Tavily Search
         try:
-            result = _call_openclaw_tool("web_search", ["--query", "VIX index current value today", "--count", "3"])
-            if result and "results" in result:
-                for res in result.get("results", []):
-                    snippet = res.get("snippet", "").lower()
-                    import re
-                    # 查找VIX数字（通常在13-30之间）
-                    matches = re.findall(r'(\d+\.\d+|\d+)\s*(?:point|points|指数)?', snippet)
-                    for match in matches:
-                        value = float(match)
-                        if 10 <= value <= 50:  # 合理范围
-                            print(f"      从 Tavily Search 获取 VIX 指数: {value}")
-                            _set_to_cache(cache_key, value)
-                            return value
-        except Exception as search_err:
-            print(f"      Tavily Search 失败: {search_err}")
+            vix_value = _get_vix_via_playwright()
+            if vix_value is not None:
+                print(f"      从 Playwright (CBOE官网) 获取 VIX 指数: {vix_value}")
+                _set_to_cache(cache_key, vix_value)
+                _record_fallback_usage("vix", "Playwright (CBOE官网)")
+                return vix_value
+            else:
+                print("      Playwright VIX指数获取返回空值")
+        except Exception as play_err:
+            print(f"      Playwright 爬取失败: {play_err}")
         
         # 方法2：web_fetch 爬取 CBOE官网
         try:
@@ -386,6 +629,77 @@ def get_vix_fallback() -> float | None:
         _record_fallback_usage("vix", None, str(e))
         return None
 
+def _get_gold_price_via_playwright() -> float | None:
+    """通过 Playwright 爬取黄金网站获取人民币/克价格"""
+    try:
+        url = "https://gold.cnfol.com/"
+        print(f"      尝试 Playwright 爬取黄金网: {url}")
+        
+        result = _call_playwright_scraper(url, stealth=True)
+        if not result:
+            print("      Playwright 爬取返回空结果")
+            return None
+        
+        # 从 Playwright 结果中提取内容
+        content = ""
+        if "content" in result:
+            content = result["content"]
+        elif "raw" in result:
+            content = result["raw"]
+        else:
+            print("      Playwright 结果中没有内容字段")
+            return None
+        
+        # 解析黄金价格（人民币/克）
+        import re
+        # 尝试多种模式匹配黄金价格
+        # 模式1：元/克 格式
+        matches = re.findall(r'(\d+\.\d+)\s*元\s*[/每]?\s*克', content)
+        if not matches:
+            # 模式2：人民币/克 格式
+            matches = re.findall(r'(\d+\.\d+)\s*人民币\s*[/每]?\s*克', content)
+        if not matches:
+            # 模式3：元/盎司 格式 (转换为元/克: 1盎司=31.1035克)
+            oz_matches = re.findall(r'(\d+\.\d+)\s*元\s*[/每]?\s*盎司', content)
+            if oz_matches:
+                try:
+                    oz_price = float(oz_matches[0])
+                    # 转换为元/克
+                    gram_price = oz_price / 31.1035
+                    print(f"      从 Playwright (黄金网) 获取黄金价格(盎司转换): {round(gram_price, 2)}元/克")
+                    return round(gram_price, 2)
+                except ValueError:
+                    pass
+        if not matches:
+            # 模式4：仅数字，在合理范围内（黄金价格通常在300-600元/克）
+            all_numbers = re.findall(r'(\d{3}\.\d+|\d{3})', content)
+            matches = [n for n in all_numbers if 300 <= float(n) <= 600]
+        if not matches:
+            # 模式5：尝试在"黄金"或"金价"附近查找数字
+            gold_section = re.search(r'(?i)(黄金|金价).*?(\d{3}\.\d+|\d{3})', content)
+            if gold_section:
+                num = gold_section.group(2)
+                if 300 <= float(num) <= 600:
+                    matches = [num]
+        
+        if matches:
+            # 取第一个匹配项
+            gold_price = float(matches[0])
+            print(f"      从 Playwright (黄金网) 获取黄金价格: {gold_price}元/克")
+            return gold_price
+        else:
+            print("      无法从 Playwright 内容中解析黄金价格")
+            # 调试：保存内容以供分析
+            debug_path = "/tmp/gold_price_content.txt"
+            with open(debug_path, "w", encoding="utf-8") as f:
+                f.write(content[:5000])
+            print(f"      已保存内容到 {debug_path} (前5000字符)")
+            return None
+            
+    except Exception as e:
+        print(f"      Playwright 黄金价格获取异常: {e}")
+        return None
+
 def get_gold_price_fallback() -> float | None:
     """
     备用方案获取黄金价格（人民币/克）
@@ -413,24 +727,18 @@ def get_gold_price_fallback() -> float | None:
         except Exception as api_err:
             print(f"      金交所API失败: {api_err}")
         
-        # 方法2：Tavily Search
+        # 方法2：Playwright 爬取黄金网 - 替代失效的 Tavily Search
         try:
-            result = _call_openclaw_tool("web_search", ["--query", "黄金价格 人民币 每克 今日", "--count", "3"])
-            if result and "results" in result:
-                for res in result.get("results", []):
-                    snippet = res.get("snippet", "").lower()
-                    import re
-                    # 查找价格（人民币/克）
-                    matches = re.findall(r'(\d+\.\d+)\s*元\s*每克', snippet)
-                    if not matches:
-                        matches = re.findall(r'(\d+\.\d+)\s*人民币\s*每克', snippet)
-                    if matches:
-                        price = float(matches[0])
-                        print(f"      从 Tavily Search 获取黄金价格: {price}元/克")
-                        _set_to_cache(cache_key, price)
-                        return price
-        except Exception as search_err:
-            print(f"      Tavily Search 失败: {search_err}")
+            gold_price = _get_gold_price_via_playwright()
+            if gold_price is not None:
+                print(f"      从 Playwright (黄金网) 获取黄金价格: {gold_price}元/克")
+                _set_to_cache(cache_key, gold_price)
+                _record_fallback_usage("gold_cny", "Playwright (黄金网)")
+                return gold_price
+            else:
+                print("      Playwright 黄金价格获取返回空值")
+        except Exception as play_err:
+            print(f"      Playwright 爬取失败: {play_err}")
         
         # 方法3：web_fetch 爬取财经网站
         try:
