@@ -11,7 +11,6 @@ import json
 import logging
 import schedule
 import time
-import os
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -72,20 +71,32 @@ class T01Scheduler:
         )
     
     def get_trade_date(self, date_str: str = None, offset: int = 0) -> str:
-        """获取交易日期"""
+        """获取交易日期
+        
+        Args:
+            date_str: 指定日期字符串，如果提供则直接返回
+            offset: 日期偏移量
+                - 0: 最近交易日（今天如果是交易日则返回今天，否则返回最近交易日）
+                - 1: 下一个交易日（暂时不支持）
+                - -1: 前一个交易日
+                - -2: 前两个交易日，依此类推
+        """
         if date_str:
             return date_str
         
         # 如果没有提供日期，获取最近交易日
         today = datetime.now().strftime('%Y%m%d')
         
-        # 获取最近30天交易日历
-        start_date = (datetime.now() - timedelta(days=30)).strftime('%Y%m%d')
+        # 获取最近60天交易日历（确保包含足够多的交易日）
+        start_date = (datetime.now() - timedelta(days=60)).strftime('%Y%m%d')
         cal = self.pro.trade_cal(exchange='SSE', start_date=start_date, end_date=today)
         
         if cal.empty:
             self.logger.error("无法获取交易日历")
             return today
+        
+        # 确保按日期降序排列（最近的在前）
+        cal = cal.sort_values('cal_date', ascending=False)
         
         trade_dates = cal[cal['is_open'] == 1]['cal_date'].tolist()
         
@@ -93,24 +104,136 @@ class T01Scheduler:
             self.logger.warning("没有找到交易日")
             return today
         
-        if offset < 0 and abs(offset) <= len(trade_dates):
-            return trade_dates[offset]
+        # 处理偏移量
+        if offset == 0:
+            # 如果今天是交易日，返回今天；否则返回最近交易日
+            if today in trade_dates:
+                return today
+            else:
+                return trade_dates[0] if trade_dates else today
+        elif offset < 0:
+            # 负偏移：前N个交易日
+            abs_offset = abs(offset)
+            if abs_offset < len(trade_dates):
+                # trade_dates[0]是最近交易日，trade_dates[1]是前一个交易日
+                return trade_dates[abs_offset]
+            else:
+                self.logger.warning(f"偏移量 {offset} 超出范围，返回最早可用交易日")
+                return trade_dates[-1] if trade_dates else today
+        else:
+            # 正偏移：下一个交易日（暂时不支持）
+            self.logger.warning(f"正偏移量 {offset} 暂不支持，返回最近交易日")
+            return trade_dates[0] if trade_dates else today
+    
+    def send_feishu_message(self, message: str) -> bool:
+        """发送飞书消息
         
-        # 默认返回最近交易日
-        return trade_dates[-1]
+        Args:
+            message: 消息内容
+            
+        Returns:
+            bool: 是否发送成功
+        """
+        try:
+            # 使用openclaw CLI发送飞书消息
+            cmd = [
+                'openclaw', 'message', 'send',
+                '--channel', 'feishu',
+                '--target', 'user:ou_b8a256a9cb526db6c196cb438d6893a6',
+                '--message', message
+            ]
+            
+            self.logger.info(f"📤 发送飞书消息: {len(message)} 字符")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            
+            if result.returncode == 0:
+                self.logger.info("✅ 飞书消息发送成功")
+                return True
+            else:
+                self.logger.error(f"❌ 飞书消息发送失败: {result.stderr}")
+                return False
+                
+        except subprocess.TimeoutExpired:
+            self.logger.error("❌ 飞书消息发送超时")
+            return False
+        except Exception as e:
+            self.logger.error(f"❌ 飞书消息发送异常: {e}")
+            return False
+    
+    def prepare_t_day_push_message(self, result: dict) -> str:
+        """准备T日评分推送消息
+        
+        Args:
+            result: T日评分结果字典
+            
+        Returns:
+            推送消息字符串
+        """
+        if not result.get('success'):
+            return f"⚠️ T日评分失败: {result.get('error', '未知错误')}"
+        
+        trade_date = result.get('trade_date', '未知日期')
+        candidates = result.get('candidates', [])
+        summary = result.get('summary', {})
+        
+        message_parts = []
+        message_parts.append(f"📊 **T01策略 - T日评分结果 ({trade_date})**")
+        message_parts.append("="*40)
+        message_parts.append(f"**市场概况**:")
+        message_parts.append(f"涨停股票: {summary.get('total_limit_up', 0)} 只")
+        message_parts.append(f"有效评分: {summary.get('total_scored', 0)} 只")
+        message_parts.append(f"候选筛选: {summary.get('top_n_selected', 0)} 只")
+        message_parts.append("")
+        message_parts.append(f"**🎯 候选股票榜单**")
+        
+        for i, stock in enumerate(candidates[:5], 1):
+            name = stock.get('name', '未知')
+            code = stock.get('ts_code', '未知')
+            score = stock.get('total_score', 0)
+            first_time = stock.get('first_limit_time', '')
+            seal_ratio = stock.get('seal_ratio', 0)
+            turnover = stock.get('turnover_rate', 0)
+            industry = stock.get('industry', '未知')
+            
+            # 格式化首次涨停时间
+            if first_time:
+                # 补零到6位，确保格式为HHMMSS
+                padded = first_time.zfill(6)
+                # 格式化为 HH:MM:SS
+                time_str = f"{padded[0:2]}:{padded[2:4]}:{padded[4:6]}"
+                # 如果秒为00，可以省略秒部分
+                if padded[4:6] == "00":
+                    time_str = time_str[:-3]
+            else:
+                time_str = "未知"
+            
+            message_parts.append(f"#{i} **{name}** ({code})")
+            message_parts.append(f"  评分: {score:.1f} | 涨停: {time_str}")
+            message_parts.append(f"  封成比: {seal_ratio:.2f} | 换手: {turnover:.2f}%")
+            message_parts.append(f"  行业: {industry}")
+            message_parts.append("")
+        
+        message_parts.append("="*40)
+        message_parts.append("**📋 明日计划**")
+        message_parts.append("1. 明早09:25: 竞价数据分析")
+        message_parts.append("2. 09:30前: 推送最终买入建议")
+        message_parts.append("")
+        message_parts.append("⏰ 生成时间: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        
+        return "\n".join(message_parts)
     
     def run_t_day_scoring(self, trade_date: str = None) -> dict:
         """
         运行T日涨停股评分
         
         Args:
-            trade_date: 交易日期，如果为None则使用最近交易日
+            trade_date: 交易日期，如果为None则使用今天（如果是交易日）
             
         Returns:
             评分结果字典
         """
         if trade_date is None:
-            trade_date = self.get_trade_date(offset=-1)  # 使用前一个交易日
+            trade_date = self.get_trade_date(offset=0)  # 使用今天（如果是交易日）
         
         self.logger.info(f"开始T日涨停股评分 (日期: {trade_date})")
         
@@ -168,6 +291,14 @@ class T01Scheduler:
             # 保存候选股票用于T+1日分析
             self.save_candidates_for_t1(result)
             
+            # 发送飞书推送消息
+            try:
+                push_message = self.prepare_t_day_push_message(result)
+                self.send_feishu_message(push_message)
+                self.logger.info("✅ T日评分推送消息已发送")
+            except Exception as e:
+                self.logger.error(f"T日评分推送消息发送失败: {e}")
+            
             return result
             
         except Exception as e:
@@ -193,7 +324,8 @@ class T01Scheduler:
             如果在交易时间且无法获取实时竞价数据，将返回错误
         """
         if trade_date is None:
-            trade_date = self.get_trade_date(offset=0)  # 使用当日
+            # 使用今天日期，而不是最近交易日
+            trade_date = datetime.now().strftime('%Y%m%d')
         
         self.logger.info(f"开始T+1日竞价分析 (日期: {trade_date}, 交易时间: {is_trading_hours})")
         
@@ -405,7 +537,20 @@ class T01Scheduler:
                 # 使用第一个匹配的文件 (通常只有一个)
                 file_path, data = matched_files[0]
                 self.logger.info(f"加载候选股票: {file_path} (T+1日: {t1_date})")
-                return data.get('candidates', [])
+                
+                # 为每个候选股票添加trade_date字段
+                candidates = data.get('candidates', [])
+                # 尝试获取trade_date或t_date字段
+                t_date = data.get('trade_date') or data.get('t_date')
+                
+                if t_date:
+                    for candidate in candidates:
+                        candidate['trade_date'] = t_date
+                    self.logger.debug(f"为 {len(candidates)} 只候选股票添加trade_date字段: {t_date}")
+                else:
+                    self.logger.warning(f"候选文件缺少trade_date/t_date字段: {file_path}")
+                
+                return candidates
             
             # 如果没有找到完全匹配的，使用最新的文件
             self.logger.warning(f"未找到T+1日 {t1_date} 的候选文件，使用最新的文件")
@@ -416,7 +561,20 @@ class T01Scheduler:
                 data = json.load(f)
             
             self.logger.info(f"加载最新候选股票: {latest_file}")
-            return data.get('candidates', [])
+            
+            # 为每个候选股票添加trade_date字段
+            candidates = data.get('candidates', [])
+            # 尝试获取trade_date或t_date字段
+            t_date = data.get('trade_date') or data.get('t_date')
+            
+            if t_date:
+                for candidate in candidates:
+                    candidate['trade_date'] = t_date
+                self.logger.debug(f"为 {len(candidates)} 只候选股票添加trade_date字段: {t_date}")
+            else:
+                self.logger.warning(f"候选文件缺少trade_date/t_date字段: {latest_file}")
+            
+            return candidates
             
         except Exception as e:
             self.logger.error(f"加载候选股票失败: {e}")
@@ -647,9 +805,12 @@ class T01Scheduler:
                         # 推送消息
                         push_message = result.get('push_message')
                         if push_message:
-                            # TODO: 实际推送消息到飞书
                             self.logger.info(f"📤 准备推送消息: {len(push_message)} 字符")
-                            # 这里可以集成飞书推送
+                            # 实际发送飞书消息
+                            if self.send_feishu_message(push_message):
+                                self.logger.info("✅ T+1竞价分析推送消息已发送")
+                            else:
+                                self.logger.error("❌ T+1竞价分析推送消息发送失败")
                     else:
                         error_msg = result.get('error', '未知错误')
                         self.logger.error(f"❌ T+1日竞价分析任务失败: {error_msg}")
@@ -660,7 +821,8 @@ class T01Scheduler:
                             error_message += "在交易时间 (9:25-9:29) 无法获取实时竞价数据，\n"
                             error_message += "因此今日无法提供选股建议。\n\n"
                             error_message += "请检查网络连接或API权限。"
-                            # TODO: 推送错误消息到飞书
+                            # 推送错误消息到飞书
+                            self.send_feishu_message(error_message)
                 else:
                     self.logger.info(f"📅 今日 {today} 不是交易日，跳过T+1日分析")
             except Exception as e:
@@ -669,70 +831,6 @@ class T01Scheduler:
         # 调度任务
         schedule.every().day.at("09:25").do(t1_job)
         return t1_job
-    
-    def send_feishu_message(self, message: str, target: str = None):
-        """发送飞书消息
-        
-        Args:
-            message: 消息内容
-            target: 目标（飞书群ID或个人ID），默认为None（发送到默认对话）
-        """
-        try:
-            # 构建命令
-            cmd = ["openclaw", "message", "--channel", "feishu"]
-            
-            if target:
-                cmd.extend(["--target", target])
-            
-            cmd.extend(["--message", message])
-            
-            # 执行命令
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-            
-            if result.returncode == 0:
-                self.logger.info(f"✅ 飞书消息发送成功: {message[:50]}...")
-                return True
-            else:
-                self.logger.error(f"❌ 飞书消息发送失败: {result.stderr}")
-                return False
-                
-        except Exception as e:
-            self.logger.error(f"发送飞书消息异常: {e}")
-            return False
-    
-    def schedule_morning_message(self):
-        """调度早上9点消息任务 (每个交易日早上9点)"""
-        self.logger.info("调度早上9点消息任务: 每个交易日09:00")
-        
-        def morning_job():
-            """早上9点消息任务"""
-            self.logger.info("⏰ 执行早上9点消息任务")
-            
-            # 获取当日日期
-            today = datetime.now().strftime('%Y%m%d')
-            
-            # 检查是否为交易日
-            try:
-                cal = self.pro.trade_cal(exchange='SSE', start_date=today, end_date=today)
-                is_trading_day = not cal.empty and cal.iloc[0]['is_open'] == 1
-                
-                if is_trading_day:
-                    # 发送早上9点消息
-                    message = "即将开市，请做好准备。"
-                    success = self.send_feishu_message(message)
-                    
-                    if success:
-                        self.logger.info(f"✅ 早上9点消息发送成功: {today}")
-                    else:
-                        self.logger.error(f"❌ 早上9点消息发送失败: {today}")
-                else:
-                    self.logger.info(f"📅 今日 {today} 不是交易日，跳过早上9点消息")
-            except Exception as e:
-                self.logger.error(f"早上9点消息任务异常: {e}")
-        
-        # 调度任务
-        schedule.every().day.at("09:00").do(morning_job)
-        return morning_job
     
     def run_once(self, mode: str = 'test'):
         """
@@ -822,7 +920,6 @@ class T01Scheduler:
         # 调度任务
         t_day_job = self.schedule_t_day_task()
         t1_job = self.schedule_t1_task()
-        morning_job = self.schedule_morning_message()
         
         self.logger.info("调度器已启动，进入主循环...")
         self.logger.info("按 Ctrl+C 停止")

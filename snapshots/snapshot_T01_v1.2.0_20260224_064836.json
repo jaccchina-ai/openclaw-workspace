@@ -1,0 +1,714 @@
+{
+  "metadata": {
+    "task_id": "T01",
+    "version": "1.2.0",
+    "created_at": "2026-02-24T06:48:36.118580",
+    "git_commit": "bab25eb4028650297ebef573278d0886810855a1",
+    "git_branch": "master",
+    "message": "适配灾难恢复系统后更新快照",
+    "creator": "VersionSnapshotCreator"
+  },
+  "task_info": {
+    "path": "tasks/T01",
+    "version": "1.2.0",
+    "config": {
+      "version": "1.2.0",
+      "last_updated": "2026-02-23",
+      "api": {
+        "endpoint": "http://api.tushare.pro",
+        "api_key": "870008d508d2b0e57ecf2ccc586c23c4ecc37522f5e93890fb3d56ab",
+        "timeout": 30
+      },
+      "data_sources": {
+        "tushare": {
+          "token": "870008d508d2b0e57ecf2ccc586c23c4ecc37522f5e93890fb3d56ab",
+          "data_source": "DC",
+          "enabled": true
+        },
+        "akshare": {
+          "enabled": false
+        }
+      },
+      "strategy": {
+        "schedule": {
+          "daily_screening_time": "20:00",
+          "morning_review_time": "09:25",
+          "push_time": "09:30"
+        },
+        "t_day_scoring": {
+          "first_limit_time": 30,
+          "buy_to_sell_ratio": 10,
+          "order_amount_to_circ_mv": 15,
+          "turnover_rate": 5,
+          "turnover_rate_to_20ma": 10,
+          "volume_ratio": 5,
+          "main_net_amount": 5,
+          "main_net_ratio": 5,
+          "medium_net_amount": 5,
+          "is_hot_sector": 10
+        },
+        "t1_auction_scoring": {
+          "open_change_pct": 35,
+          "auction_volume_to_t_volume": 25,
+          "auction_volume_ratio": 20,
+          "auction_turnover_rate": 0,
+          "auction_amount": 20
+        },
+        "risk_control": {
+          "index_5ma_relation": true,
+          "index_above_5ma_weight": 1.0,
+          "index_below_5ma_weight": 0.7,
+          "max_position_per_stock": 0.2,
+          "min_total_score": 60
+        },
+        "output": {
+          "top_n_candidates": 5,
+          "final_recommendation_count": 3,
+          "include_reasons": true,
+          "include_position": true
+        }
+      },
+      "output": {
+        "top_n": 10,
+        "alert_thresholds": {
+          "price_change": 5,
+          "volume_spike": 200
+        },
+        "format": "table",
+        "save_to_file": true,
+        "file_path": "./output/results_{date}.csv"
+      },
+      "data_storage": {
+        "database": {
+          "type": "sqlite",
+          "path": "./data/t01_database.db",
+          "auto_backup": true,
+          "backup_path": "./data/backups/"
+        },
+        "tables": {
+          "recommendations": "t01_recommendations",
+          "trades": "t01_trades",
+          "performance": "t01_performance",
+          "factors": "t01_factors",
+          "learning_logs": "t01_learning_logs"
+        },
+        "retention": {
+          "recommendations": 365,
+          "trades": 730,
+          "performance": 1095
+        }
+      },
+      "performance_tracking": {
+        "buy_time": "T+1日09:30",
+        "sell_time": "T+2日15:00",
+        "buy_price": "开盘价",
+        "sell_price": "收盘价",
+        "min_trades_for_statistics": 20,
+        "confidence_interval": 0.95,
+        "metrics": [
+          "win_rate",
+          "average_return",
+          "sharpe_ratio",
+          "max_drawdown",
+          "profit_factor"
+        ]
+      },
+      "machine_learning": {
+        "mode": "reinforcement",
+        "enabled": true,
+        "min_data_points": 100,
+        "models": {
+          "factor_importance": "random_forest",
+          "win_prediction": "xgboost",
+          "portfolio_optimization": "genetic"
+        },
+        "training": {
+          "test_size": 0.2,
+          "cross_validation": 5,
+          "early_stopping": 10
+        },
+        "factor_discovery": {
+          "enabled": true,
+          "max_factors": 50,
+          "correlation_threshold": 0.8,
+          "min_improvement": 0.01
+        },
+        "self_evolution": {
+          "enabled": true,
+          "review_interval": 30,
+          "optimization_cycles": 3
+        }
+      },
+      "system_optimization": {
+        "auto_optimize": true,
+        "optimize_frequency": "weekly",
+        "parameter_tuning": {
+          "score_weights": true,
+          "thresholds": true,
+          "risk_parameters": true
+        },
+        "optimization_goals": [
+          "max_win_rate",
+          "max_sharpe_ratio",
+          "min_drawdown"
+        ]
+      }
+    },
+    "config_file": "/root/.openclaw/workspace/tasks/T01/config.yaml",
+    "files": [
+      "tasks/T01/README.md",
+      "tasks/T01/config.yaml",
+      "tasks/T01/api_client.py",
+      "tasks/T01/strategy.py",
+      "tasks/T01/screener.py",
+      "tasks/T01/output_formatter.py",
+      "tasks/T01/requirements.txt",
+      "tasks/T01/config.example.yaml",
+      "tasks/T01/run.sh",
+      "tasks/T01/integration.py",
+      "tasks/T01/limit_up_strategy.py",
+      "tasks/T01/api_questions.md",
+      "tasks/T01/test_tushare.py",
+      "tasks/T01/main_old.py",
+      "tasks/T01/main.py",
+      "tasks/T01/t01_limit_up.log",
+      "tasks/T01/limit_up_strategy_new.py",
+      "tasks/T01/test_v2.py",
+      "tasks/T01/test_tomorrow.py",
+      "tasks/T01/test_auction_interface.py",
+      "tasks/T01/limit_up_strategy_new_backup.py",
+      "tasks/T01/test_new_apis.py",
+      "tasks/T01/test_auction_integration.py",
+      "tasks/T01/test_trade_cal_fix.py",
+      "tasks/T01/test_margin_risk.py",
+      "tasks/T01/scheduler.py",
+      "tasks/T01/test_trading_day_data.py",
+      "tasks/T01/quick_trading_day_test.py",
+      "tasks/T01/test_next_trading_day.py",
+      "tasks/T01/debug_next_trading_day.py",
+      "tasks/T01/manual_t_day_scoring.py",
+      "tasks/T01/quick_t_day_scoring.py",
+      "tasks/T01/test_message_format.py",
+      "tasks/T01/USER_GUIDE.md",
+      "tasks/T01/check_test_environment.py",
+      "tasks/T01/health_check.py",
+      "tasks/T01/data_storage.py",
+      "tasks/T01/performance_tracker.py",
+      "tasks/T01/machine_learning.py",
+      "tasks/T01/demo_ml_integration.py",
+      "tasks/T01/news_sentiment_test.py",
+      "tasks/T01/__pycache__/main.cpython-311.pyc",
+      "tasks/T01/__pycache__/limit_up_strategy.cpython-311.pyc",
+      "tasks/T01/__pycache__/output_formatter.cpython-311.pyc",
+      "tasks/T01/__pycache__/limit_up_strategy_new.cpython-311.pyc",
+      "tasks/T01/__pycache__/scheduler.cpython-311.pyc",
+      "tasks/T01/logs/t01_scheduler.log",
+      "tasks/T01/state/candidates_20260213_to_20260224.json",
+      "tasks/T01/state/message_example.txt",
+      "tasks/T01/state/test_message.txt"
+    ],
+    "file_count": 50,
+    "source": "registry"
+  },
+  "files": [
+    {
+      "path": "tasks/T01/README.md",
+      "size": 5605,
+      "modified": 1771757578.6624994,
+      "checksum": "sha256:a3f720584ed75e9959d3d256c2adc882a723060e5db9c4ebff11cefe793a9b6d",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/config.yaml",
+      "size": 5948,
+      "modified": 1771856057.061374,
+      "checksum": "sha256:e7ecca3e73ed0949681f106ae9eb3476a6d3b58206056adae1159e29f9743658",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/api_client.py",
+      "size": 1954,
+      "modified": 1771742199.5626328,
+      "checksum": "sha256:af72528e78feb62df0fe0e8291514ea8519892268a4c4b218881d13dd701756b",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/strategy.py",
+      "size": 6614,
+      "modified": 1771742229.7596345,
+      "checksum": "sha256:fbfa983a81995b87608db1c55ed75c4299c7cac1c5b51901850f41df3b11db25",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/screener.py",
+      "size": 2881,
+      "modified": 1771742244.6036353,
+      "checksum": "sha256:3f23a4cd56951317efaf84a8ce6100c138c1c3f0b8e5ba602c891ab3bfb38cb0",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/output_formatter.py",
+      "size": 7470,
+      "modified": 1771742277.9006371,
+      "checksum": "sha256:f127186988861c6628609353462594cc30dd8c55a885c2b3582c2d5982202dfa",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/requirements.txt",
+      "size": 348,
+      "modified": 1771746358.103395,
+      "checksum": "sha256:1a2c7c1da93b920e6265c70c4a192da755c46f040d9d1a340e6c45c903a08099",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/config.example.yaml",
+      "size": 1868,
+      "modified": 1771742320.0276396,
+      "checksum": "sha256:ad446703058fd4dbe33dd52c064808869915aededf7dc101a7f0e59af83b6df6",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/run.sh",
+      "size": 894,
+      "modified": 1771742328.00664,
+      "checksum": "sha256:743cb349577e245de8bd59a9f02a746ce989e2d1bca46577f94947d08c18c62a",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/integration.py",
+      "size": 4685,
+      "modified": 1771742412.3816447,
+      "checksum": "sha256:def9d12fb819ff5536077161fffd94b87e63ab97362debf3b9ae2556bebb9858",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/limit_up_strategy.py",
+      "size": 22753,
+      "modified": 1771749084.413207,
+      "checksum": "sha256:b92fa4d4bb7099fa3fdfff7e73a9bf6bbe94ddebeacfc4675259ee9517edf6bd",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/api_questions.md",
+      "size": 3304,
+      "modified": 1771746380.1753936,
+      "checksum": "sha256:c02cf23307881da06890b26f1783fac123775f7eba513335768b5305e0931ef4",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_tushare.py",
+      "size": 7233,
+      "modified": 1771746417.5173922,
+      "checksum": "sha256:10424096792f643d974ade6364a0e4742d5ba568baf5adc51a048cc305f63b1d",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/main_old.py",
+      "size": 4746,
+      "modified": 1771746446.5403914,
+      "checksum": "sha256:9975953034df67debda6c4dff2176296a2e97003ab697debd1aff0c729a86171",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/main.py",
+      "size": 16282,
+      "modified": 1771746533.8353896,
+      "checksum": "sha256:c121cbe6e2efe7e0356b9ef61be778b25efbf7151804a2ab34f851922ff40fa3",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/t01_limit_up.log",
+      "size": 2931,
+      "modified": 1771746639.685387,
+      "checksum": "sha256:8e5478f7474412eb670957b88dbcecdab80a71d625dacb60dd3d7ba7c6ccc7f0",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/limit_up_strategy_new.py",
+      "size": 72002,
+      "modified": 1771856118.6593707,
+      "checksum": "sha256:2fc50852c246533ae41d87c4178bda1af4bd12422d6fed60f9cd6897c0b14be4",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_v2.py",
+      "size": 4692,
+      "modified": 1771749455.8671882,
+      "checksum": "sha256:148b29cf6dca1a47a7a6906cdf30acfd94ca4ab931b48831c0617f998f587f82",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_tomorrow.py",
+      "size": 8205,
+      "modified": 1771751725.9146347,
+      "checksum": "sha256:4c29292075d6610e310f3477b899445ed577a0124eb4fb741a36ea248d2e7cae",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_auction_interface.py",
+      "size": 7308,
+      "modified": 1771751861.186668,
+      "checksum": "sha256:3200c7efc9496c07df210877a868b3a085fcfcae24c746c655cdbfec90c54ff9",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/limit_up_strategy_new_backup.py",
+      "size": 35100,
+      "modified": 1771752491.762015,
+      "checksum": "sha256:b0218f2bcd563ddb21be1aab5049682f4510adc4c8505184327ff2245c88add1",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_new_apis.py",
+      "size": 7715,
+      "modified": 1771752621.6080468,
+      "checksum": "sha256:01edb81e8b04722fabeb7cf2a9c7e6348fe3ab5a03c70a45101d285f458aefeb",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_auction_integration.py",
+      "size": 7779,
+      "modified": 1771753245.752992,
+      "checksum": "sha256:99b1dd34d2e06115cc10f37af7196b2f9c3216a8376d3baa8e94529f3269a249",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_trade_cal_fix.py",
+      "size": 5274,
+      "modified": 1771753337.819973,
+      "checksum": "sha256:b2939f4bf4ef0523cf5b351be76c238a8617dcc820cc7d1716814243bea0066d",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_margin_risk.py",
+      "size": 8234,
+      "modified": 1771755053.24974,
+      "checksum": "sha256:53a469fa3edb280d8bb7055b145d496fcb51bc9831cf02594667a0b1929b3d24",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/scheduler.py",
+      "size": 34555,
+      "modified": 1771759453.1879742,
+      "checksum": "sha256:a3377aff3f9fa9d6c5abcac6ca1f1f7fe9fad5fa18a3921b39f65b6e64248380",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_trading_day_data.py",
+      "size": 13592,
+      "modified": 1771755439.1266904,
+      "checksum": "sha256:3bc7711730dfebe8bdca79844b7e6cbd1e15aa80bd68db52d3a7739755a66c49",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/quick_trading_day_test.py",
+      "size": 2623,
+      "modified": 1771755522.6456738,
+      "checksum": "sha256:bb687d123e550ba69757cac31d059b3abd7b46e67bdd66bf1535e96c266953f1",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_next_trading_day.py",
+      "size": 2460,
+      "modified": 1771755667.044656,
+      "checksum": "sha256:7ccbbccae2f5fb06312427637661c95bcb7ea5b416cddc5fe0e697aef6a199b6",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/debug_next_trading_day.py",
+      "size": 2562,
+      "modified": 1771755699.0426536,
+      "checksum": "sha256:948d0e6221d29c0890a80bbf2942c6738d9edfde1a97bfca0f7d54a6b6871036",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/manual_t_day_scoring.py",
+      "size": 10498,
+      "modified": 1771756557.1575592,
+      "checksum": "sha256:de11cae953cd370becf6ef12707e5eeed548fecf8aae5a9dd920ce6f341e1748",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/quick_t_day_scoring.py",
+      "size": 7092,
+      "modified": 1771756636.9465423,
+      "checksum": "sha256:cf1ecc4c9c31248bc4a7d0120f95d92a057a29480e8579a299aa7e17f57d2774",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/test_message_format.py",
+      "size": 5732,
+      "modified": 1771756813.166531,
+      "checksum": "sha256:52dba88a9bf54683348bd6d4bc0c1638fafeaab9bec3829485e15e44c705f7fb",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/USER_GUIDE.md",
+      "size": 13783,
+      "modified": 1771757505.9715006,
+      "checksum": "sha256:7bee005f19677d667d4f7f345500d2c1b99d886a87f631a5ef3bb317985904ff",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/check_test_environment.py",
+      "size": 15752,
+      "modified": 1771758135.082515,
+      "checksum": "sha256:76e5b84c62cfb89e14a52443f1fa8f726494aa46ba5debe587854e188df9738f",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/health_check.py",
+      "size": 16830,
+      "modified": 1771758208.5665615,
+      "checksum": "sha256:91e5c422022e4543f506280b2473acef6afe10ab3caed9e0b1d087590c069f71",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/data_storage.py",
+      "size": 31884,
+      "modified": 1771759100.962843,
+      "checksum": "sha256:da8a5c2523c754dd49152d09e7ab4d0d92077bea08f5dccb4ceeef865004d195",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/performance_tracker.py",
+      "size": 27632,
+      "modified": 1771759219.8658442,
+      "checksum": "sha256:76b0510a75f240b6a357481efbe7630792acc70016652a415d1bccbc318f6c53",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/machine_learning.py",
+      "size": 39015,
+      "modified": 1771759367.8019257,
+      "checksum": "sha256:a9e73a2b5e0247da091ef2fbff5a621741ad8a632e658c919c45fb7192794e5e",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/demo_ml_integration.py",
+      "size": 10693,
+      "modified": 1771759512.156004,
+      "checksum": "sha256:de98f660f473c35af66effefc65a9254be1e67cec12ff134f8aa493f4009783e",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/news_sentiment_test.py",
+      "size": 14082,
+      "modified": 1771880910.7461455,
+      "checksum": "sha256:9063bfba66c6213bf11c561b2a56cfa454d23e8d880f20f606291bc719bcf1ca",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/__pycache__/main.cpython-311.pyc",
+      "size": 7527,
+      "modified": 1771742381.267643,
+      "checksum": "sha256:5e6575ae8db4d213cec81252a176f7ac382edbdc65c76e50dddf7fb2e92cdcef",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/__pycache__/limit_up_strategy.cpython-311.pyc",
+      "size": 26294,
+      "modified": 1771746545.6743894,
+      "checksum": "sha256:a12a45ad3b6ed619acb8787c333717bdb928b14be0e324e703ee439ac2b5b418",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/__pycache__/output_formatter.cpython-311.pyc",
+      "size": 10769,
+      "modified": 1771746545.6763895,
+      "checksum": "sha256:6947f9faaa24de90c214d66c71d25a76266f45f6361bad95604757ac61bac569",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/__pycache__/limit_up_strategy_new.cpython-311.pyc",
+      "size": 70213,
+      "modified": 1771856136.8183706,
+      "checksum": "sha256:9b12d9b487d405b915d28b30c8c8e6e85ca829d7ee435ec1c3aa5cc3de3543f4",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/__pycache__/scheduler.cpython-311.pyc",
+      "size": 39910,
+      "modified": 1771758229.3835785,
+      "checksum": "sha256:57cbd1e0cc9177ff0cd398cfeac081e4932be3a6e1b757c0f3d40c50d8e4035b",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/logs/t01_scheduler.log",
+      "size": 671,
+      "modified": 1771755221.5837166,
+      "checksum": "sha256:8f0bc5f531f10a0425756e37405039417702b6b6f7d3cd9e9658e93421400d83",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/state/candidates_20260213_to_20260224.json",
+      "size": 2259,
+      "modified": 1771756695.3015375,
+      "checksum": "sha256:34afaf0636a4f527f162a838a655a3d5ef12b56f1a69ea61d783735bd304ea03",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/state/message_example.txt",
+      "size": 2370,
+      "modified": 1771756817.0845308,
+      "checksum": "sha256:cc49e208f09701454c55aca69acc024f5c926e68f9e56851848abc7e8aa6f2f9",
+      "checksum_type": "sha256"
+    },
+    {
+      "path": "tasks/T01/state/test_message.txt",
+      "size": 1078,
+      "modified": 1771758229.4075785,
+      "checksum": "sha256:31d9e926ebbac5704939d293fccd09382791bfef69e1a4119d5dc9c1e2a9f318",
+      "checksum_type": "sha256"
+    }
+  ],
+  "registry_state": {
+    "schema_version": "1.0",
+    "description": "OpenClaw Workspace Task Registry - 唯一任务定义源",
+    "created_date": "2026-02-22",
+    "last_updated": "2026-02-23",
+    "owner": "James Dong",
+    "rules": "如聊天内容与Registry冲突，以Registry为准",
+    "tasks": [
+      {
+        "id": "T01",
+        "name": "龙头战法选股任务",
+        "version": "1.2.0",
+        "description": "基于龙头战法的自动化选股系统，集成API数据获取、技术指标筛选、基本面筛选、龙头股识别，支持多格式输出与告警。",
+        "status": "active",
+        "location": "tasks/T01",
+        "created_date": "2026-02-22",
+        "last_updated": "2026-02-24",
+        "dependencies": [
+          "a-share-short-decision",
+          "python>=3.8",
+          "pandas",
+          "numpy",
+          "requests",
+          "pyyaml"
+        ],
+        "schedule": null,
+        "output_formats": [
+          "table",
+          "json",
+          "csv"
+        ],
+        "alert_system": true,
+        "configuration_file": "config.yaml",
+        "entry_point": "main.py",
+        "documentation": "tasks/T01/README.md",
+        "tags": [
+          "选股",
+          "龙头战法",
+          "A股",
+          "量化"
+        ],
+        "snapshots": [
+          {
+            "version": "1.2.0",
+            "snapshot_file": "snapshots/snapshot_T01_v1.2.0_20260224_062118.json",
+            "created_at": "2026-02-24T06:21:19.210989"
+          }
+        ]
+      },
+      {
+        "id": "T99",
+        "name": "复盘任务（策略复盘与优化）",
+        "version": "1.2.0",
+        "description": "定期复盘A股短线策略表现，自动计算胜率与平均收益率，集成宏观监控数据动态调整选股阈值，实现策略持续优化。",
+        "status": "active",
+        "location": "skills/a-share-short-decision",
+        "created_date": "2026-02-20",
+        "last_updated": "2026-02-24",
+        "dependencies": [
+          "akshare",
+          "pandas",
+          "numpy",
+          "macro-monitor"
+        ],
+        "schedule": "首次运行: 2026-03-14 15:00 (at任务)",
+        "output_formats": [
+          "json",
+          "report"
+        ],
+        "alert_system": false,
+        "configuration_file": "config.json",
+        "entry_point": "run_review.sh",
+        "documentation": "skills/a-share-short-decision/TASK.md",
+        "tags": [
+          "复盘",
+          "策略优化",
+          "A股",
+          "回测"
+        ],
+        "integrations": {
+          "macro_monitor": {
+            "enabled": true,
+            "weight_adjustment": true,
+            "sector_screening": true
+          }
+        },
+        "snapshots": [
+          {
+            "version": "1.2.0",
+            "snapshot_file": "snapshots/snapshot_T99_v1.2.0_20260224_064137.json",
+            "created_at": "2026-02-24T06:41:37.475198"
+          }
+        ]
+      },
+      {
+        "id": "T100",
+        "name": "宏观监控独立报告任务",
+        "version": "1.0.2",
+        "description": "每日自动收集国内外宏观数据、板块轮动、新闻情感，生成综合报告并发送至飞书群，为投资决策提供宏观视角。",
+        "status": "active",
+        "location": "skills/macro-monitor",
+        "created_date": "2026-02-20",
+        "last_updated": "2026-02-24",
+        "dependencies": [
+          "akshare",
+          "pandas",
+          "numpy",
+          "scikit-learn",
+          "browser工具"
+        ],
+        "schedule": "每日 22:00 (北京时间) via cron",
+        "output_formats": [
+          "飞书群消息",
+          "json",
+          "log"
+        ],
+        "alert_system": true,
+        "configuration_file": "无独立配置文件",
+        "entry_point": "run_monitor.py",
+        "documentation": "skills/macro-monitor/TASK.md",
+        "tags": [
+          "宏观监控",
+          "数据收集",
+          "新闻分析",
+          "板块轮动"
+        ],
+        "target_audience": "飞书群: chat:oc_ff08c55a23630937869cd222dad0bf14",
+        "data_sources": [
+          "akshare (国内宏观)",
+          "Trading Economics (国际)",
+          "财联社 (新闻)",
+          "华尔街见闻 (新闻)"
+        ],
+        "snapshots": [
+          {
+            "version": "1.0.2",
+            "snapshot_file": "snapshots/snapshot_T100_v1.0.2_20260224_064141.json",
+            "created_at": "2026-02-24T06:41:41.799251"
+          }
+        ]
+      }
+    ]
+  },
+  "environment": {
+    "TAVILY_API_KEY": "tvly-dev...9Ze4",
+    "OPENAI_API_KEY": "sk-119b0...3fcb",
+    "PATH": "/root/.nvm/versions/node/v22.22.0/bin:/root/.local/bin:/root/bin:/root/.nvm/versions/node/v22.22.0/bin:/usr/local/bin:/usr/bin:/bin:/root/.nvm/current/bin:/root/.local/bin:/root/.npm-global/bin:/root/bin:/root/.volta/bin:/root/.asdf/shims:/root/.bun/bin:/root/.fnm/current/bin:/root/.local/share/pnpm",
+    "python_version": "3.11.6 (main, Dec 16 2025, 19:41:28) [GCC 12.3.1 20230912 (OpenCloudOS 12.3.1.7-1)]"
+  }
+}

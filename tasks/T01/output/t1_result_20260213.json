@@ -1,0 +1,212 @@
+{
+  "generated_at": "2026-02-24T11:07:57.547359",
+  "trade_date": "20260213",
+  "t_day_summary": {
+    "total_candidates": 3,
+    "top_scores": [
+      {
+        "name": "国风新材",
+        "ts_code": "000859.SZ",
+        "total_score": 150.96242418446522,
+        "t_day_score": 150.96242418446522,
+        "pct_chg": 10.02,
+        "first_time": "",
+        "fd_amount": 75787061.0,
+        "amount": 1747475056.0,
+        "float_mv": 10724225493.87,
+        "turnover_ratio": 0.0,
+        "is_hot_sector": false,
+        "industry": "塑料",
+        "first_limit_time_score": 0.0,
+        "order_quality_score": 0.0,
+        "liquidity_score": 0.0,
+        "money_flow_score": 0.0,
+        "sector_score": 0.0,
+        "dragon_list_score": 0.0,
+        "seal_ratio": 0.04336946655678042,
+        "seal_to_mv": 0.0070669029705986795,
+        "trade_date": "20260213"
+      },
+      {
+        "name": "汉缆股份",
+        "ts_code": "002498.SZ",
+        "total_score": 138.2564977005539,
+        "t_day_score": 138.2564977005539,
+        "pct_chg": 10.08,
+        "first_time": "",
+        "fd_amount": 111278645.0,
+        "amount": 1829739760.0,
+        "float_mv": 22522408920.0,
+        "turnover_ratio": 0.0,
+        "is_hot_sector": false,
+        "industry": "电网设备",
+        "first_limit_time_score": 0.0,
+        "order_quality_score": 0.0,
+        "liquidity_score": 0.0,
+        "money_flow_score": 0.0,
+        "sector_score": 0.0,
+        "dragon_list_score": 0.0,
+        "seal_ratio": 0.0608166513253229,
+        "seal_to_mv": 0.004940796759141695,
+        "trade_date": "20260213"
+      },
+      {
+        "name": "天奇股份",
+        "ts_code": "002009.SZ",
+        "total_score": 115.12372534074677,
+        "t_day_score": 115.12372534074677,
+        "pct_chg": 10.0,
+        "first_time": "",
+        "fd_amount": 53823029.0,
+        "amount": 3829849264.0,
+        "float_mv": 12620928359.16,
+        "turnover_ratio": 0.0,
+        "is_hot_sector": false,
+        "industry": "专用设备",
+        "first_limit_time_score": 0.0,
+        "order_quality_score": 0.0,
+        "liquidity_score": 0.0,
+        "money_flow_score": 0.0,
+        "sector_score": 0.0,
+        "dragon_list_score": 0.0,
+        "seal_ratio": 0.014053563284050961,
+        "seal_to_mv": 0.004264585573131504,
+        "trade_date": "20260213"
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "000859.SZ",
+      "name": "国风新材",
+      "t_date": "20260213",
+      "t1_date": "20260224",
+      "t_day_score": 150.96242418446522,
+      "auction_score": 65.0,
+      "final_score": 125.17369692912565,
+      "auction_data": {
+        "open_change_pct": -3.258145363408526,
+        "auction_volume_ratio": 5.18362,
+        "auction_turnover_rate": 0.551363,
+        "auction_amount": 57202884.0,
+        "auction_volume_to_t_volume": 3.3243803383449024,
+        "auction_volume": 4939800.0,
+        "t_day_volume": 1485931.06,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅低开(<-2%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "002498.SZ",
+      "name": "汉缆股份",
+      "t_date": "20260213",
+      "t1_date": "20260224",
+      "t_day_score": 138.2564977005539,
+      "auction_score": 82.0605612998523,
+      "final_score": 121.3977167803434,
+      "auction_data": {
+        "open_change_pct": 4.874446085672084,
+        "auction_volume_ratio": 12.0009,
+        "auction_turnover_rate": 0.659554,
+        "auction_amount": 155788200.0,
+        "auction_volume_to_t_volume": 8.003470110881837,
+        "auction_volume": 21942000.0,
+        "t_day_volume": 2741560.81,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价高开(3-5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "002009.SZ",
+      "name": "天奇股份",
+      "t_date": "20260213",
+      "t1_date": "20260224",
+      "t_day_score": 115.12372534074677,
+      "auction_score": 87.58698092031423,
+      "final_score": 106.862702014617,
+      "auction_data": {
+        "open_change_pct": 6.453423120089778,
+        "auction_volume_ratio": 5.44895,
+        "auction_turnover_rate": 1.47765,
+        "auction_amount": 198528638.0,
+        "auction_volume_to_t_volume": 4.739837436447504,
+        "auction_volume": 5232700.0,
+        "t_day_volume": 1103983.01,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "风险较高",
+    "risk_level": "高",
+    "risk_score": 7,
+    "suggestion": "降低仓位，严格止损",
+    "position_multiplier": 0.5,
+    "financing_balance": 2564012285101.0,
+    "margin_balance": 15745539266.0,
+    "financing_change_pct": -2.4844678341197795,
+    "margin_change_pct": -3.192054604251673,
+    "financing_buy_repay_ratio": 0.7595130574271305,
+    "market_data": {
+      "trade_date": "20260213",
+      "total_financing_balance": 2564012285101.0,
+      "total_margin_balance": 15745539266.0,
+      "total_financing_margin_balance": 2579757824367.0,
+      "financing_change_ratio": -2.4844678341197795,
+      "margin_change_ratio": -3.192054604251673,
+      "financing_buy_ratio": 0.7595130574271305,
+      "sse_data": {
+        "financing_balance": 1300667234815.0,
+        "financing_buy": 84016465696.0,
+        "financing_repay": 113768348390.0,
+        "margin_balance": 10702614685.0,
+        "margin_sell": 49810883.0,
+        "total_balance": 1311369849500.0,
+        "margin_remaining": 2107891419.0
+      },
+      "szse_data": {
+        "financing_balance": 1263345050286.0,
+        "financing_buy": 94522896915.0,
+        "financing_repay": 121302478721.0,
+        "margin_balance": 5042924581.0,
+        "margin_sell": 13990160.0,
+        "total_balance": 1268387974867.0,
+        "margin_remaining": 638204625.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": false
+}

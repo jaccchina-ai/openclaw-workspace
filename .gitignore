@@ -1,61 +1,106 @@
-# 日志文件
+# GitHub 集成 - 金融策略系统工作空间
+
+# 敏感数据
 *.log
-logs/
-
-# 数据文件
-*.db
-*.sqlite
-*.csv
-*.jsonl
-data/
-
-# 缓存文件
-__pycache__/
-*.pyc
-.pytest_cache/
-
-# 环境文件
+*.log.*
+*.key
+*.pem
+*.crt
 .env
-.env.local
-.env.*.local
+.env.*
+.local.env
+config.local.*
+secrets/
 
-# IDE文件
+# API 密钥和令牌文件
+*_token.txt
+*_key.txt
+*_secret.txt
+credentials.json
+*.credentials
+
+# 备份文件
+*.bak
+*.backup*
+backup_*
+*_backup
+*.old
+*_old
+
+# 临时文件
+*.tmp
+*.temp
+temp/
+tmp/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 测试和调试文件
+*_test.py
+*_test.*
+*_debug.*
+debug_*
+test_*
+*.test.*
+
+# 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE 文件
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# 临时文件
-*.tmp
-temp/
-tmp/
+# 数据文件（可能包含敏感信息）
+*.db
+*.sqlite
+*.sqlite3
+*.csv
+*.xlsx
+*.xls
 
-# OpenClaw特定文件
-.openclaw/
-.clawhub/
-.pi/
+# 特定目录排除
+.learnings/errors/
+.learnings/raw/
+backups/
+backup_proactive/
 
-# 内存文件（每日记录）
-memory/*.md
-!memory/README.md
+# 特定文件排除（但保留 .learnings/ 目录中的 .md 文件）
+!.learnings/*.md
 
-# 技能缓存
-skills/*/node_modules/
+# 排除一些包含敏感信息的文件
+tasks/T01/t01_results_*.json
+tasks/T01/state/candidates_*.json
+skills/macro-monitor/data/*.json
+skills/a-share-short-decision/data/*.json
 
-# 任务特定排除
-tasks/*/__pycache__/
-tasks/*/*.log
-tasks/*/state/
-tasks/*/output/
-
-# 但保留重要配置
+# 但保留配置文件和文档
+!tasks/T01/config.yaml
+!skills/a-share-short-decision/config.json
 !task_registry.json
-!tasks/*/config.yaml
-!tasks/*/README.md
-!tasks/*/USER_GUIDE.md
-
-# 版本快照（由系统管理）
-snapshots/
-
-# 测试文件（可选保留）
-# !tasks/*/test_*.py

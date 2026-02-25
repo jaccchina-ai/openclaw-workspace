@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-browser": {
+      "version": "0.2.0",
+      "installedAt": 1770803375381
+    },
+    "macro-monitor": {
+      "version": "1.0.2",
+      "installedAt": 1771581383325
+    },
+    "proactive-agent": {
+      "version": "3.1.0",
+      "installedAt": 1771581400334
+    },
+    "tushare-finance": {
+      "version": "2.0.6",
+      "installedAt": 1771581571126
+    },
+    "imap-smtp-email": {
+      "version": "0.0.2",
+      "installedAt": 1771583122309
+    },
+    "a-share-short-decision": {
+      "version": "1.2.0",
+      "installedAt": 1771584587356
+    },
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1771588104117
+    },
+    "summarize": {
+      "version": "1.0.0",
+      "installedAt": 1771599730635
+    },
+    "self-improving-agent": {
+      "version": "1.0.11",
+      "installedAt": 1771955537681
+    },
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1771998968362
+    }
+  }
+}

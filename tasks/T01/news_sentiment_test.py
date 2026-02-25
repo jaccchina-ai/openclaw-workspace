@@ -31,7 +31,7 @@ class NewsSentimentAnalyzer:
         logger.info("NewsSentimentAnalyzer initialized with Tavily API")
     
     def search_stock_news(self, stock_name: str, stock_code: str, trade_date: str, 
-                         days_back: int = 3) -> Dict[str, Any]:
+                         days_back: int = 1) -> Dict[str, Any]:
         """
         搜索股票相关新闻
         
@@ -44,12 +44,19 @@ class NewsSentimentAnalyzer:
         Returns:
             新闻搜索结果
         """
-        # 构建搜索查询
+        # 构建搜索查询 - 优化版 (添加中文限定词和市场标识)
+        # 提取市场标识
+        market = "A股"
+        if stock_code.endswith('.SH'):
+            market = "沪市"
+        elif stock_code.endswith('.SZ'):
+            market = "深市"
+        
         queries = [
-            f"{stock_name} {stock_code} 涨停",  # 涨停相关
-            f"{stock_name} {stock_code} 利好",  # 利好相关
-            f"{stock_name} {stock_code} 业绩",  # 业绩相关
-            f"{stock_name} {stock_code} 公告",  # 公司公告
+            f"{stock_name} {stock_code} {market} 中国 A股 涨停板 涨停",  # 涨停相关
+            f"{stock_name} {stock_code} {market} 中国 A股 利好 消息",  # 利好相关
+            f"{stock_name} {stock_code} {market} 中国 A股 业绩 预告",  # 业绩相关
+            f"{stock_name} {stock_code} {market} 中国 A股 公告 通知",  # 公司公告
         ]
         
         all_results = []
@@ -75,7 +82,7 @@ class NewsSentimentAnalyzer:
             'search_queries': queries
         }
     
-    def _call_tavily(self, query: str, days_back: int = 3) -> Dict[str, Any]:
+    def _call_tavily(self, query: str, days_back: int = 1) -> Dict[str, Any]:
         """调用Tavily API"""
         cmd = [
             'node', self.tavily_script_path,
@@ -159,9 +166,13 @@ class NewsSentimentAnalyzer:
                         'url': url_match.group(0) if url_match else '',
                         'relevance_score': int(score_match.group(1)) / 100 if score_match else 0.5
                     }
-                elif line.startswith('  http'):
-                    # URL行（已处理）
-                    pass
+                elif line.startswith('http') or line.startswith('  http'):
+                    # URL行 - 设置URL
+                    url = line.strip()
+                    if current_source:
+                        current_source['url'] = url
+                    # 不视为内容行，继续循环
+                    continue
                 elif line and current_source:
                     # 内容行
                     if 'content' not in current_source:
@@ -197,8 +208,17 @@ class NewsSentimentAnalyzer:
         
         注意：这是一个简单实现，实际应使用NLP模型
         """
-        positive_keywords = ['利好', '增长', '超预期', '突破', '创新高', '推荐', '买入', '看好']
-        negative_keywords = ['利空', '下跌', '亏损', '风险', '减持', '卖出', '谨慎', '预警']
+        # 中文关键词
+        positive_keywords_cn = ['利好', '增长', '超预期', '突破', '创新高', '推荐', '买入', '看好', '上涨', '强势']
+        negative_keywords_cn = ['利空', '下跌', '亏损', '风险', '减持', '卖出', '谨慎', '预警', '暴跌', '调整']
+        
+        # 英文关键词
+        positive_keywords_en = ['positive', 'growth', 'beat', 'outperform', 'buy', 'bullish', 'upgrade', 'strong', 'gain']
+        negative_keywords_en = ['negative', 'decline', 'loss', 'risk', 'sell', 'bearish', 'downgrade', 'weak', 'drop', 'fall']
+        
+        # 合并关键词
+        positive_keywords = positive_keywords_cn + positive_keywords_en
+        negative_keywords = negative_keywords_cn + negative_keywords_en
         
         total_score = 0
         positive_count = 0
@@ -240,6 +260,28 @@ class NewsSentimentAnalyzer:
             positive_ratio = 0
             negative_ratio = 0
         
+        # 计算舆情综合评分 (0-10分)
+        # 基于: 新闻数量 + 情感倾向 + 正面新闻比例
+        overall_score = 0
+        if total_news > 0:
+            # 基础分: 有新闻关注度
+            overall_score += 2.0
+            
+            # 正面新闻加分
+            if positive_count > 0:
+                overall_score += min(positive_count * 0.5, 3.0)
+            
+            # 情感得分映射 (-1到1映射到0到3分)
+            sentiment_mapped = (avg_sentiment + 1) * 1.5  # -1->0, 0->1.5, 1->3
+            overall_score += min(sentiment_mapped, 3.0)
+            
+            # 新闻数量加分 (上限2分)
+            news_count_score = min(total_news * 0.1, 2.0)
+            overall_score += news_count_score
+        
+        # 限制在0-10分
+        overall_score = max(0, min(overall_score, 10))
+        
         return {
             'total_news': total_news,
             'positive_count': positive_count,
@@ -248,7 +290,9 @@ class NewsSentimentAnalyzer:
             'positive_ratio': positive_ratio,
             'negative_ratio': negative_ratio,
             'avg_sentiment': avg_sentiment,
-            'sentiment_category': 'positive' if avg_sentiment > 0.2 else 'negative' if avg_sentiment < -0.2 else 'neutral'
+            'sentiment_category': 'positive' if avg_sentiment > 0.2 else 'negative' if avg_sentiment < -0.2 else 'neutral',
+            'overall_sentiment': 'positive' if avg_sentiment > 0.2 else 'negative' if avg_sentiment < -0.2 else 'neutral',
+            'overall_score': round(overall_score, 2)
         }
     
     def calculate_heat_index(self, news_count: int, avg_sentiment: float, 

@@ -1,0 +1,289 @@
+{
+  "metadata": {
+    "task_id": "T99",
+    "version": "1.2.0",
+    "created_at": "2026-02-24T06:41:37.370702",
+    "git_commit": "23d767fa83f40f5c033462006eec33c39d33c7a0",
+    "git_branch": "master",
+    "message": "T99初始快照",
+    "creator": "VersionSnapshotCreator"
+  },
+  "task_info": {
+    "path": "skills/a-share-short-decision",
+    "version": "1.2.0",
+    "config": {
+      "skill_name": "a-share-short-decision",
+      "version": "1.2.0",
+      "market": "CN-A",
+      "data_source": {
+        "provider": "akshare",
+        "fallback_enabled": false
+      },
+      "strategy": {
+        "holding_days_default": "1-3",
+        "weights": {
+          "market_sentiment": 0.25,
+          "sector_strength": 0.25,
+          "stock_volume_strength": 0.2,
+          "capital_inflow": 0.2,
+          "technical_structure": 0.1
+        },
+        "thresholds": {
+          "buy": 75,
+          "watch": 60,
+          "market_block": 40
+        },
+        "macro": {
+          "weight": 0.46395,
+          "sectors": [
+            "其他数字媒体",
+            "海洋捕捞",
+            "航海装备Ⅲ",
+            "航海装备Ⅱ",
+            "文字媒体"
+          ],
+          "score": 48,
+          "trend": "neutral",
+          "last_updated": "2026-02-21 04:19:46",
+          "t100_influence": 1.031,
+          "t100_data_available": true,
+          "t100_composite_index": 65.5,
+          "t100_sentiment": "乐观",
+          "t100_predicted_sectors": [
+            {
+              "name": "电子",
+              "change_pct": 2.8
+            },
+            {
+              "name": "医药",
+              "change_pct": 2.3
+            },
+            {
+              "name": "计算机",
+              "change_pct": 1.9
+            }
+          ]
+        },
+        "screener": {
+          "prefilter_change_pct": 6.0,
+          "min_change_pct": 7.0,
+          "min_volume_ratio": 1.8,
+          "trend_lookback": 4,
+          "min_history_days": 8,
+          "volume_baseline_days": 6,
+          "high_volume_bearish_drop_pct": -1.5,
+          "high_volume_bearish_vol_ratio": 1.8,
+          "historical_mode": {
+            "min_change_pct": 4.5,
+            "trend_lookback": 3,
+            "min_volume_ratio": 1.4,
+            "high_volume_bearish_drop_pct": -2.2,
+            "high_volume_bearish_vol_ratio": 2.2,
+            "relaxed_pick_from_pool_when_empty": false
+          }
+        }
+      },
+      "risk_control": {
+        "max_single_position": 0.15,
+        "stop_loss_pct": -6,
+        "take_profit_pct": 12,
+        "ma5_break_stop": true
+      },
+      "optimization_info": {
+        "base_date": "2026-02-14",
+        "analysis_period": "2026-02-01 to 2026-02-12",
+        "config_type": "conservative",
+        "expected_improvements": {
+          "candidate_increase": "5-10%",
+          "success_rate_improvement": "1-2 percentage points",
+          "avg_return_improvement": "0.2-0.5 percentage points"
+        }
+      }
+    },
+    "config_file": "/root/.openclaw/workspace/skills/a-share-short-decision/config.json",
+    "files": [
+      "skills/a-share-short-decision/config.json",
+      "skills/a-share-short-decision/main.py",
+      "skills/a-share-short-decision/README.md",
+      "skills/a-share-short-decision/requirements.md",
+      "skills/a-share-short-decision/scheduler.yaml",
+      "skills/a-share-short-decision/SKILL.md",
+      "skills/a-share-short-decision/_meta.json",
+      "skills/a-share-short-decision/run_scan.sh",
+      "skills/a-share-short-decision/setup_cron.sh",
+      "skills/a-share-short-decision/remove_cron.sh",
+      "skills/a-share-short-decision/scan.log",
+      "skills/a-share-short-decision/run_review.sh",
+      "skills/a-share-short-decision/auto_tune.py",
+      "skills/a-share-short-decision/macro_sector_extractor.py",
+      "skills/a-share-short-decision/prompts/analysis_prompt.txt",
+      "skills/a-share-short-decision/subskills/config-optimization/optimize_from_aggressive.py",
+      "skills/a-share-short-decision/subskills/config-optimization/SKILL.md",
+      "skills/a-share-short-decision/subskills/daily-recommendation/generate_daily_recommendation.py",
+      "skills/a-share-short-decision/subskills/daily-recommendation/SKILL.md",
+      "skills/a-share-short-decision/tools/__init__.py",
+      "skills/a-share-short-decision/tools/debug_utils.py",
+      "skills/a-share-short-decision/tools/decision_eval.py",
+      "skills/a-share-short-decision/tools/fusion_engine.py",
+      "skills/a-share-short-decision/tools/indicators.py",
+      "skills/a-share-short-decision/tools/market_data.py",
+      "skills/a-share-short-decision/tools/money_flow.py",
+      "skills/a-share-short-decision/tools/reporting.py",
+      "skills/a-share-short-decision/tools/risk_control.py",
+      "skills/a-share-short-decision/tools/sentiment.py",
+      "skills/a-share-short-decision/tools/settings.py",
+      "skills/a-share-short-decision/tools/market_data.py.backup",
+      "skills/a-share-short-decision/tools/__pycache__/__init__.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/decision_eval.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/fusion_engine.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/debug_utils.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/indicators.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/market_data.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/settings.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/money_flow.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/risk_control.cpython-311.pyc",
+      "skills/a-share-short-decision/tools/__pycache__/reporting.cpython-311.pyc",
+      "skills/a-share-short-decision/.clawhub/origin.json",
+      "skills/a-share-short-decision/data/macro_sectors.json",
+      "skills/a-share-short-decision/__pycache__/macro_sector_extractor.cpython-311.pyc"
+    ],
+    "file_count": 44,
+    "source": "registry"
+  },
+  "files": [],
+  "registry_state": {
+    "schema_version": "1.0",
+    "description": "OpenClaw Workspace Task Registry - 唯一任务定义源",
+    "created_date": "2026-02-22",
+    "last_updated": "2026-02-23",
+    "owner": "James Dong",
+    "rules": "如聊天内容与Registry冲突，以Registry为准",
+    "tasks": [
+      {
+        "id": "T01",
+        "name": "龙头战法选股任务",
+        "version": "1.2.0",
+        "description": "基于龙头战法的自动化选股系统，集成API数据获取、技术指标筛选、基本面筛选、龙头股识别，支持多格式输出与告警。",
+        "status": "active",
+        "location": "tasks/T01",
+        "created_date": "2026-02-22",
+        "last_updated": "2026-02-24",
+        "dependencies": [
+          "a-share-short-decision",
+          "python>=3.8",
+          "pandas",
+          "numpy",
+          "requests",
+          "pyyaml"
+        ],
+        "schedule": null,
+        "output_formats": [
+          "table",
+          "json",
+          "csv"
+        ],
+        "alert_system": true,
+        "configuration_file": "config.yaml",
+        "entry_point": "main.py",
+        "documentation": "tasks/T01/README.md",
+        "tags": [
+          "选股",
+          "龙头战法",
+          "A股",
+          "量化"
+        ],
+        "snapshots": [
+          {
+            "version": "1.2.0",
+            "snapshot_file": "snapshots/snapshot_T01_v1.2.0_20260224_062118.json",
+            "created_at": "2026-02-24T06:21:19.210989"
+          }
+        ]
+      },
+      {
+        "id": "T99",
+        "name": "复盘任务（策略复盘与优化）",
+        "version": "1.2.0",
+        "description": "定期复盘A股短线策略表现，自动计算胜率与平均收益率，集成宏观监控数据动态调整选股阈值，实现策略持续优化。",
+        "status": "active",
+        "location": "skills/a-share-short-decision",
+        "created_date": "2026-02-20",
+        "last_updated": "2026-02-21",
+        "dependencies": [
+          "akshare",
+          "pandas",
+          "numpy",
+          "macro-monitor"
+        ],
+        "schedule": "首次运行: 2026-03-14 15:00 (at任务)",
+        "output_formats": [
+          "json",
+          "report"
+        ],
+        "alert_system": false,
+        "configuration_file": "config.json",
+        "entry_point": "run_review.sh",
+        "documentation": "skills/a-share-short-decision/TASK.md",
+        "tags": [
+          "复盘",
+          "策略优化",
+          "A股",
+          "回测"
+        ],
+        "integrations": {
+          "macro_monitor": {
+            "enabled": true,
+            "weight_adjustment": true,
+            "sector_screening": true
+          }
+        }
+      },
+      {
+        "id": "T100",
+        "name": "宏观监控独立报告任务",
+        "version": "1.0.2",
+        "description": "每日自动收集国内外宏观数据、板块轮动、新闻情感，生成综合报告并发送至飞书群，为投资决策提供宏观视角。",
+        "status": "active",
+        "location": "skills/macro-monitor",
+        "created_date": "2026-02-20",
+        "last_updated": "2026-02-21",
+        "dependencies": [
+          "akshare",
+          "pandas",
+          "numpy",
+          "scikit-learn",
+          "browser工具"
+        ],
+        "schedule": "每日 22:00 (北京时间) via cron",
+        "output_formats": [
+          "飞书群消息",
+          "json",
+          "log"
+        ],
+        "alert_system": true,
+        "configuration_file": "无独立配置文件",
+        "entry_point": "run_monitor.py",
+        "documentation": "skills/macro-monitor/TASK.md",
+        "tags": [
+          "宏观监控",
+          "数据收集",
+          "新闻分析",
+          "板块轮动"
+        ],
+        "target_audience": "飞书群: chat:oc_ff08c55a23630937869cd222dad0bf14",
+        "data_sources": [
+          "akshare (国内宏观)",
+          "Trading Economics (国际)",
+          "财联社 (新闻)",
+          "华尔街见闻 (新闻)"
+        ]
+      }
+    ]
+  },
+  "environment": {
+    "TAVILY_API_KEY": "tvly-dev...9Ze4",
+    "OPENAI_API_KEY": "sk-119b0...3fcb",
+    "PATH": "/root/.nvm/versions/node/v22.22.0/bin:/root/.local/bin:/root/bin:/root/.nvm/versions/node/v22.22.0/bin:/usr/local/bin:/usr/bin:/bin:/root/.nvm/current/bin:/root/.local/bin:/root/.npm-global/bin:/root/bin:/root/.volta/bin:/root/.asdf/shims:/root/.bun/bin:/root/.fnm/current/bin:/root/.local/share/pnpm",
+    "python_version": "3.11.6 (main, Dec 16 2025, 19:41:28) [GCC 12.3.1 20230912 (OpenCloudOS 12.3.1.7-1)]"
+  }
+}

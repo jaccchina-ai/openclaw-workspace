@@ -21,35 +21,22 @@
       "market_block": 40
     },
     "macro": {
-      "weight": 0.46395,
+      "weight": 0.45,
       "sectors": [
-        "其他数字媒体",
-        "海洋捕捞",
-        "航海装备Ⅲ",
-        "航海装备Ⅱ",
-        "文字媒体"
+        "油气及炼化工程",
+        "油服工程",
+        "油田服务",
+        "磷肥及磷化工",
+        "玻纤制造"
       ],
       "score": 48,
       "trend": "neutral",
-      "last_updated": "2026-02-21 04:19:46",
-      "t100_influence": 1.031,
-      "t100_data_available": true,
-      "t100_composite_index": 65.5,
-      "t100_sentiment": "乐观",
-      "t100_predicted_sectors": [
-        {
-          "name": "电子",
-          "change_pct": 2.8
-        },
-        {
-          "name": "医药",
-          "change_pct": 2.3
-        },
-        {
-          "name": "计算机",
-          "change_pct": 1.9
-        }
-      ]
+      "last_updated": "2026-02-24 14:30:27",
+      "t100_influence": 1.0,
+      "t100_data_available": false,
+      "t100_composite_index": null,
+      "t100_sentiment": null,
+      "t100_predicted_sectors": []
     },
     "screener": {
       "prefilter_change_pct": 6.0,

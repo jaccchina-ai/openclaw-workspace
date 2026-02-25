@@ -4,6 +4,9 @@
 
 set -e
 
+# OpenClaw CLI absolute path (for cron environment)
+OPENCLAW_PATH="/root/.nvm/versions/node/v22.22.0/bin/openclaw"
+
 export PATH="/usr/local/bin:/usr/bin:/bin:/root/.nvm/versions/node/v22.22.0/bin:$PATH"
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -156,7 +159,7 @@ fi
 
 # Send report to Feishu group (auto-send for scheduled reviews)
 echo "Sending report to Feishu group..."
-openclaw message --channel feishu \
+"$OPENCLAW_PATH" message send --channel feishu \
     --target "chat:oc_ff08c55a23630937869cd222dad0bf14" \
     --message "$REPORT"
 

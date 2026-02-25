@@ -4,6 +4,9 @@
 
 set -e
 
+# OpenClaw CLI absolute path (for cron environment)
+OPENCLAW_PATH="/root/.nvm/versions/node/v22.22.0/bin/openclaw"
+
 # Ensure PATH includes OpenClaw
 export PATH="/usr/local/bin:/usr/bin:/bin:/root/.nvm/versions/node/v22.22.0/bin:$PATH"
 
@@ -109,7 +112,7 @@ fi
 
 # Send to Feishu group (chat:oc_ff08c55a23630937869cd222dad0bf14)
 echo "Sending results to Feishu group..."
-openclaw message --channel feishu \
+"$OPENCLAW_PATH" message send --channel feishu \
     --target "chat:oc_ff08c55a23630937869cd222dad0bf14" \
     --message "$MESSAGE"
 

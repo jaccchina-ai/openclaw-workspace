@@ -10,6 +10,22 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Tuple, Optional
 import logging
 import tushare as ts
+import os
+import sys
+
+# 尝试导入舆情分析模块
+try:
+    # 添加当前目录到路径，确保可以导入news_sentiment_test
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, current_dir)
+    from news_sentiment_test import NewsSentimentAnalyzer
+    HAS_SENTIMENT_MODULE = True
+except ImportError as e:
+    logger.warning(f"无法导入舆情分析模块: {e}")
+    HAS_SENTIMENT_MODULE = False
+except Exception as e:
+    logger.warning(f"初始化舆情分析模块失败: {e}")
+    HAS_SENTIMENT_MODULE = False
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +57,33 @@ class LimitUpScoringStrategyV2:
         self.t_day_weights = self.strategy_config.get('t_day_scoring', {})
         self.t1_weights = self.strategy_config.get('t1_auction_scoring', {})
         self.risk_config = self.strategy_config.get('risk_control', {})
+        
+        # 舆情分析配置
+        self.sentiment_config = self.strategy_config.get('sentiment_analysis', {})
+        self.sentiment_enabled = self.sentiment_config.get('enabled', True)
+        self.sentiment_top_n = self.sentiment_config.get('top_n_for_analysis', 10)
+        self.sentiment_days_back = self.sentiment_config.get('days_back', 1)
+        
+        # 舆情分析器初始化
+        self.enable_sentiment = (HAS_SENTIMENT_MODULE and 
+                               os.environ.get('TAVILY_API_KEY') and 
+                               self.sentiment_enabled)
+        self.sentiment_analyzer = None
+        
+        if self.enable_sentiment:
+            try:
+                self.sentiment_analyzer = NewsSentimentAnalyzer()
+                logger.info(f"舆情分析器初始化成功，将对前{self.sentiment_top_n}名进行舆情分析")
+            except Exception as e:
+                logger.warning(f"舆情分析器初始化失败: {e}")
+                self.enable_sentiment = False
+        else:
+            if not HAS_SENTIMENT_MODULE:
+                logger.info("舆情分析模块不可用，跳过舆情分析")
+            elif not os.environ.get('TAVILY_API_KEY'):
+                logger.info("TAVILY_API_KEY未设置，跳过舆情分析")
+            elif not self.sentiment_enabled:
+                logger.info("舆情分析功能已禁用")
         
         logger.info("涨停股评分策略V2初始化完成")
     
@@ -322,6 +365,8 @@ class LimitUpScoringStrategyV2:
         """
         计算T日涨停股评分 - 基于limit_list_d数据
         
+        优化版：先计算基础评分，选出前N名，再对前N名进行舆情分析
+        
         Args:
             stock_data: 涨停股票基础数据 (来自limit_list_d)
             trade_date: 交易日期
@@ -332,11 +377,13 @@ class LimitUpScoringStrategyV2:
         if stock_data.empty:
             return pd.DataFrame()
         
-        results = []
+        logger.info(f"开始T日评分优化流程，股票数量: {len(stock_data)}")
         
+        # 第一阶段：计算所有股票的基础评分（不含舆情）
+        basic_results = []
         for idx, row in stock_data.iterrows():
             score_details = {}
-            total_score = 0
+            basic_score = 0  # 基础评分（不含舆情）
             
             try:
                 ts_code = row['ts_code']
@@ -345,53 +392,53 @@ class LimitUpScoringStrategyV2:
                 first_limit_time = row.get('first_time')
                 time_score = self._score_first_limit_time(first_limit_time)
                 score_details['first_limit_time'] = time_score
-                total_score += time_score
+                basic_score += time_score
                 
-                # 2. 封单质量评分 (封成比 + 封单/流通市值)
-                fd_amount = row.get('fd_amount', 0)  # 封单金额
-                amount = row.get('amount', 1)  # 成交金额 (避免除零)
-                float_mv = row.get('float_mv', 1)  # 流通市值 (避免除零)
+                # 2. 封单质量评分
+                fd_amount = row.get('fd_amount', 0)
+                amount = row.get('amount', 1)
+                float_mv = row.get('float_mv', 1)
                 
-                # 封成比 = 封单金额 / 成交金额
                 seal_ratio = fd_amount / amount if amount > 0 else 0
-                
-                # 封单金额/流通市值
                 seal_to_mv = fd_amount / float_mv if float_mv > 0 else 0
                 
                 order_score = self._score_order_quality(seal_ratio, seal_to_mv)
                 score_details['order_quality'] = order_score
-                total_score += order_score
+                basic_score += order_score
                 
                 # 3. 流动性评分
-                turnover_rate = row.get('turnover_ratio', 0)  # 换手率
+                turnover_rate = row.get('turnover_ratio', 0)
                 turnover_20ma_ratio = self._get_turnover_20ma_ratio(ts_code, trade_date)
                 volume_ratio = self._get_volume_ratio(ts_code, trade_date)
                 
                 liquidity_score = self._score_liquidity(turnover_rate, turnover_20ma_ratio, volume_ratio)
                 score_details['liquidity'] = liquidity_score
-                total_score += liquidity_score
+                basic_score += liquidity_score
                 
-                # 4. 资金流评分 (使用moneyflow接口)
+                # 4. 资金流评分
                 main_net = self._get_main_net_amount(ts_code, trade_date)
                 main_ratio = self._get_main_net_ratio(ts_code, trade_date)
                 medium_net = self._get_medium_net_amount(ts_code, trade_date)
                 
                 money_flow_score = self._score_money_flow(main_net, main_ratio, medium_net)
                 score_details['money_flow'] = money_flow_score
-                total_score += money_flow_score
+                basic_score += money_flow_score
                 
                 # 5. 热点板块评分
                 is_hot_sector = self._check_hot_sector(ts_code, trade_date)
                 sector_score = self._score_sector(is_hot_sector)
                 score_details['sector'] = sector_score
-                total_score += sector_score
+                basic_score += sector_score
                 
-                # 6. 龙虎榜数据评分 (使用top_list接口)
+                # 6. 龙虎榜数据评分
                 dragon_score = self._score_dragon_list(ts_code, trade_date)
                 score_details['dragon_list'] = dragon_score
-                total_score += dragon_score
+                basic_score += dragon_score
                 
-                # 收集结果
+                # 暂时不包含舆情评分
+                score_details['sentiment'] = 0
+                
+                # 存储基础结果
                 result = {
                     'ts_code': ts_code,
                     'name': row.get('name', ''),
@@ -399,36 +446,86 @@ class LimitUpScoringStrategyV2:
                     'close': row.get('close', 0),
                     'pct_chg': row.get('pct_chg', 0),
                     'industry': row.get('industry', ''),
-                    'total_score': total_score,
+                    'basic_score': basic_score,  # 基础分（不含舆情）
+                    'total_score': basic_score,  # 暂时与基础分相同
                     'score_details': score_details,
                     'first_limit_time': first_limit_time,
-                    'seal_ratio': seal_ratio,  # 封成比
-                    'seal_to_mv': seal_to_mv,  # 封单/流通市值
-                    'fd_amount': fd_amount,  # 封单金额
-                    'amount': amount,  # 成交金额
-                    'float_mv': float_mv,  # 流通市值
-                    'turnover_rate': turnover_rate,  # 换手率
+                    'seal_ratio': seal_ratio,
+                    'seal_to_mv': seal_to_mv,
+                    'fd_amount': fd_amount,
+                    'amount': amount,
+                    'float_mv': float_mv,
+                    'turnover_rate': turnover_rate,
                     'turnover_20ma_ratio': turnover_20ma_ratio,
                     'volume_ratio': volume_ratio,
                     'main_net_amount': main_net,
                     'main_net_ratio': main_ratio,
                     'medium_net_amount': medium_net,
                     'is_hot_sector': is_hot_sector,
-                    'dragon_score': dragon_score
+                    'dragon_score': dragon_score,
+                    'sentiment_score': 0  # 初始为0
                 }
                 
-                results.append(result)
+                basic_results.append(result)
                 
             except Exception as e:
-                logger.error(f"评分股票 {row.get('ts_code', 'N/A')} 时出错: {e}")
+                logger.error(f"基础评分股票 {row.get('ts_code', 'N/A')} 时出错: {e}")
                 continue
         
-        # 转换为DataFrame并排序
-        df = pd.DataFrame(results)
-        if not df.empty:
-            df = df.sort_values('total_score', ascending=False)
+        # 转换为DataFrame并按基础分排序
+        df = pd.DataFrame(basic_results)
+        if df.empty:
+            logger.warning("没有有效评分结果")
+            return df
         
-        logger.info(f"成功评分 {len(df)} 只股票")
+        # 按基础分排序
+        df = df.sort_values('basic_score', ascending=False)
+        logger.info(f"基础评分完成，共 {len(df)} 只股票，最高基础分: {df.iloc[0]['basic_score']:.2f}")
+        
+        # 第二阶段：对前N名进行舆情分析
+        if self.enable_sentiment and self.sentiment_analyzer:
+            top_n = min(self.sentiment_top_n, len(df))
+            logger.info(f"开始对前{top_n}名进行舆情分析")
+            
+            sentiment_processed = 0
+            for i in range(top_n):
+                stock = df.iloc[i]
+                ts_code = stock['ts_code']
+                name = stock['name']
+                
+                try:
+                    sentiment_score = self._score_sentiment(ts_code, name, trade_date)
+                    
+                    # 更新分数
+                    df.at[df.index[i], 'sentiment_score'] = sentiment_score
+                    df.at[df.index[i], 'score_details']['sentiment'] = sentiment_score
+                    
+                    # 更新总分：基础分 + 舆情分
+                    new_total_score = stock['basic_score'] + sentiment_score
+                    df.at[df.index[i], 'total_score'] = new_total_score
+                    
+                    sentiment_processed += 1
+                    logger.debug(f"舆情分析: {name} ({ts_code}) - 舆情分: {sentiment_score:.2f}, 总分: {new_total_score:.2f}")
+                    
+                except Exception as e:
+                    logger.warning(f"舆情分析失败 {name} ({ts_code}): {e}")
+                    # 保持原分数不变
+            
+            logger.info(f"舆情分析完成，处理 {sentiment_processed}/{top_n} 只股票")
+        else:
+            logger.info("跳过舆情分析，使用基础评分")
+        
+        # 按总分重新排序
+        df = df.sort_values('total_score', ascending=False)
+        
+        logger.info(f"最终评分完成，共 {len(df)} 只股票，最高总分: {df.iloc[0]['total_score']:.2f}")
+        
+        # 输出前5名详情
+        if len(df) >= 5:
+            for i in range(min(5, len(df))):
+                stock = df.iloc[i]
+                logger.info(f"TOP{i+1}: {stock['name']} ({stock['ts_code']}) - 基础分: {stock['basic_score']:.2f}, 舆情分: {stock['sentiment_score']:.2f}, 总分: {stock['total_score']:.2f}")
+        
         return df
     
     def _get_turnover_20ma_ratio(self, ts_code: str, trade_date: str) -> float:
@@ -758,6 +855,38 @@ class LimitUpScoringStrategyV2:
         
         return 0.0
     
+    def _score_sentiment(self, ts_code: str, name: str, trade_date: str) -> float:
+        """评分舆情分析 (新闻情感)"""
+        if not self.enable_sentiment or not self.sentiment_analyzer:
+            return 0.0
+        
+        try:
+            # 获取舆情分析结果，使用配置的回溯天数
+            days_back = self.sentiment_days_back
+            news_result = self.sentiment_analyzer.search_stock_news(
+                name, ts_code, trade_date, days_back=days_back
+            )
+            
+            sentiment_result = self.sentiment_analyzer.analyze_sentiment(
+                news_result['news_results']
+            )
+            
+            overall_score = sentiment_result.get('overall_score', 0)
+            
+            # 舆情评分权重 (从配置获取，默认10分)
+            sentiment_weight = self.t_day_weights.get('sentiment', 10)
+            
+            # 将舆情评分(0-10)映射到权重得分
+            # 舆情评分0-10分，权重10分 => 舆情得分 = 舆情评分 * 权重 / 10
+            sentiment_points = overall_score * sentiment_weight / 10.0
+            
+            logger.debug(f"舆情评分: {ts_code} {name}, 舆情评分: {overall_score}/10, 权重得分: {sentiment_points:.2f}")
+            return sentiment_points
+            
+        except Exception as e:
+            logger.warning(f"舆情评分失败 {ts_code} {name}: {e}")
+            return 0.0
+    
     # 评分函数 (从原文件复制，稍作修改)
     def _score_first_limit_time(self, first_limit_time) -> float:
         """评分首次涨停时间 (越早越好)"""
@@ -976,7 +1105,6 @@ class LimitUpScoringStrategyV2:
         if is_trading_hours:
             try:
                 realtime_df = self.pro.stk_auction(
-                    trade_date=trade_date,
                     ts_code=ts_code,
                     fields='price,pre_close,amount,turnover_rate,volume_ratio,vol'
                 )
@@ -1023,7 +1151,6 @@ class LimitUpScoringStrategyV2:
         try:
             # 先尝试实时接口 (可能仍有数据)
             realtime_df = self.pro.stk_auction(
-                trade_date=trade_date,
                 ts_code=ts_code,
                 fields='price,pre_close,amount,turnover_rate,volume_ratio,vol'
             )

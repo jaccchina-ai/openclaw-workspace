@@ -27,6 +27,9 @@ except ImportError as e:
 # 飞书群 ID (T99 使用的群)
 FEISHU_GROUP_ID = "chat:oc_ff08c55a23630937869cd222dad0bf14"
 
+# OpenClaw CLI 绝对路径（cron环境中PATH可能不包含）
+OPENCLAW_PATH = "/root/.nvm/versions/node/v22.22.0/bin/openclaw"
+
 # 备用方案使用跟踪
 _FALLBACK_USAGE = {
     "usd_cny": {"used": False, "source": None, "error": None},
@@ -83,7 +86,7 @@ def _call_openclaw_tool(tool: str, args: list) -> dict | None:
     try:
         import subprocess
         import json
-        cmd = ["openclaw", tool] + args
+        cmd = [OPENCLAW_PATH, tool] + args
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if result.returncode == 0:
             try:
@@ -826,7 +829,7 @@ def analyze_news_sentiment() -> Dict[str, Any]:
             
             # 预检查：确保 external-chrome profile 可用
             try:
-                profiles_cmd = ["openclaw", "browser", "profiles", "--json"]
+                profiles_cmd = [OPENCLAW_PATH, "browser", "profiles", "--json"]
                 profiles_result = subprocess.run(profiles_cmd, capture_output=True, text=True, timeout=15)
                 if profiles_result.returncode == 0:
                     try:
@@ -847,7 +850,7 @@ def analyze_news_sentiment() -> Dict[str, Any]:
                 print(f"      预检查异常: {e}, 继续尝试")
             
             # 1. 打开目标网页
-            open_cmd = ["openclaw", "browser", "open", "--browser-profile", "external-chrome", url]
+            open_cmd = [OPENCLAW_PATH, "browser", "open", "--browser-profile", "external-chrome", url]
             result = subprocess.run(open_cmd, capture_output=True, text=True, timeout=30)
             if result.returncode != 0:
                 error_msg = result.stderr.lower() if result.stderr else ""
@@ -877,7 +880,7 @@ def analyze_news_sentiment() -> Dict[str, Any]:
             time.sleep(wait_time)
             
             # 3. 获取页面快照（JSON格式）
-            snapshot_cmd = ["openclaw", "browser", "snapshot", "--browser-profile", 
+            snapshot_cmd = [OPENCLAW_PATH, "browser", "snapshot", "--browser-profile", 
                           "external-chrome", "--json", "--target-id", target_id]
             snapshot_result = subprocess.run(snapshot_cmd, capture_output=True, text=True, timeout=30)
             
@@ -959,7 +962,7 @@ def analyze_news_sentiment() -> Dict[str, Any]:
             # 6. 关闭标签页（清理）
             if target_id:
                 try:
-                    close_cmd = ["openclaw", "browser", "close", "--browser-profile", 
+                    close_cmd = [OPENCLAW_PATH, "browser", "close", "--browser-profile", 
                                "external-chrome", "--target-id", target_id]
                     subprocess.run(close_cmd, capture_output=True, timeout=10)
                 except:
@@ -1543,11 +1546,11 @@ def save_for_t99(domestic: Dict, international: Dict, sector_pred: Dict,
             "components": sentiment_index.get('components', {})
         },
         "investment_advice_summary": {
-            "pmi_advice": '处于扩张区间，关注工业板块' if domestic.get('pmi_manufacturing', 0) > 50 else '处于收缩区间，谨慎对待周期股',
-            "cpi_advice": '通胀压力上升，关注抗通胀资产' if domestic.get('cpi_yoy', 0) > 3.0 else '通胀温和，货币政策空间较大',
-            "fx_advice": '汇率偏弱，外资流出压力大' if international.get('usd_cny', 0) > 7.2 else '汇率稳定，对A股影响中性',
-            "yield_advice": '高企压制成长股，偏好价值股' if international.get('us_10y_yield', 0) > 4.5 else '偏低支撑成长股估值',
-            "vix_advice": '市场情绪恐慌，建议降低仓位' if international.get('vix', 0) > 25 else '市场情绪稳定，可适度积极'
+            "pmi_advice": '处于扩张区间，关注工业板块' if (domestic.get('pmi_manufacturing') or 0) > 50 else '处于收缩区间，谨慎对待周期股',
+            "cpi_advice": '通胀压力上升，关注抗通胀资产' if (domestic.get('cpi_yoy') or 0) > 3.0 else '通胀温和，货币政策空间较大',
+            "fx_advice": '汇率偏弱，外资流出压力大' if (international.get('usd_cny') or 0) > 7.2 else '汇率稳定，对A股影响中性',
+            "yield_advice": '高企压制成长股，偏好价值股' if (international.get('us_10y_yield') or 0) > 4.5 else '偏低支撑成长股估值',
+            "vix_advice": '市场情绪恐慌，建议降低仓位' if (international.get('vix') or 0) > 25 else '市场情绪稳定，可适度积极'
         }
     }
     
@@ -1588,11 +1591,39 @@ def send_to_feishu(report: str):
         print(report[:500] + "...")
         return
     
-    # 使用 openclaw CLI 发送消息
-    # 注意：需要 openclaw 服务运行且配置了飞书通道
-    cmd = f'openclaw message --channel feishu --target "{FEISHU_GROUP_ID}" --message "{report}"'
-    os.system(cmd)
-    print("Report sent to Feishu group.")
+    try:
+        # 使用绝对路径调用 openclaw CLI 发送消息
+        # 使用 subprocess.run 避免 shell 注入和引号问题
+        import subprocess
+        cmd = [
+            OPENCLAW_PATH,
+            "message", "send",
+            "--channel", "feishu",
+            "--target", FEISHU_GROUP_ID,
+            "--message", report
+        ]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        
+        if result.returncode == 0:
+            print("✅ 报告成功发送到飞书群")
+            if result.stdout:
+                print(f"输出: {result.stdout[:200]}")
+        else:
+            print(f"❌ 发送报告失败，返回码: {result.returncode}")
+            if result.stderr:
+                print(f"错误信息: {result.stderr[:500]}")
+            # 尝试记录失败但继续执行
+            print("报告内容前500字符:")
+            print(report[:500])
+            
+    except Exception as e:
+        print(f"❌ 发送报告时发生异常: {e}")
+        import traceback
+        traceback.print_exc()
+        # 记录报告内容以便调试
+        print("报告内容前500字符:")
+        print(report[:500])
 
 def main():
     print("=== macro-monitor v2.0 开始执行 ===")

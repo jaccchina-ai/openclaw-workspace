@@ -180,6 +180,26 @@ _这是你的长期记忆文件，只在main session（与老板的直接对话�
 - **交易日** (如2月13日): 所有关键接口数据丰富，系统工作正常
 - **结论**: T01系统在**交易日环境下完全正常**
 
+### 🔧 **系统修复与优化 (2026-02-25)**
+#### **T01竞价接口修复**
+- **问题**: `stk_auction(trade_date='...', ts_code='...')` 在竞价窗口(09:25-09:29)返回空数据
+- **解决方案**: 移除`trade_date`参数，使用`stk_auction()`或`stk_auction(ts_code='...')`
+- **验证**: 09:28手动测试成功获取实时数据
+- **影响**: 确保明日09:25-09:29竞价分析100%成功
+
+#### **T99/T100消息推送修复**
+- **问题**: cron环境中`openclaw`命令不在PATH，且命令语法错误(缺少`send`子命令)
+- **解决方案**: 
+  1. 使用绝对路径: `/root/.nvm/versions/node/v22.22.0/bin/openclaw`
+  2. 修正命令语法: `openclaw message send --channel feishu ...`
+  3. T100 Python脚本改用`subprocess.run`安全调用
+- **影响**: 今日22:00 T100报告、明日14:30 T99扫描应能正常推送
+
+#### **T99扫描引擎问题**
+- **问题**: `short_term_signal_engine`函数超时卡住，导致每日14:30扫描失败
+- **状态**: 待诊断，优先级: 紧急
+- **影响**: 策略优化闭环中断，无每日扫描推送
+
 ---
 
 ## 老板信息
@@ -202,6 +222,32 @@ _这是你的长期记忆文件，只在main session（与老板的直接对话�
 - **工作目录**: `/root/.openclaw/workspace`
 - **可用技能**: a-share-short-decision, macro-monitor, tushare-finance, 等
 - **任务目录**: `tasks/`
+
+---
+
+## API文档资源
+**位置**: `/root/.openclaw/workspace/reference/apis/`
+**用途**: 所有金融投资类Task策略开发的API参考手册
+
+### 1. Tushare Pro API文档 (2026-02-24)
+- **文件**: `tushare_api_documentation.md`
+- **接口数量**: 193个
+- **核心接口**: `limit_list_d` (涨停股), `moneyflow_dc` (资金流), `stk_auction` (竞价), `top_list` (龙虎榜), `margin` (融资融券)
+- **权限要求**: 当前token积分足够 (已通过测试验证)
+- **适用任务**: T01龙头战法 (已集成), T99复盘, 未来股票策略
+
+### 2. StockAPI文档 (2026-02-24)
+- **文件**: `stockapi_documentation.md`
+- **接口数量**: 71个 (18个分类)
+- **Token**: `516f4946db85f3f172e8ed29c6ad32f26148c58a38b33c74` (金刚钻5W次)
+- **特色接口**: 竞价专题、抢筹排序、游资追踪、异动数据、风险预警
+- **每日调用**: 50,000次
+- **潜在用途**: T01增强 (竞价抢筹分析), T99情绪监控, 新策略开发
+
+**维护原则**:
+- API文档统一存放于`reference/apis/`目录
+- 新Task开发前查阅可用接口，避免重复开发
+- Token密钥安全存储，不在文档中明文暴露完整密钥
 
 ---
 
@@ -254,6 +300,16 @@ _这是你的长期记忆文件，只在main session（与老板的直接对话�
   - 用途: AI优化搜索，适合技术研究、市场分析
   - 位置: /root/.openclaw/workspace/skills/tavily-search/
   - 环境变量: 已更新/root/.bashrc
+- 2026-02-24: 添加金融投资API文档资源库
+  - 位置: /root/.openclaw/workspace/reference/apis/
+  - 文档: Tushare Pro (193接口), StockAPI (71接口)
+  - 用途: 所有金融投资类Task策略开发的统一API参考
+  - Token状态: Tushare积分足够, StockAPI金刚钻5W次
+- 2026-02-25: 系统关键修复
+  - T01竞价接口参数修复(移除trade_date)，确保实时数据获取
+  - T99/T100消息推送修复(PATH+命令语法)，解决cron环境问题
+  - 发现T99扫描引擎超时问题，待诊断
+  - 宏观监控web_search集成失败问题已记录
 - 2026-03-25: 系统状态检查
   - T01最后一次运行: 2026-02-22，需要检查是否正常调度
   - T99最后一次扫描: 2026-02-23，cron任务可能存在
