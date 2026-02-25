@@ -185,8 +185,9 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y gh
           fi
-          # Authenticate with GitHub token for API access
-          echo "${{ github.token }}" | gh auth login --with-token
+          # In GitHub Actions, GH_TOKEN is automatically used for authentication
+          # Just verify authentication status
+          echo "Verifying GitHub CLI authentication..."
           gh auth status
 
       - name: Test Issues sync script

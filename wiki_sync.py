@@ -107,31 +107,61 @@ def check_wiki_exists() -> bool:
     """Check if the wiki repository exists."""
     print("🔍 Checking if wiki exists...")
     
-    # Try to access the wiki via GitHub API
+    # First check if wiki is enabled via GitHub API
     returncode, stdout, stderr = run_command([
         "gh", "api",
-        f"repos/{REPO}/pages"
+        f"repos/{REPO}"
     ])
     
-    # If we can't access pages, try a direct git ls-remote
     if returncode != 0:
-        returncode, stdout, stderr = run_command([
-            "git", "ls-remote",
-            WIKI_REPO_URL,
-            "HEAD"
-        ])
+        print(f"❌ Failed to check repository info: {stderr[:100]}")
+        return False
     
-    if returncode == 0:
-        print("✅ Wiki repository exists")
-        return True
-    else:
-        print("❌ Wiki repository does not exist or is not accessible")
-        print(f"   Error: {stderr[:100]}")
+    try:
+        import json
+        repo_info = json.loads(stdout)
+        has_wiki = repo_info.get('has_wiki', False)
+        
+        if not has_wiki:
+            print("❌ Wiki is not enabled for this repository")
+            return False
+        
+        print("✅ Wiki is enabled for repository")
+        
+        # Try to access the wiki repository to see if it's initialized
+        # Use token authentication for git operations
+        token = os.environ.get('GITHUB_TOKEN') or os.environ.get('GH_TOKEN')
+        if token:
+            # Use token-authenticated URL
+            auth_url = f"https://{token}@github.com/{REPO}.wiki.git"
+            returncode, stdout, stderr = run_command([
+                "git", "ls-remote",
+                auth_url,
+                "HEAD"
+            ], capture_output=False)
+        else:
+            # Try without authentication (may work for public repos)
+            returncode, stdout, stderr = run_command([
+                "git", "ls-remote",
+                WIKI_REPO_URL,
+                "HEAD"
+            ], capture_output=False)
+        
+        if returncode == 0:
+            print("✅ Wiki repository is initialized and accessible")
+            return True
+        else:
+            print("ℹ️  Wiki is enabled but repository may not be initialized yet")
+            print("   This is normal - the wiki will be initialized on first sync")
+            return True  # Return True because wiki is enabled, just not initialized yet
+            
+    except json.JSONDecodeError as e:
+        print(f"❌ Failed to parse repository info: {e}")
         return False
 
 def clone_wiki() -> bool:
-    """Clone the wiki repository."""
-    print("📥 Cloning wiki repository...")
+    """Clone or initialize the wiki repository."""
+    print("📥 Setting up wiki repository...")
     
     # Clean up existing clone
     if os.path.exists(WIKI_CLONE_DIR):
@@ -139,18 +169,54 @@ def clone_wiki() -> bool:
     
     os.makedirs(WIKI_CLONE_DIR, exist_ok=True)
     
-    returncode, stdout, stderr = run_command([
-        "git", "clone",
-        WIKI_REPO_URL,
-        WIKI_CLONE_DIR
-    ], capture_output=False)
+    # Try to clone with token authentication
+    token = os.environ.get('GITHUB_TOKEN') or os.environ.get('GH_TOKEN')
+    if token:
+        auth_url = f"https://{token}@github.com/{REPO}.wiki.git"
+        returncode, stdout, stderr = run_command([
+            "git", "clone",
+            auth_url,
+            WIKI_CLONE_DIR
+        ], capture_output=False)
+    else:
+        returncode, stdout, stderr = run_command([
+            "git", "clone",
+            WIKI_REPO_URL,
+            WIKI_CLONE_DIR
+        ], capture_output=False)
     
     if returncode == 0:
         print("✅ Wiki repository cloned")
         return True
     else:
-        print(f"❌ Failed to clone wiki repository: {stderr}")
-        return False
+        # If clone failed, wiki may not be initialized yet
+        # Initialize an empty git repository locally
+        print("ℹ️  Wiki repository not found, initializing empty wiki...")
+        
+        # Initialize empty git repo
+        returncode, stdout, stderr = run_command([
+            "git", "init"
+        ], cwd=WIKI_CLONE_DIR, capture_output=False)
+        
+        if returncode != 0:
+            print(f"❌ Failed to initialize git repository: {stderr}")
+            return False
+        
+        # Set up remote
+        remote_url = f"https://github.com/{REPO}.wiki.git"
+        if token:
+            remote_url = f"https://{token}@github.com/{REPO}.wiki.git"
+        
+        returncode, stdout, stderr = run_command([
+            "git", "remote", "add", "origin", remote_url
+        ], cwd=WIKI_CLONE_DIR, capture_output=False)
+        
+        if returncode != 0:
+            print(f"❌ Failed to add remote: {stderr}")
+            return False
+        
+        print("✅ Initialized empty wiki repository")
+        return True
 
 def transform_json_to_md(source_path: str, mapping: Dict[str, Any]) -> str:
     """Transform JSON file to markdown."""
@@ -269,17 +335,33 @@ def commit_and_push_wiki() -> bool:
         print(f"❌ Failed to commit: {stderr}")
         return False
     
-    # Push
+    # Push - use --set-upstream for initial push
     print("📤 Pushing wiki changes...")
     returncode, stdout, stderr = run_command([
-        "git", "push"
-    ], cwd=WIKI_CLONE_DIR, capture_output=False)
+        "git", "push", "--set-upstream", "origin", "master"
+    ], cwd=WIKI_CLONE_DIR, capture_output=True)
     
     if returncode == 0:
         print("✅ Wiki changes pushed successfully")
         return True
     else:
         print(f"❌ Failed to push wiki changes: {stderr}")
+        
+        # Try alternative: maybe the branch is called 'main'
+        print("🔄 Trying with 'main' branch...")
+        returncode, stdout, stderr = run_command([
+            "git", "branch", "-m", "main"
+        ], cwd=WIKI_CLONE_DIR, capture_output=False)
+        
+        if returncode == 0:
+            returncode, stdout, stderr = run_command([
+                "git", "push", "--set-upstream", "origin", "main"
+            ], cwd=WIKI_CLONE_DIR, capture_output=True)
+            
+            if returncode == 0:
+                print("✅ Wiki changes pushed successfully to 'main' branch")
+                return True
+        
         return False
 
 def create_home_page() -> bool:
