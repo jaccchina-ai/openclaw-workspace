@@ -107,6 +107,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Basic T01 Tests
     needs: validate-configs
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -173,6 +175,19 @@ jobs:
           else
             echo "⚠️  sync_registry.py not found"
           fi
+
+      - name: Setup GitHub CLI
+        run: |
+          echo "🔧 Setting up GitHub CLI..."
+          # Check if gh CLI is installed
+          if ! command -v gh &> /dev/null; then
+            echo "📦 Installing GitHub CLI..."
+            sudo apt-get update
+            sudo apt-get install -y gh
+          fi
+          # Authenticate with GitHub token for API access
+          echo "${{ github.token }}" | gh auth login --with-token
+          gh auth status
 
       - name: Test Issues sync script
         run: |
