@@ -1,0 +1,34 @@
+{
+  "task_failures": {
+    "task_t99_daily_scan": {
+      "count": 2,
+      "first_failure": "2026-03-11T18:00:01.579335"
+    },
+    "task_t01_auction_check": {
+      "count": 0,
+      "first_failure": null
+    },
+    "task_t01_tday_scoring": {
+      "count": 0,
+      "first_failure": null
+    },
+    "task_t100_macro_report": {
+      "count": 1,
+      "first_failure": "2026-03-12T00:00:20.233020"
+    }
+  },
+  "last_check": "2026-03-12T00:00:20.347455",
+  "alert_history": [
+    {
+      "timestamp": "2026-03-03T00:06:00Z",
+      "task": "task_t99_daily_scan",
+      "issue": "监控状态与实际不符，已纠正失败计数",
+      "action": "更新了失败计数和根本原因分析"
+    },
+    {
+      "timestamp": "2026-03-12T00:00:20.217492",
+      "message": "🚨 T99每日扫描可能未执行\n原因: 日志文件不存在: /root/.openclaw/workspace/skills/a-share-short-decision/scan_enhanced.log\n时间: 03-12 00:00",
+      "sent": true
+    }
+  ]
+}

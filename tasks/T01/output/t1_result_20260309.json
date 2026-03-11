@@ -1,0 +1,313 @@
+{
+  "generated_at": "2026-03-10T09:25:58.664045",
+  "trade_date": "20260309",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "601789.SH",
+        "name": "宁波建工",
+        "trade_date": "20260309",
+        "close": 6.04,
+        "pct_chg": 10.02,
+        "industry": "房屋建设",
+        "basic_score": 168.12909034275688,
+        "total_score": 168.12909034275688,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 16.656900242430865,
+          "liquidity": 8.47219010032602,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "92504",
+        "seal_ratio": 0.8284501212154317,
+        "seal_to_mv": 0.035304057580715115,
+        "fd_amount": 231745136.0,
+        "amount": 279733360.0,
+        "float_mv": 6564263483.6,
+        "turnover_rate": 4.26,
+        "turnover_20ma_ratio": 0.8966570300978063,
+        "volume_ratio": 0.89,
+        "main_net_amount": 66507000.0,
+        "main_net_ratio": 23.78,
+        "medium_net_amount": -32411800.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "605268.SH",
+        "name": "王力安防",
+        "trade_date": "20260309",
+        "close": 15.33,
+        "pct_chg": 9.97,
+        "industry": "家居用品",
+        "basic_score": 165.83189334462406,
+        "total_score": 165.83189334462406,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 25.0,
+          "liquidity": 7.406893344624045,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 90.42500000000001,
+          "sentiment": 0
+        },
+        "first_limit_time": "92503",
+        "seal_ratio": 8.16268402603906,
+        "seal_to_mv": 0.09251508254964613,
+        "fd_amount": 624731226.0,
+        "amount": 76535025.0,
+        "float_mv": 6752750025.0,
+        "turnover_rate": 1.13,
+        "turnover_20ma_ratio": 0.9070680033872135,
+        "volume_ratio": 0.83,
+        "main_net_amount": 16421500.0,
+        "main_net_ratio": 21.46,
+        "medium_net_amount": -9096800.0,
+        "is_hot_sector": false,
+        "dragon_score": 90.42500000000001,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "301179.SZ",
+        "name": "泽宇智能",
+        "trade_date": "20260309",
+        "close": 24.07,
+        "pct_chg": 19.99,
+        "industry": "电网设备",
+        "basic_score": 157.4911099595135,
+        "total_score": 157.4911099595135,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.295561448648233,
+          "liquidity": 8.320548510865263,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 96.875,
+          "sentiment": 0
+        },
+        "first_limit_time": "101348",
+        "seal_ratio": 0.1477807243241164,
+        "seal_to_mv": 0.02006540909584083,
+        "fd_amount": 114709051.0,
+        "amount": 776211184.0,
+        "float_mv": 5716756157.43,
+        "turnover_rate": 14.59,
+        "turnover_20ma_ratio": 0.5161645532595791,
+        "volume_ratio": 1.56,
+        "main_net_amount": 97292400.0,
+        "main_net_ratio": 12.53,
+        "medium_net_amount": -46610600.00000001,
+        "is_hot_sector": false,
+        "dragon_score": 96.875,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "600268.SH",
+        "name": "国电南自",
+        "trade_date": "20260309",
+        "close": 16.34,
+        "pct_chg": 10.03,
+        "industry": "电网设备",
+        "basic_score": 154.0317278582272,
+        "total_score": 154.0317278582272,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.268790838571105,
+          "liquidity": 7.78793701965613,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 93.975,
+          "sentiment": 0
+        },
+        "first_limit_time": "104257",
+        "seal_ratio": 0.13439541928555265,
+        "seal_to_mv": 0.010921746431833858,
+        "fd_amount": 180394318.0,
+        "amount": 1342265376.0,
+        "float_mv": 16516984634.82,
+        "turnover_rate": 8.58,
+        "turnover_20ma_ratio": 0.43138110589683926,
+        "volume_ratio": 1.41,
+        "main_net_amount": 224072100.0,
+        "main_net_ratio": 16.69,
+        "medium_net_amount": -107190900.0,
+        "is_hot_sector": false,
+        "dragon_score": 93.975,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "600851.SH",
+        "name": "海欣股份",
+        "trade_date": "20260309",
+        "close": 8.78,
+        "pct_chg": 10.03,
+        "industry": "化学制药",
+        "basic_score": 153.29590420717457,
+        "total_score": 153.29590420717457,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.632733480617585,
+          "liquidity": 11.463170726556983,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 89.2,
+          "sentiment": 0
+        },
+        "first_limit_time": "102130",
+        "seal_ratio": 0.31636674030879214,
+        "seal_to_mv": 0.011989926366296418,
+        "fd_amount": 77712104.0,
+        "amount": 245639298.0,
+        "float_mv": 6481449645.8,
+        "turnover_rate": 3.93,
+        "turnover_20ma_ratio": 0.738951217967095,
+        "volume_ratio": 3.35,
+        "main_net_amount": 45861700.0,
+        "main_net_ratio": 18.67,
+        "medium_net_amount": -20114000.0,
+        "is_hot_sector": false,
+        "dragon_score": 89.2,
+        "sentiment_score": 0
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "601789.SH",
+      "name": "宁波建工",
+      "t_date": "20260309",
+      "t1_date": "20260310",
+      "t_day_score": 168.12909034275688,
+      "auction_score": 100.0,
+      "final_score": 147.6903632399298,
+      "auction_data": {
+        "open_change_pct": 10.01821493624772,
+        "auction_volume_ratio": 30.559,
+        "auction_turnover_rate": 1.45575,
+        "auction_amount": 95558979.0,
+        "auction_volume_to_t_volume": 34.160738423632225,
+        "auction_volume": 15821023.0,
+        "t_day_volume": 463134.69,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "605268.SH",
+      "name": "王力安防",
+      "t_date": "20260309",
+      "t1_date": "20260310",
+      "t_day_score": 165.83189334462406,
+      "auction_score": 95.09773158393115,
+      "final_score": 144.61164481641617,
+      "auction_data": {
+        "open_change_pct": 9.9713055954089,
+        "auction_volume_ratio": 41.0155,
+        "auction_turnover_rate": 0.562666,
+        "auction_amount": 37995405.0,
+        "auction_volume_to_t_volume": 49.644466700050074,
+        "auction_volume": 2478500.0,
+        "t_day_volume": 49925.0,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "000533.SZ",
+      "name": "顺钠股份",
+      "t_date": "20260309",
+      "t1_date": "20260310",
+      "t_day_score": 143.16024547824415,
+      "auction_score": 85.69892473118277,
+      "final_score": 125.92184925412573,
+      "auction_data": {
+        "open_change_pct": 5.913978494623649,
+        "auction_volume_ratio": 37.9469,
+        "auction_turnover_rate": 2.51848,
+        "auction_amount": 271845816.0,
+        "auction_volume_to_t_volume": 32.129257176402106,
+        "auction_volume": 17249100.0,
+        "t_day_volume": 536865.82,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2619048882638.0,
+    "margin_balance": 18120381790.0,
+    "financing_change_pct": -0.3280041681095092,
+    "margin_change_pct": 1.2673212369480382,
+    "financing_buy_repay_ratio": 0.9991572494003291,
+    "market_data": {
+      "trade_date": "20260309",
+      "total_financing_balance": 2619048882638.0,
+      "total_margin_balance": 18120381790.0,
+      "total_financing_margin_balance": 2637169264428.0,
+      "financing_change_ratio": -0.3280041681095092,
+      "margin_change_ratio": 1.2673212369480382,
+      "financing_buy_ratio": 0.9991572494003291,
+      "sse_data": {
+        "financing_balance": 1333276798688.0,
+        "financing_buy": 120266698867.0,
+        "financing_repay": 118203340074.0,
+        "margin_balance": 12372384331.0,
+        "margin_sell": 114035816.0,
+        "total_balance": 1345649183019.0,
+        "margin_remaining": 2324083482.0
+      },
+      "szse_data": {
+        "financing_balance": 1285772083950.0,
+        "financing_buy": 117867754589.0,
+        "financing_repay": 120131970608.0,
+        "margin_balance": 5747997459.0,
+        "margin_sell": 30519459.0,
+        "total_balance": 1291520081409.0,
+        "margin_remaining": 721120206.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}

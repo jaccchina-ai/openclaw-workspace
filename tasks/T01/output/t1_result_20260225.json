@@ -1,0 +1,312 @@
+{
+  "generated_at": "2026-02-26T09:25:15.627821",
+  "trade_date": "20260225",
+  "t_day_summary": {
+    "total_candidates": 5,
+    "top_scores": [
+      {
+        "ts_code": "300437.SZ",
+        "name": "清水源",
+        "trade_date": "20260225",
+        "close": 18.98,
+        "pct_chg": 19.97,
+        "industry": "环境治理",
+        "basic_score": 163.73089587302022,
+        "total_score": 163.73089587302022,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.344125042567983,
+          "liquidity": 10.486770830452235,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 94.9,
+          "sentiment": 0
+        },
+        "first_limit_time": "95224",
+        "seal_ratio": 0.1720625212839918,
+        "seal_to_mv": 0.04317174890411584,
+        "fd_amount": 144059167.0,
+        "amount": 837248960.0,
+        "float_mv": 3336885131.06,
+        "turnover_rate": 26.14,
+        "turnover_20ma_ratio": 1.1960312491356704,
+        "volume_ratio": 4.23,
+        "main_net_amount": 195447300.0,
+        "main_net_ratio": 23.34,
+        "medium_net_amount": -92968500.0,
+        "is_hot_sector": false,
+        "dragon_score": 94.9,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "600010.SH",
+        "name": "包钢股份",
+        "trade_date": "20260225",
+        "close": 2.93,
+        "pct_chg": 10.15,
+        "industry": "普钢",
+        "basic_score": 154.15325821966442,
+        "total_score": 154.15325821966442,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.246381797472335,
+          "liquidity": 7.9568764221920905,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 93.94999999999999,
+          "sentiment": 0
+        },
+        "first_limit_time": "101204",
+        "seal_ratio": 0.12319089873616719,
+        "seal_to_mv": 0.007878406939014312,
+        "fd_amount": 724385948.0,
+        "amount": 5880190464.0,
+        "float_mv": 91945738980.91,
+        "turnover_rate": 6.62,
+        "turnover_20ma_ratio": 0.35206292665762734,
+        "volume_ratio": 1.67,
+        "main_net_amount": 1871342600.0,
+        "main_net_ratio": 31.82,
+        "medium_net_amount": -954634700.0,
+        "is_hot_sector": false,
+        "dragon_score": 93.94999999999999,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "300821.SZ",
+        "name": "东岳硅材",
+        "trade_date": "20260225",
+        "close": 14.89,
+        "pct_chg": 19.98,
+        "industry": "化学制品",
+        "basic_score": 151.41594169056162,
+        "total_score": 151.41594169056162,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.122302643934026,
+          "liquidity": 12.14363904662758,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 87.15,
+          "sentiment": 0
+        },
+        "first_limit_time": "101200",
+        "seal_ratio": 0.06115132196701248,
+        "seal_to_mv": 0.0053179264739393025,
+        "fd_amount": 95004141.0,
+        "amount": 1553590960.0,
+        "float_mv": 17864884267.5,
+        "turnover_rate": 9.12,
+        "turnover_20ma_ratio": 0.9430917139882738,
+        "volume_ratio": 4.93,
+        "main_net_amount": 341079200.0,
+        "main_net_ratio": 21.95,
+        "medium_net_amount": -189918000.0,
+        "is_hot_sector": false,
+        "dragon_score": 87.15,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "300788.SZ",
+        "name": "中信出版",
+        "trade_date": "20260225",
+        "close": 42.74,
+        "pct_chg": 19.99,
+        "industry": "出版",
+        "basic_score": 147.4335790529959,
+        "total_score": 147.4335790529959,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.100299098860374,
+          "liquidity": 7.333279954135515,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 88.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "104627",
+        "seal_ratio": 0.050149549430186534,
+        "seal_to_mv": 0.004474047875716988,
+        "fd_amount": 36360926.0,
+        "amount": 725049904.0,
+        "float_mv": 8127075751.1,
+        "turnover_rate": 9.54,
+        "turnover_20ma_ratio": 0.28498398624065463,
+        "volume_ratio": 1.43,
+        "main_net_amount": 176449000.0,
+        "main_net_ratio": 24.34,
+        "medium_net_amount": -72627200.0,
+        "is_hot_sector": false,
+        "dragon_score": 88.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "301373.SZ",
+        "name": "凌玮科技",
+        "trade_date": "20260225",
+        "close": 44.26,
+        "pct_chg": 20.01,
+        "industry": "化学制品",
+        "basic_score": 145.36539687972714,
+        "total_score": 145.36539687972714,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.103538890607306,
+          "liquidity": 10.41185798911986,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 82.85,
+          "sentiment": 0
+        },
+        "first_limit_time": "104812",
+        "seal_ratio": 0.0517694453036531,
+        "seal_to_mv": 0.018319628359747035,
+        "fd_amount": 31194713.0,
+        "amount": 602569968.0,
+        "float_mv": 1702802719.98,
+        "turnover_rate": 37.17,
+        "turnover_20ma_ratio": 1.173557396735958,
+        "volume_ratio": 8.2,
+        "main_net_amount": 101615000.0,
+        "main_net_ratio": 16.86,
+        "medium_net_amount": -53697600.0,
+        "is_hot_sector": false,
+        "dragon_score": 82.85,
+        "sentiment_score": 0
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "300437.SZ",
+      "name": "清水源",
+      "t_date": "20260225",
+      "t1_date": "20260226",
+      "t_day_score": 163.73089587302022,
+      "auction_score": 33.143988194690245,
+      "final_score": 124.55482356952122,
+      "auction_data": {
+        "open_change_pct": 0.8217446270543552,
+        "auction_volume_ratio": 1.12254,
+        "auction_turnover_rate": 0.069336,
+        "auction_amount": 1944305.0,
+        "auction_volume_to_t_volume": 0.26523042181188844,
+        "auction_volume": 121900.0,
+        "t_day_volume": 459600.37,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价成交量很强(20-30%，热度明显延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "300821.SZ",
+      "name": "东岳硅材",
+      "t_date": "20260225",
+      "t1_date": "20260226",
+      "t_day_score": 151.41594169056162,
+      "auction_score": 57.93955617598709,
+      "final_score": 123.37302603618926,
+      "auction_data": {
+        "open_change_pct": 6.204673650282027,
+        "auction_volume_ratio": 2.17026,
+        "auction_turnover_rate": 0.0401903,
+        "auction_amount": 6355396.0,
+        "auction_volume_to_t_volume": 0.4405506620150778,
+        "auction_volume": 482200.0,
+        "t_day_volume": 1094539.27,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比放大(2-3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "600010.SH",
+      "name": "包钢股份",
+      "t_date": "20260225",
+      "t1_date": "20260226",
+      "t_day_score": 154.15325821966442,
+      "auction_score": 30.70104147368418,
+      "final_score": 117.11759319587034,
+      "auction_data": {
+        "open_change_pct": 0.3759398496240521,
+        "auction_volume_ratio": 0.253394,
+        "auction_turnover_rate": 0.0100603,
+        "auction_amount": 8429190.0,
+        "auction_volume_to_t_volume": 0.15204933395097503,
+        "auction_volume": 3157000.0,
+        "t_day_volume": 20762997.89,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价量比低迷(<0.5)",
+          "竞价成交量强(15-20%，热度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2621383885644.0,
+    "margin_balance": 16720204834.0,
+    "financing_change_pct": 0.5799811943273445,
+    "margin_change_pct": 1.4040394623368464,
+    "financing_buy_repay_ratio": 1.106485865271241,
+    "market_data": {
+      "trade_date": "20260225",
+      "total_financing_balance": 2621383885644.0,
+      "total_margin_balance": 16720204834.0,
+      "total_financing_margin_balance": 2638104090478.0,
+      "financing_change_ratio": 0.5799811943273445,
+      "margin_change_ratio": 1.4040394623368464,
+      "financing_buy_ratio": 1.106485865271241,
+      "sse_data": {
+        "financing_balance": 1330832293401.0,
+        "financing_buy": 119636338244.0,
+        "financing_repay": 105677777627.0,
+        "margin_balance": 11271469674.0,
+        "margin_sell": 56482785.0,
+        "total_balance": 1342103763075.0,
+        "margin_remaining": 2137457924.0
+      },
+      "szse_data": {
+        "financing_balance": 1290551592243.0,
+        "financing_buy": 126171294708.0,
+        "financing_repay": 116473847321.0,
+        "margin_balance": 5448735160.0,
+        "margin_sell": 26587955.0,
+        "total_balance": 1296000327403.0,
+        "margin_remaining": 665599986.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}

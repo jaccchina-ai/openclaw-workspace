@@ -1,0 +1,247 @@
+{
+  "total": 34,
+  "success": 34,
+  "failed": 0,
+  "start_time": "2026-03-06T13:58:42.283854",
+  "files": [
+    {
+      "path": "/root/.openclaw/workspace/SOUL.md",
+      "title": "SOUL.md - Who You Are",
+      "category": "preference",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/USER.md",
+      "title": "USER.md - About Your Human",
+      "category": "preference",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/AGENTS.md",
+      "title": "AGENTS.md - Your Workspace",
+      "category": "preference",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/MEMORY.md",
+      "title": "MEMORY.md - 长期记忆",
+      "category": "preference",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/TOOLS.md",
+      "title": "TOOLS.md - Local Notes",
+      "category": "preference",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/HEARTBEAT.md",
+      "title": "HEARTBEAT.md - Periodic Self-Improvement",
+      "category": "preference",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/IDENTITY.md",
+      "title": "IDENTITY.md - Who Am I?",
+      "category": "preference",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/task_registry.json",
+      "title": "task_registry.json",
+      "category": "decision",
+      "importance": 0.9,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-20.md",
+      "title": "2026-02-20",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-21.md",
+      "title": "2026-02-21",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-22.md",
+      "title": "2026-02-22",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-23.md",
+      "title": "2026-02-23 周一",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-24.md",
+      "title": "2026-02-24 周二",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-25.md",
+      "title": "2026-02-25 周三",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-26.md",
+      "title": "2026-02-26 周四",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-27.md",
+      "title": "2026-02-27 工作记录",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-28.md",
+      "title": "2026-02-28.md",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-01.md",
+      "title": "2026-03-01 系统修复记录",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-02.md",
+      "title": "2026-03-02 系统状态与修复记录",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-03.md",
+      "title": "2026-03-03 系统监控修复记录",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-05.md",
+      "title": "2026-03-05 心跳检查与T99修复",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-06.md",
+      "title": "2026-03-06 心跳检查与T99修复",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-25.md",
+      "title": "2026-03-25",
+      "category": "fact",
+      "importance": 0.7,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/agent-browser/SKILL.md",
+      "title": "SKILL.md",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/macro-monitor/SKILL.md",
+      "title": "宏观数据监控技能",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/proactive-agent/SKILL.md",
+      "title": "Proactive Agent 🦞",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/tushare-finance/SKILL.md",
+      "title": "Tushare 金融数据 Skill",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/imap-smtp-email/SKILL.md",
+      "title": "IMAP/SMTP Email Tool",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/a-share-short-decision/SKILL.md",
+      "title": "A-Share Short-Term Decision Skill",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/tavily-search/SKILL.md",
+      "title": "Tavily Search",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/summarize/SKILL.md",
+      "title": "Summarize",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/self-improving-agent/SKILL.md",
+      "title": "Self-Improvement Skill",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/playwright-scraper-skill/SKILL.md",
+      "title": "Playwright Scraper Skill",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/moa/SKILL.md",
+      "title": "SKILL.md",
+      "category": "fact",
+      "importance": 0.5,
+      "status": "imported"
+    }
+  ],
+  "end_time": "2026-03-06T13:58:54.327015"
+}

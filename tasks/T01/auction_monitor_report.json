@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-02-26T09:32:23.092213",
+  "checks": {
+    "scheduler_status": {
+      "running": true,
+      "pids": [
+        2194093
+      ],
+      "timestamp": "2026-02-26T09:32:23.109091"
+    },
+    "candidate_files": {
+      "status": "valid",
+      "count": 5,
+      "latest": "/root/.openclaw/workspace/tasks/T01/state/candidates_20240221_to_20240222.json",
+      "t_date": "20240221",
+      "t1_date": "20240222",
+      "timestamp": "2026-02-26T09:32:23.109365"
+    },
+    "today_auction": {
+      "today": "20260226",
+      "result_files": 0,
+      "log_entries": 1,
+      "recent_logs": [
+        "2026-02-26 03:20:51,385 - __main__ - INFO - 开始T+1日竞价评分 (日期: 20260226)"
+      ],
+      "timestamp": "2026-02-26T09:32:23.110606"
+    },
+    "auction_window": {
+      "current_time": "09:32",
+      "in_auction_window": false,
+      "minutes_to_window": 1423,
+      "timestamp": "2026-02-26T09:32:23.110663"
+    }
+  }
+}

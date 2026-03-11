@@ -44,6 +44,10 @@
     "playwright-scraper-skill": {
       "version": "1.2.0",
       "installedAt": 1772007093366
+    },
+    "moa": {
+      "version": "1.2.0",
+      "installedAt": 1772164460088
     }
   }
 }

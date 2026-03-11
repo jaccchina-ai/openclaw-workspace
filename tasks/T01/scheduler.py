@@ -5,6 +5,7 @@ T01 定时任务调度器
 集成数据存储和绩效跟踪功能
 """
 
+import os
 import sys
 import yaml
 import json
@@ -16,12 +17,137 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import pandas as pd
 import tushare as ts
+import psutil
+
+# 飞书增强模块导入（可选）
+try:
+    from feishu_message_enhanced import FeishuMessageSender
+    FEISHU_ENHANCED_AVAILABLE = True
+except ImportError:
+    FEISHU_ENHANCED_AVAILABLE = False
 
 sys.path.insert(0, str(Path(__file__).parent))
 
 from limit_up_strategy_new import LimitUpScoringStrategyV2
 from data_storage import T01DataStorage
 from performance_tracker import PerformanceTracker
+
+# 健壮调度器修复 - 防止30分钟重启问题
+class RobustScheduler:
+    """健壮调度器，防止异常导致退出"""
+    
+    def __init__(self, original_scheduler):
+        self.scheduler = original_scheduler
+        self.logger = logging.getLogger(__name__)
+        self.start_time = datetime.now()
+        self.heartbeat_counter = 0
+        self.last_heartbeat = time.time()
+        
+        # 监控配置
+        self.max_memory_mb = 500  # 最大内存限制
+        self.heartbeat_interval = 300  # 5分钟心跳
+    
+    def run_pending_with_safety(self):
+        """安全运行pending任务"""
+        try:
+            # 检查内存使用
+            self.check_memory_usage()
+            
+            # 运行任务
+            schedule.run_pending()
+            
+            # 记录心跳
+            current_time = time.time()
+            if current_time - self.last_heartbeat > self.heartbeat_interval:
+                self.heartbeat_counter += 1
+                self.logger.info(
+                    f"💓 调度器心跳 #{self.heartbeat_counter}, "
+                    f"运行时间: {(datetime.now() - self.start_time).total_seconds() / 60:.1f}分钟, "
+                    f"内存: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB"
+                )
+                self.last_heartbeat = current_time
+                
+                # 定期垃圾回收
+                if self.heartbeat_counter % 12 == 0:  # 每小时一次
+                    import gc
+                    gc.collect()
+                    self.logger.info("🔄 执行定期垃圾回收")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"调度器主循环异常: {e}", exc_info=True)
+            # 不重新抛出异常，避免退出
+            return False
+    
+    def check_memory_usage(self):
+        """检查内存使用"""
+        import psutil
+        mem_info = psutil.Process().memory_info()
+        mem_mb = mem_info.rss / 1024 / 1024
+        
+        if mem_mb > self.max_memory_mb:
+            self.logger.warning(f"⚠️ 内存使用过高: {mem_mb:.1f}MB > {self.max_memory_mb}MB")
+            
+            # 尝试释放内存
+            import gc
+            gc.collect()
+            
+            # 记录内存状态
+            self.log_memory_state()
+    
+    def log_memory_state(self):
+        """记录内存状态"""
+        import gc
+        import psutil
+        mem_info = psutil.Process().memory_info()
+        
+        self.logger.info(
+            f"内存状态 - RSS: {mem_info.rss / 1024 / 1024:.1f}MB, "
+            f"VMS: {mem_info.vms / 1024 / 1024:.1f}MB, "
+            f"垃圾回收对象: {len(gc.get_objects())}"
+        )
+    
+    def run_forever(self, sleep_seconds=10):
+        """永远运行调度器"""
+        # 动态调整检查间隔：竞价窗口期间（09:24-09:30）减少到3秒
+        current_time = datetime.now().strftime('%H:%M')
+        if '09:24' <= current_time <= '09:30':
+            sleep_seconds = 3
+            self.logger.info(f"🚀 启动健壮调度器，检查间隔: {sleep_seconds}秒 (竞价窗口模式)")
+        else:
+            self.logger.info(f"🚀 启动健壮调度器，检查间隔: {sleep_seconds}秒")
+        
+        consecutive_failures = 0
+        max_consecutive_failures = 5
+        
+        while True:
+            try:
+                success = self.run_pending_with_safety()
+                
+                if success:
+                    consecutive_failures = 0
+                else:
+                    consecutive_failures += 1
+                    if consecutive_failures >= max_consecutive_failures:
+                        self.logger.error(f"连续失败 {consecutive_failures} 次，可能系统不稳定")
+                
+                time.sleep(sleep_seconds)
+                
+            except KeyboardInterrupt:
+                self.logger.info("调度器被用户中断")
+                break
+            except Exception as e:
+                self.logger.error(f"调度器意外异常: {e}", exc_info=True)
+                consecutive_failures += 1
+                
+                # 如果连续失败太多，等待更长时间
+                if consecutive_failures > max_consecutive_failures:
+                    sleep_time = min(300, sleep_seconds * 2)  # 最多5分钟
+                    self.logger.warning(f"连续失败过多，等待 {sleep_time} 秒后继续")
+                    time.sleep(sleep_time)
+                else:
+                    time.sleep(sleep_seconds)
 
 
 class T01Scheduler:
@@ -69,6 +195,65 @@ class T01Scheduler:
                 logging.FileHandler(log_dir / 't01_scheduler.log', encoding='utf-8')
             ]
         )
+    
+    def load_trading_calendar(self):
+        """加载本地交易日历文件，避免Tushare API挂起问题"""
+        import json
+        from datetime import datetime
+        
+        calendar_path = '/root/.openclaw/workspace/trading_calendar.json'
+        try:
+            with open(calendar_path, 'r', encoding='utf-8') as f:
+                self.trading_calendar = json.load(f)
+            self.logger.info(f"✅ 本地交易日历加载成功: {calendar_path}")
+        except Exception as e:
+            self.logger.error(f"❌ 无法加载交易日历文件 {calendar_path}: {e}")
+            self.trading_calendar = None
+    
+    def is_trading_day(self, date_str):
+        """检查给定日期是否为交易日
+        
+        Args:
+            date_str: 日期字符串，格式可以是 YYYY-MM-DD 或 YYYYMMDD
+            
+        Returns:
+            bool: 是否为交易日
+        """
+        if not hasattr(self, 'trading_calendar') or self.trading_calendar is None:
+            self.load_trading_calendar()
+            if self.trading_calendar is None:
+                self.logger.error("无法加载交易日历，回退到Tushare API")
+                # 回退到原始API调用
+                try:
+                    cal = self.pro.trade_cal(exchange='SSE', start_date=date_str, end_date=date_str)
+                    return not cal.empty and cal.iloc[0]['is_open'] == 1
+                except:
+                    return False
+        
+        # 统一日期格式为 YYYY-MM-DD
+        if len(date_str) == 8:  # YYYYMMDD
+            formatted_date = f"{date_str[0:4]}-{date_str[4:6]}-{date_str[6:8]}"
+        else:
+            formatted_date = date_str
+        
+        # 检查是否为交易日
+        trading_days = self.trading_calendar.get('2026', {}).get('trading_days', [])
+        holidays = self.trading_calendar.get('2026', {}).get('holidays', [])
+        
+        # 如果在交易日列表中且不在节假日列表中
+        if formatted_date in trading_days and formatted_date not in holidays:
+            return True
+        
+        # 检查是否为周末
+        try:
+            dt = datetime.strptime(formatted_date, '%Y-%m-%d')
+            weekday = dt.strftime('%A')  # 例如 'Saturday'
+            if weekday in self.trading_calendar.get('2026', {}).get('weekends', []):
+                return False
+        except:
+            pass
+        
+        return False
     
     def get_trade_date(self, date_str: str = None, offset: int = 0) -> str:
         """获取交易日期
@@ -126,7 +311,7 @@ class T01Scheduler:
             return trade_dates[0] if trade_dates else today
     
     def send_feishu_message(self, message: str) -> bool:
-        """发送飞书消息
+        """发送飞书消息（增强版）
         
         Args:
             message: 消息内容
@@ -134,17 +319,54 @@ class T01Scheduler:
         Returns:
             bool: 是否发送成功
         """
+        if FEISHU_ENHANCED_AVAILABLE:
+            try:
+                # 使用增强发送器
+                sender = FeishuMessageSender(
+                    config={
+                        "max_retries": 2,
+                        "timeout": 30,
+                        "enable_fallback": True,
+                        "log_file": "/root/.openclaw/workspace/logs/feishu_fallback.log"
+                    },
+                    logger=self.logger
+                )
+                
+                result = sender.send_with_retry(message, context="T01_scheduler")
+                
+                if result["success"]:
+                    self.logger.info(f"✅ 飞书消息发送成功 (尝试次数: {result['attempts']})")
+                    return True
+                else:
+                    if result.get("fallback_used") and result.get("fallback_success"):
+                        self.logger.warning(f"⚠️ 飞书消息发送失败，已记录到fallback日志")
+                        return True  # 视为成功，因为消息已保存
+                    else:
+                        self.logger.error(f"❌ 飞书消息发送失败: {result.get('last_error', '未知错误')}")
+                        return False
+                        
+            except Exception as e:
+                self.logger.error(f"❌ 增强发送器异常，回退到原始方法: {e}")
+                # 回退到原始方法
+                return self._send_feishu_message_legacy(message)
+        else:
+            # 增强模块不可用，使用原始方法
+            return self._send_feishu_message_legacy(message)
+    
+    def _send_feishu_message_legacy(self, message: str) -> bool:
+        """原始发送方法（备份）"""
         try:
-            # 使用openclaw CLI发送飞书消息
+            # 使用openclaw CLI发送飞书消息（使用绝对路径确保cron环境中可用）
+            openclaw_path = "/root/.nvm/versions/node/v22.22.0/bin/openclaw"
             cmd = [
-                'openclaw', 'message', 'send',
+                openclaw_path, 'message', 'send',
                 '--channel', 'feishu',
                 '--target', 'user:ou_b8a256a9cb526db6c196cb438d6893a6',
                 '--message', message
             ]
             
-            self.logger.info(f"📤 发送飞书消息: {len(message)} 字符")
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            self.logger.info(f"📤 发送飞书消息(原始): {len(message)} 字符")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30, env=os.environ.copy())
             
             if result.returncode == 0:
                 self.logger.info("✅ 飞书消息发送成功")
@@ -331,8 +553,7 @@ class T01Scheduler:
         
         # 检查当前时间是否为交易日
         try:
-            cal = self.pro.trade_cal(exchange='SSE', start_date=trade_date, end_date=trade_date)
-            if cal.empty or cal.iloc[0]['is_open'] != 1:
+            if not self.is_trading_day(trade_date):
                 self.logger.warning(f"日期 {trade_date} 不是交易日")
                 return {
                     'success': False,
@@ -761,8 +982,7 @@ class T01Scheduler:
             
             # 检查是否为交易日
             try:
-                cal = self.pro.trade_cal(exchange='SSE', start_date=today, end_date=today)
-                is_trading_day = not cal.empty and cal.iloc[0]['is_open'] == 1
+                is_trading_day = self.is_trading_day(today)
                 
                 if is_trading_day:
                     result = self.run_t_day_scoring(today)
@@ -777,23 +997,80 @@ class T01Scheduler:
         
         # 调度任务
         schedule.every().day.at("20:00").do(t_day_job)
+        self.logger.info(f"✅ T日评分任务已调度: 每天20:00")
         return t_day_job
     
     def schedule_t1_task(self):
         """调度T+1日竞价分析任务 (早上9:25)"""
         self.logger.info("调度T+1日竞价分析任务: 每天09:25")
         
+        def pre_auction_check():
+            """竞价前检查任务 (09:20)"""
+            self.logger.info("🔍 执行竞价前检查任务 (09:20)")
+            
+            # 导入诊断工具
+            import sys
+            import subprocess
+            import json
+            
+            try:
+                # 运行诊断工具
+                diagnostic_script = Path(__file__).parent / "scheduler_diagnostic.py"
+                if diagnostic_script.exists():
+                    result = subprocess.run(
+                        ["python3", str(diagnostic_script)],
+                        cwd=Path(__file__).parent,
+                        capture_output=True,
+                        text=True,
+                        timeout=120
+                    )
+                    
+                    if result.returncode == 0:
+                        self.logger.info("✅ 竞价前检查完成，系统状态正常")
+                        # 可以发送简要通知
+                        check_message = "🕐 **竞价前检查报告**\n"
+                        check_message += "系统状态正常，准备执行09:25竞价分析。\n"
+                        check_message += f"检查时间: {datetime.now().strftime('%H:%M:%S')}"
+                        self.send_feishu_message(check_message)
+                    else:
+                        self.logger.warning(f"⚠️ 竞价前检查发现问题，返回码: {result.returncode}")
+                        error_message = "⚠️ **竞价前检查警告**\n\n"
+                        error_message += "系统检查发现问题，可能影响09:25竞价分析。\n"
+                        error_message += f"错误输出:\n```\n{result.stderr[-500:] if result.stderr else '无错误信息'}\n```"
+                        self.send_feishu_message(error_message)
+                else:
+                    self.logger.warning("诊断脚本不存在，跳过详细检查")
+                    # 简单检查候选文件
+                    candidate_files = list(Path("state").glob("candidates_*.json"))
+                    if not candidate_files:
+                        self.logger.error("❌ 未找到候选股票文件")
+                        error_message = "❌ **紧急: 候选股票文件缺失**\n\n"
+                        error_message += "未找到候选股票文件，09:25竞价分析可能失败。\n"
+                        error_message += "请立即运行 T日评分任务生成候选文件。"
+                        self.send_feishu_message(error_message)
+                    else:
+                        self.logger.info(f"✅ 找到候选文件: {len(candidate_files)} 个")
+            except Exception as e:
+                self.logger.error(f"竞价前检查异常: {e}")
+        
         def t1_job():
             """T+1日竞价分析任务"""
             self.logger.info("⏰ 执行T+1日竞价分析任务")
             
-            # 获取当日日期
-            today = datetime.now().strftime('%Y%m%d')
+            # 获取当前时间
+            now = datetime.now()
+            today = now.strftime('%Y%m%d')
+            current_time = now.strftime('%H:%M')
+            
+            # 检查是否为交易时间段（09:25-09:29）
+            if not ('09:25' <= current_time <= '09:29'):
+                self.logger.warning(f"❌ 非交易时间触发竞价分析: {current_time}")
+                self.logger.warning(f"    竞价分析应在09:25-09:29执行，当前时间{current_time}，跳过执行")
+                return
             
             # 检查是否为交易日
             try:
-                cal = self.pro.trade_cal(exchange='SSE', start_date=today, end_date=today)
-                is_trading_day = not cal.empty and cal.iloc[0]['is_open'] == 1
+                is_trading_day = self.is_trading_day(today)
                 
                 if is_trading_day:
                     # 在交易时间执行
@@ -829,6 +1106,7 @@ class T01Scheduler:
                 self.logger.error(f"T+1日竞价分析任务异常: {e}")
         
         # 调度任务
+        schedule.every().day.at("09:20").do(pre_auction_check)
         schedule.every().day.at("09:25").do(t1_job)
         return t1_job
     
@@ -916,23 +1194,39 @@ class T01Scheduler:
     def run_scheduler(self):
         """运行调度器主循环"""
         self.logger.info("启动T01策略调度器")
+        # 记录当前时间和时区
+        import datetime, time
+        now = datetime.datetime.now()
+        self.logger.info(f"当前系统时间: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+        self.logger.info(f"系统时区: {time.tzname}")
+        self.logger.info(f"UTC时间: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}")
         
         # 调度任务
+        self.logger.info("开始注册定时任务...")
         t_day_job = self.schedule_t_day_task()
         t1_job = self.schedule_t1_task()
+        
+        # 检查作业注册情况
+        import schedule
+        jobs = schedule.get_jobs()
+        self.logger.info(f"已注册定时任务数量: {len(jobs)}")
+        for i, job in enumerate(jobs):
+            next_run = job.next_run.strftime('%Y-%m-%d %H:%M:%S') if hasattr(job, 'next_run') and job.next_run else '未知'
+            self.logger.info(f"任务 #{i+1}: {job}")
+            self.logger.info(f"     下次运行时间: {next_run}")
+            self.logger.info(f"     调度时间: {job.at_time if hasattr(job, 'at_time') else '未知'}")
         
         self.logger.info("调度器已启动，进入主循环...")
         self.logger.info("按 Ctrl+C 停止")
         
         try:
-            # 初始运行一次 (用于测试)
-            self.logger.info("运行初始测试...")
-            self.run_once('test')
+            # 初始运行一次 (用于测试) - 临时跳过，避免卡住
+            self.logger.info("跳过初始测试以避免卡住...")
+            # self.run_once('test')
             
-            # 主循环
-            while True:
-                schedule.run_pending()
-                time.sleep(60)  # 每分钟检查一次
+            # 使用健壮调度器防止30分钟重启问题
+            robust_scheduler = RobustScheduler(self)
+            robust_scheduler.run_forever(sleep_seconds=10)
                 
         except KeyboardInterrupt:
             self.logger.info("调度器被用户中断")

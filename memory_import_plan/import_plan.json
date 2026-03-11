@@ -1,0 +1,186 @@
+{
+  "generated_at": "2026-03-02T03:39:16.898188",
+  "total_files": 30,
+  "files": [
+    {
+      "path": "/root/.openclaw/workspace/SOUL.md",
+      "type": "core_identity",
+      "category": "identity",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/USER.md",
+      "type": "core_identity",
+      "category": "identity",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/AGENTS.md",
+      "type": "core_identity",
+      "category": "identity",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/MEMORY.md",
+      "type": "core_identity",
+      "category": "identity",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/TOOLS.md",
+      "type": "core_identity",
+      "category": "identity",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/HEARTBEAT.md",
+      "type": "core_identity",
+      "category": "identity",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/IDENTITY.md",
+      "type": "core_identity",
+      "category": "identity",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/task_registry.json",
+      "type": "task_registry",
+      "category": "context/projects",
+      "priority": 1
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-25.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-03-01.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-28.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-27.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-26.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-25.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-24.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-23.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-22.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-21.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/memory/2026-02-20.md",
+      "type": "daily_log",
+      "category": "context/daily",
+      "priority": 2
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/agent-browser/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/macro-monitor/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/proactive-agent/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/tushare-finance/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/imap-smtp-email/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/a-share-short-decision/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/tavily-search/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/summarize/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/self-improving-agent/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/playwright-scraper-skill/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    },
+    {
+      "path": "/root/.openclaw/workspace/skills/moa/SKILL.md",
+      "type": "skill",
+      "category": "knowledge/skills",
+      "priority": 3
+    }
+  ]
+}

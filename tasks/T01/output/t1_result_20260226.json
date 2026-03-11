@@ -1,0 +1,213 @@
+{
+  "generated_at": "2026-03-01T01:28:25.450349",
+  "trade_date": "20260226",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "002470.SZ",
+        "name": "金正大",
+        "industry": "农化制品",
+        "total_score": 79.07,
+        "seal_ratio": 2.907,
+        "turnover_rate": 0,
+        "first_time": "92500",
+        "limit_times": 3,
+        "fd_amount": 240830256.0,
+        "float_mv": 9265813355.94,
+        "amount": 82844406.0,
+        "trade_date": "20260226"
+      },
+      {
+        "ts_code": "002272.SZ",
+        "name": "川润股份",
+        "industry": "通用设备",
+        "total_score": 61.02,
+        "seal_ratio": 0.1017,
+        "turnover_rate": 0,
+        "first_time": "101906",
+        "limit_times": 1,
+        "fd_amount": 157032145.0,
+        "float_mv": 7424527610.08,
+        "amount": 1544470176.0,
+        "trade_date": "20260226"
+      },
+      {
+        "ts_code": "002095.SZ",
+        "name": "生 意 宝",
+        "industry": "数字媒体",
+        "total_score": 57.4,
+        "seal_ratio": 0.1921,
+        "turnover_rate": 0,
+        "first_time": "104657",
+        "limit_times": 1,
+        "fd_amount": 77932240.0,
+        "float_mv": 5034168300.0,
+        "amount": 405601472.0,
+        "trade_date": "20260226"
+      },
+      {
+        "ts_code": "600410.SH",
+        "name": "华胜天成",
+        "industry": "IT服务Ⅱ",
+        "total_score": 56.8,
+        "seal_ratio": 0.069,
+        "turnover_rate": 0,
+        "first_time": "104414",
+        "limit_times": 1,
+        "fd_amount": 481701970.0,
+        "float_mv": 29901410005.41,
+        "amount": 6977767936.0,
+        "trade_date": "20260226"
+      },
+      {
+        "ts_code": "300943.SZ",
+        "name": "春晖智控",
+        "industry": "通用设备",
+        "total_score": 56.19,
+        "seal_ratio": 0.1188,
+        "turnover_rate": 0,
+        "first_time": "112954",
+        "limit_times": 1,
+        "fd_amount": 118514173.0,
+        "float_mv": 5190908689.68,
+        "amount": 997444912.0,
+        "trade_date": "20260226"
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "002470.SZ",
+      "name": "金正大",
+      "t_date": "20260226",
+      "t1_date": "20260227",
+      "t_day_score": 79.07,
+      "auction_score": 82.3758865248227,
+      "final_score": 80.0617659574468,
+      "auction_data": {
+        "open_change_pct": 4.964539007092203,
+        "auction_volume_ratio": 31.3999,
+        "auction_turnover_rate": 1.69925,
+        "auction_amount": 165266272.0,
+        "auction_volume_to_t_volume": 190.05462319073382,
+        "auction_volume": 55833200.0,
+        "t_day_volume": 293774.49,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价高开(3-5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "002546.SZ",
+      "name": "新联电子",
+      "t_date": "20260226",
+      "t1_date": "20260227",
+      "t_day_score": 52.96,
+      "auction_score": 54.44574210992368,
+      "final_score": 53.4057226329771,
+      "auction_data": {
+        "open_change_pct": 2.1946564885496223,
+        "auction_volume_ratio": 2.97342,
+        "auction_turnover_rate": 0.28757,
+        "auction_amount": 24676911.0,
+        "auction_volume_to_t_volume": 2.6862068541795505,
+        "auction_volume": 2304100.0,
+        "t_day_volume": 857752.26,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.06,
+        "confidence": "低",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价量比放大(2-3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "观望"
+      }
+    },
+    {
+      "ts_code": "001400.SZ",
+      "name": "江顺科技",
+      "t_date": "20260226",
+      "t1_date": "20260227",
+      "t_day_score": 52.65,
+      "auction_score": 50.33731350327246,
+      "final_score": 51.956194050981736,
+      "auction_data": {
+        "open_change_pct": 2.0496038580778464,
+        "auction_volume_ratio": 3.69839,
+        "auction_turnover_rate": 0.474,
+        "auction_amount": 8425350.0,
+        "auction_volume_to_t_volume": 2.782886695022625,
+        "auction_volume": 71100.0,
+        "t_day_volume": 25549.01,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.06,
+        "confidence": "低",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "观望"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2641396664216.0,
+    "margin_balance": 17064449038.0,
+    "financing_change_pct": 0.4369290937422215,
+    "margin_change_pct": 2.0573014849637805,
+    "financing_buy_repay_ratio": 1.0863733137576683,
+    "market_data": {
+      "trade_date": "20260226",
+      "total_financing_balance": 2641396664216.0,
+      "total_margin_balance": 17064449038.0,
+      "total_financing_margin_balance": 2658461113254.0,
+      "financing_change_ratio": 0.4369290937422215,
+      "margin_change_ratio": 2.0573014849637805,
+      "financing_buy_ratio": 1.0863733137576683,
+      "sse_data": {
+        "financing_balance": 1339956696186.0,
+        "financing_buy": 118417406073.0,
+        "financing_repay": 109019990812.0,
+        "margin_balance": 11463801463.0,
+        "margin_sell": 104426687.0,
+        "total_balance": 1351420497649.0,
+        "margin_remaining": 2183697747.0
+      },
+      "szse_data": {
+        "financing_balance": 1301439968030.0,
+        "financing_buy": 136919510982.0,
+        "financing_repay": 126016081799.0,
+        "margin_balance": 5600647575.0,
+        "margin_sell": 37753638.0,
+        "total_balance": 1307040615605.0,
+        "margin_remaining": 682658060.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": false
+}

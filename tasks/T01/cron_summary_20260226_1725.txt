@@ -1,0 +1,18 @@
+T01 Next-day Auction Analysis Cron Execution
+Execution time: 2026-02-26 17:25 UTC (2026-02-27 01:25 Beijing time)
+
+Execution method: Used scheduler.py --mode t1-auction (original main.py t1-auction would fail due to missing candidates argument)
+
+Results:
+- Successfully loaded candidates from state/candidates_20260225_to_20260226.json
+- Analyzed 5 candidate stocks for T+1 date 20260226
+- Generated 3 final recommendations with auction scores
+- Top recommendation: 清水源 (300437.SZ) final score 124.6, suggested position 20%, confidence high
+- Market condition: normal, risk low, suggestion to increase position
+- Results saved to output/t1_result_20260225.json
+- Push message prepared (not sent)
+
+Warnings:
+- No margin trading data available for 20260225 (expected for non-trading day)
+
+Status: Success

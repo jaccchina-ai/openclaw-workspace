@@ -42,7 +42,8 @@ machine_learning:
   self_evolution:
     enabled: true
     optimization_cycles: 3
-    review_interval: 30
+    # 进化方案：改为每周反思 (原为30天)
+    review_interval: 7
   training:
     cross_validation: 5
     early_stopping: 10
@@ -68,14 +69,18 @@ performance_tracking:
   min_trades_for_statistics: 20
   sell_price: 收盘价
   sell_time: T+2日15:00
+  # 进化方案：成功标准 (T+2收盘/T+1开盘 > 1.03%)
+  success_threshold: 1.03
+  # 预警机制：连续无选股天数监控
+  no_selection_warning_threshold: 3
 strategy:
   output:
     final_recommendation_count: 3
     include_position: true
     include_reasons: true
-    top_n_candidates: 5
+    top_n_candidates: 10
   sentiment_analysis:
-    enabled: true
+    enabled: false
     top_n_for_analysis: 10  # 只对前N名进行舆情分析
     days_back: 1
     max_news_per_stock: 5
@@ -118,4 +123,14 @@ system_optimization:
     risk_parameters: true
     score_weights: true
     thresholds: true
-version: 1.2.0
+  # 进化方案：预警与监控
+  warnings:
+    # 策略失效预警：连续3天无选股
+    strategy_failure_warning: true
+    no_selection_days_threshold: 3
+    # 因子失效预警：IC值 < 0.03
+    factor_decay_warning: true
+    factor_ic_threshold: 0.03
+    # 系统健康预警
+    system_health_warning: true
+version: 1.3.0

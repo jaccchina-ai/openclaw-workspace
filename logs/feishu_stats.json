@@ -1,0 +1,8 @@
+{
+  "total_sent": 1,
+  "total_failed": 1,
+  "total_retries": 2,
+  "last_success": null,
+  "last_failure": "2026-03-11T20:07:23.854399",
+  "consecutive_failures": 1
+}

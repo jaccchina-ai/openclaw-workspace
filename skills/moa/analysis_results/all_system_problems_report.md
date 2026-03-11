@@ -1,0 +1,1 @@
+Error: OPENROUTER_API_KEY environment variable not set

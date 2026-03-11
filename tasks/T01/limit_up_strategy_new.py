@@ -13,35 +13,12 @@ import tushare as ts
 import os
 import sys
 
-# 尝试导入舆情分析模块
-try:
-    # 添加当前目录到路径，确保可以导入舆情分析模块
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, current_dir)
-    
-    # 优先尝试导入混合舆情分析器
-    try:
-        from hybrid_sentiment_analyzer import HybridSentimentAnalyzer
-        HAS_HYBRID_SENTIMENT_MODULE = True
-        HAS_SENTIMENT_MODULE = True
-        logger.info("混合舆情分析器模块可用")
-    except ImportError:
-        # 回退到原 Tavily 分析器
-        try:
-            from news_sentiment_test import NewsSentimentAnalyzer
-            HAS_HYBRID_SENTIMENT_MODULE = False
-            HAS_SENTIMENT_MODULE = True
-            logger.info("原 Tavily 舆情分析器模块可用")
-        except ImportError:
-            HAS_HYBRID_SENTIMENT_MODULE = False
-            HAS_SENTIMENT_MODULE = False
-            logger.info("舆情分析模块不可用")
-except Exception as e:
-    logger.warning(f"初始化舆情分析模块失败: {e}")
-    HAS_HYBRID_SENTIMENT_MODULE = False
-    HAS_SENTIMENT_MODULE = False
-
 logger = logging.getLogger(__name__)
+
+# T01严格使用Tushare API - 禁用所有非Tushare数据源
+HAS_HYBRID_SENTIMENT_MODULE = False
+HAS_SENTIMENT_MODULE = False
+logger.info("T01策略初始化 - 严格使用Tushare API数据源")
 
 
 class LimitUpScoringStrategyV2:
@@ -72,44 +49,16 @@ class LimitUpScoringStrategyV2:
         self.t1_weights = self.strategy_config.get('t1_auction_scoring', {})
         self.risk_config = self.strategy_config.get('risk_control', {})
         
-        # 舆情分析配置
+        # 舆情分析配置 - T01严格使用Tushare API，禁用所有非Tushare数据源
         self.sentiment_config = self.strategy_config.get('sentiment_analysis', {})
-        self.sentiment_enabled = self.sentiment_config.get('enabled', True)
-        self.sentiment_top_n = self.sentiment_config.get('top_n_for_analysis', 10)
-        self.sentiment_days_back = self.sentiment_config.get('days_back', 1)
+        self.sentiment_enabled = False  # 强制禁用，只使用Tushare数据源
+        self.sentiment_top_n = 0
+        self.sentiment_days_back = 0
         
-        # 舆情分析器初始化
-        self.enable_sentiment = self.sentiment_enabled and HAS_SENTIMENT_MODULE
+        # 舆情分析器初始化 - 强制禁用
+        self.enable_sentiment = False
         self.sentiment_analyzer = None
-        
-        if self.enable_sentiment:
-            try:
-                # 优先使用混合舆情分析器
-                if HAS_HYBRID_SENTIMENT_MODULE:
-                    # 混合分析器不需要TAVILY_API_KEY，但如果有的话会使用
-                    self.sentiment_analyzer = HybridSentimentAnalyzer()
-                    analyzer_type = "混合舆情分析器"
-                else:
-                    # 回退到原 Tavily 分析器
-                    if os.environ.get('TAVILY_API_KEY'):
-                        self.sentiment_analyzer = NewsSentimentAnalyzer()
-                        analyzer_type = "Tavily 舆情分析器"
-                    else:
-                        logger.info("TAVILY_API_KEY未设置，Tavily 分析器不可用")
-                        self.enable_sentiment = False
-                        analyzer_type = None
-                
-                if self.sentiment_analyzer:
-                    logger.info(f"{analyzer_type}初始化成功，将对前{self.sentiment_top_n}名进行舆情分析")
-                
-            except Exception as e:
-                logger.warning(f"舆情分析器初始化失败: {e}")
-                self.enable_sentiment = False
-        else:
-            if not HAS_SENTIMENT_MODULE:
-                logger.info("舆情分析模块不可用，跳过舆情分析")
-            elif not self.sentiment_enabled:
-                logger.info("舆情分析功能已禁用")
+        logger.info("T01策略: 舆情分析功能已强制禁用（只使用Tushare API数据源）")
         
         logger.info("涨停股评分策略V2初始化完成")
     
@@ -1051,6 +1000,12 @@ class LimitUpScoringStrategyV2:
                         continue
                     
                     logger.debug(f"股票 {ts_code}: 使用{data_source}竞价数据，开盘涨幅: {open_change:.2f}%")
+                    
+                    # 策略更新：竞价涨幅小于1%的股票直接剔除
+                    if open_change < 1.0:
+                        logger.info(f"股票 {ts_code} 竞价涨幅 {open_change:.2f}% < 1%，直接剔除")
+                        continue
+                    
                     auction_score = self._calculate_auction_score(auction_data)
                 else:
                     # 无法获取竞价数据

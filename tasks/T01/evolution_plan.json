@@ -1,0 +1,183 @@
+{
+  "version": "1.0",
+  "created_date": "2026-03-11",
+  "last_updated": "2026-03-11",
+  "overall_match_rate": 0.93,
+  "phases": [
+    {
+      "phase": "phase1",
+      "name": "立即优化阶段",
+      "description": "基于93%匹配度的比对结果，完善MoA集成、因子正交化、预警系统",
+      "start_date": "2026-03-11",
+      "target_end_date": "2026-03-13",
+      "duration_days": 2,
+      "priority": "P0",
+      "modules": [
+        {
+          "name": "MoA自动调用机制",
+          "status": "pending",
+          "description": "配置每周五自动调用MoA进行策略深度反思",
+          "progress": 0,
+          "dependencies": ["moa_skill"]
+        },
+        {
+          "name": "因子正交化实现", 
+          "status": "pending",
+          "description": "实现PCA主成分分析，提取独立因子信息",
+          "progress": 0,
+          "dependencies": ["numpy", "scikit-learn"]
+        },
+        {
+          "name": "预警系统优化",
+          "status": "pending",
+          "description": "确保连续无选股预警100%可靠",
+          "progress": 0,
+          "dependencies": ["no_selection_warning.py"]
+        }
+      ],
+      "success_criteria": "MoA调用正常、因子正交化模块可用、预警系统稳定"
+    },
+    {
+      "phase": "phase2",
+      "name": "中期增强阶段",
+      "description": "深度因子挖掘、实时IC监控、自动化进化流程",
+      "start_date": "2026-03-14",
+      "target_end_date": "2026-03-28",
+      "duration_days": 14,
+      "priority": "P1",
+      "modules": [
+        {
+          "name": "深度因子挖掘",
+          "status": "pending",
+          "description": "增加更多技术指标和基本面因子挖掘",
+          "progress": 0,
+          "dependencies": ["phase1", "tushare_api"]
+        },
+        {
+          "name": "实时IC监控",
+          "status": "pending",
+          "description": "实现每日因子IC值计算和自动预警",
+          "progress": 0,
+          "dependencies": ["phase1"]
+        },
+        {
+          "name": "自动化进化流程",
+          "status": "pending",
+          "description": "完全自动化策略优化流程",
+          "progress": 0,
+          "dependencies": ["phase1", "machine_learning.py"]
+        }
+      ],
+      "success_criteria": "因子库扩展至50+、IC监控每日运行、进化流程全自动"
+    },
+    {
+      "phase": "phase3",
+      "name": "长期进化阶段",
+      "description": "多策略并行、市场适应性、风险控制增强",
+      "start_date": "2026-03-29",
+      "target_end_date": "2026-04-29",
+      "duration_days": 31,
+      "priority": "P2",
+      "modules": [
+        {
+          "name": "多策略并行",
+          "status": "pending",
+          "description": "探索不同的选股策略变体",
+          "progress": 0,
+          "dependencies": ["phase2"]
+        },
+        {
+          "name": "市场适应性",
+          "status": "pending",
+          "description": "根据市场环境动态调整策略",
+          "progress": 0,
+          "dependencies": ["phase2"]
+        },
+        {
+          "name": "风险控制增强",
+          "status": "pending",
+          "description": "更精细的风险管理和仓位控制",
+          "progress": 0,
+          "dependencies": ["phase2"]
+        }
+      ],
+      "success_criteria": "3种策略变体、市场环境检测准确率>80%、风险控制覆盖度100%"
+    }
+  ],
+  "implementation_checkpoints": [
+    {
+      "date": "2026-03-12",
+      "check": "phase1模块开发开始"
+    },
+    {
+      "date": "2026-03-13", 
+      "check": "phase1完成MoA集成和预警优化"
+    },
+    {
+      "date": "2026-03-18",
+      "check": "phase2完成因子挖掘框架"
+    },
+    {
+      "date": "2026-03-25",
+      "check": "phase2完成自动化进化流程"
+    },
+    {
+      "date": "2026-04-08",
+      "check": "phase3完成市场适应性模块"
+    },
+    {
+      "date": "2026-04-22",
+      "check": "phase3完成风险评估系统"
+    },
+    {
+      "date": "2026-04-29",
+      "check": "完整T01进化系统上线"
+    }
+  ],
+  "matching_analysis": {
+    "modules": [
+      {
+        "name": "策略选股成功标准",
+        "proposed": "T+2收盘/T+1开盘 > 1.03%判定成功",
+        "implemented": "config.yaml中success_threshold: 1.03",
+        "match_rate": 1.0,
+        "status": "completed"
+      },
+      {
+        "name": "策略反思",
+        "proposed": "保存数据，每周MoA反思，结合机器学习优化",
+        "implemented": "数据保存已实现，每周反思配置review_interval: 7",
+        "match_rate": 0.9,
+        "status": "in_progress"
+      },
+      {
+        "name": "机器学习",
+        "proposed": "因子权重优化、IC值监控、正交化、Alpha挖掘等",
+        "implemented": "5个子功能中4个已实现，1个部分实现",
+        "match_rate": 0.85,
+        "status": "in_progress"
+      },
+      {
+        "name": "连续3天无选股预警",
+        "proposed": "连续3天无选股触发'策略失效预警'",
+        "implemented": "no_selection_warning_threshold: 3，脚本已运行",
+        "match_rate": 1.0,
+        "status": "completed"
+      },
+      {
+        "name": "基于交易数据的权重优化",
+        "proposed": "盈利/亏损交易分析，遗传算法优化",
+        "implemented": "绩效跟踪已实现，遗传算法已配置",
+        "match_rate": 0.95,
+        "status": "in_progress"
+      },
+      {
+        "name": "因子发现与权重调优",
+        "proposed": "相关性分析阈值0.8，每周自动优化",
+        "implemented": "correlation_threshold: 0.8，optimize_frequency: weekly",
+        "match_rate": 1.0,
+        "status": "completed"
+      }
+    ]
+  }
+}

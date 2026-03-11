@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-25T05:22:26.040568",
+  "generated_at": "2026-02-26T00:34:02.598654",
   "trade_date": "20240221",
   "t_day_summary": {
     "total_candidates": 5,
@@ -20,7 +20,7 @@
           "money_flow": 10.0,
           "sector": 3.0,
           "dragon_list": 100.0,
-          "sentiment": 0
+          "sentiment": 0.0
         },
         "first_limit_time": "93912",
         "seal_ratio": 0.2899248641510697,
@@ -54,7 +54,7 @@
           "money_flow": 9.0,
           "sector": 3.0,
           "dragon_list": 93.7,
-          "sentiment": 0
+          "sentiment": 0.0
         },
         "first_limit_time": "92503",
         "seal_ratio": 2.3243225377331913,
@@ -88,7 +88,7 @@
           "money_flow": 0,
           "sector": 3.0,
           "dragon_list": 91.44999999999999,
-          "sentiment": 0
+          "sentiment": 0.0
         },
         "first_limit_time": "94022",
         "seal_ratio": 1.182862045587817,
@@ -114,7 +114,7 @@
         "pct_chg": 20.0,
         "industry": "软件开发",
         "basic_score": 142.35474324758746,
-        "total_score": 147.35474324758746,
+        "total_score": 142.35474324758746,
         "score_details": {
           "first_limit_time": 30.0,
           "order_quality": 19.5664403217731,
@@ -122,7 +122,7 @@
           "money_flow": 10.0,
           "sector": 3.0,
           "dragon_list": 68.375,
-          "sentiment": 5.0
+          "sentiment": 0.0
         },
         "first_limit_time": "94439",
         "seal_ratio": 2.28322016088655,
@@ -138,7 +138,7 @@
         "medium_net_amount": -6563700.0,
         "is_hot_sector": false,
         "dragon_score": 68.375,
-        "sentiment_score": 5
+        "sentiment_score": 0
       },
       {
         "ts_code": "300781.SZ",
@@ -156,7 +156,7 @@
           "money_flow": 9.49,
           "sector": 3.0,
           "dragon_list": 72.0,
-          "sentiment": 0
+          "sentiment": 0.0
         },
         "first_limit_time": "92500",
         "seal_ratio": 0.2592975335650578,
@@ -183,23 +183,23 @@
       "t_date": "20240221",
       "t1_date": "20240222",
       "t_day_score": 165.90599470563762,
-      "auction_score": 56.44164829640316,
-      "final_score": 133.06669078286728,
+      "auction_score": 38.19863058405918,
+      "final_score": 127.59378546916409,
       "auction_data": {
-        "open_change_pct": 4.111405835543761,
-        "auction_volume_ratio": 2.46,
-        "auction_turnover_rate": 0.0,
-        "auction_amount": 18029319.68,
-        "auction_volume_to_t_volume": 16.337547947151585,
-        "auction_volume": 1150000.0,
+        "open_change_pct": 0.7806080525883372,
+        "auction_volume_ratio": 2.08874,
+        "auction_turnover_rate": 0.200121,
+        "auction_amount": 5278856.0,
+        "auction_volume_to_t_volume": 3.057252450632192,
+        "auction_volume": 215200.0,
         "t_day_volume": 70390.0,
-        "data_source": "history"
+        "data_source": "realtime"
       },
       "recommendation": {
         "position": 0.2,
         "confidence": "高",
         "reasons": [
-          "竞价高开(3-5%)",
+          "竞价小幅高开(0-3%)",
           "竞价量比放大(2-3)",
           "竞价成交量极强(>30%，热度高度延续)"
         ],
@@ -212,23 +212,23 @@
       "t_date": "20240221",
       "t1_date": "20240222",
       "t_day_score": 162.51407397316763,
-      "auction_score": 62.16921122274881,
-      "final_score": 132.41061514804198,
+      "auction_score": 28.32085104967606,
+      "final_score": 122.25610709612016,
       "auction_data": {
-        "open_change_pct": 9.952606635071088,
-        "auction_volume_ratio": 0.17,
-        "auction_turnover_rate": 0.0,
-        "auction_amount": 4137720.0,
-        "auction_volume_to_t_volume": 16.059464048816448,
-        "auction_volume": 594500.0,
+        "open_change_pct": 0.4319654427645888,
+        "auction_volume_ratio": 0.424994,
+        "auction_turnover_rate": 0.00593597,
+        "auction_amount": 272490.0,
+        "auction_volume_to_t_volume": 0.7914925090501631,
+        "auction_volume": 29300.0,
         "t_day_volume": 37018.67,
-        "data_source": "history"
+        "data_source": "realtime"
       },
       "recommendation": {
         "position": 0.2,
         "confidence": "高",
         "reasons": [
-          "竞价大幅高开(>5%)",
+          "竞价小幅高开(0-3%)",
           "竞价量比低迷(<0.5)",
           "竞价成交量极强(>30%，热度高度延续)"
         ],
@@ -241,23 +241,23 @@
       "t_date": "20240221",
       "t1_date": "20240222",
       "t_day_score": 151.54605583355044,
-      "auction_score": 82.2,
-      "final_score": 130.74223908348532,
+      "auction_score": 34.736703993908634,
+      "final_score": 116.5032502816579,
       "auction_data": {
-        "open_change_pct": 10.03627569528416,
-        "auction_volume_ratio": 0.55,
-        "auction_turnover_rate": 0.0,
-        "auction_amount": 50610918.4,
-        "auction_volume_to_t_volume": 19.993253330924308,
-        "auction_volume": 5561639.04,
+        "open_change_pct": 0.812182741116752,
+        "auction_volume_ratio": 1.61657,
+        "auction_turnover_rate": 0.0303784,
+        "auction_amount": 1069461.0,
+        "auction_volume_to_t_volume": 0.3871652525908168,
+        "auction_volume": 107700.0,
         "t_day_volume": 278175.79,
-        "data_source": "history"
+        "data_source": "realtime"
       },
       "recommendation": {
         "position": 0.2,
         "confidence": "高",
         "reasons": [
-          "竞价大幅高开(>5%)",
+          "竞价小幅高开(0-3%)",
           "竞价成交量极强(>30%，热度高度延续)"
         ],
         "action": "买入"

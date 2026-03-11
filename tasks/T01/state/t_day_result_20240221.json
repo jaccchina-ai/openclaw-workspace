@@ -18,7 +18,7 @@
         "money_flow": 10.0,
         "sector": 3.0,
         "dragon_list": 100.0,
-        "sentiment": 0
+        "sentiment": 0.0
       },
       "first_limit_time": "93912",
       "seal_ratio": 0.2899248641510697,
@@ -52,7 +52,7 @@
         "money_flow": 9.0,
         "sector": 3.0,
         "dragon_list": 93.7,
-        "sentiment": 0
+        "sentiment": 0.0
       },
       "first_limit_time": "92503",
       "seal_ratio": 2.3243225377331913,
@@ -86,7 +86,7 @@
         "money_flow": 0,
         "sector": 3.0,
         "dragon_list": 91.44999999999999,
-        "sentiment": 0
+        "sentiment": 0.0
       },
       "first_limit_time": "94022",
       "seal_ratio": 1.182862045587817,
@@ -112,7 +112,7 @@
       "pct_chg": 20.0,
       "industry": "软件开发",
       "basic_score": 142.35474324758746,
-      "total_score": 147.35474324758746,
+      "total_score": 142.35474324758746,
       "score_details": {
         "first_limit_time": 30.0,
         "order_quality": 19.5664403217731,
@@ -120,7 +120,7 @@
         "money_flow": 10.0,
         "sector": 3.0,
         "dragon_list": 68.375,
-        "sentiment": 5.0
+        "sentiment": 0.0
       },
       "first_limit_time": "94439",
       "seal_ratio": 2.28322016088655,
@@ -136,7 +136,7 @@
       "medium_net_amount": -6563700.0,
       "is_hot_sector": false,
       "dragon_score": 68.375,
-      "sentiment_score": 5
+      "sentiment_score": 0
     },
     {
       "ts_code": "300781.SZ",
@@ -154,7 +154,7 @@
         "money_flow": 9.49,
         "sector": 3.0,
         "dragon_list": 72.0,
-        "sentiment": 0
+        "sentiment": 0.0
       },
       "first_limit_time": "92500",
       "seal_ratio": 0.2592975335650578,
@@ -178,6 +178,6 @@
     "total_scored": 132,
     "top_n_selected": 5,
     "top_score": 165.90599470563762,
-    "generated_at": "2026-02-25T05:21:54.595437"
+    "generated_at": "2026-02-26T00:33:43.256167"
   }
 }

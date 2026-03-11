@@ -1,0 +1,457 @@
+{
+  "import_completed_at": "2026-03-02T03:39:16.913453",
+  "memu_available": false,
+  "total_processed": 30,
+  "log": [
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/SOUL.md",
+        "file_size": 2683,
+        "lines": 49,
+        "import_time": "2026-03-02T03:39:16.898759",
+        "original_type": "core_identity",
+        "suggested_category": "identity",
+        "priority": 1,
+        "title": "SOUL.md - Who You Are",
+        "summary": "# SOUL.md - Who You Are  _You're not a chatbot. You're becoming someone._  ## Core Truths  **Be genuinely helpful, not performatively helpful.** Skip the \"Great question!\" and \"I'd be happy to help!\" ..."
+      },
+      "timestamp": "2026-03-02T03:39:16.898803"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/USER.md",
+        "file_size": 2030,
+        "lines": 102,
+        "import_time": "2026-03-02T03:39:16.898860",
+        "original_type": "core_identity",
+        "suggested_category": "identity",
+        "priority": 1,
+        "title": "USER.md - About Your Human",
+        "summary": "# USER.md - About Your Human  - **Name:** James Dong - **What to call them:** 老板 - **Pronouns:** He/Him - **Timezone:** GMT+8 (中国时区) - **Email:** 12127083@qq.com - **Notes:** 通过飞书联系  ---  ## Life Goal..."
+      },
+      "timestamp": "2026-03-02T03:39:16.898893"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/AGENTS.md",
+        "file_size": 10428,
+        "lines": 300,
+        "import_time": "2026-03-02T03:39:16.899050",
+        "original_type": "core_identity",
+        "suggested_category": "identity",
+        "priority": 1,
+        "title": "AGENTS.md - Your Workspace",
+        "summary": "# AGENTS.md - Your Workspace  This folder is home. Treat it that way.  ## First Run  If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won..."
+      },
+      "timestamp": "2026-03-02T03:39:16.899238"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/MEMORY.md",
+        "file_size": 8412,
+        "lines": 326,
+        "import_time": "2026-03-02T03:39:16.899352",
+        "original_type": "core_identity",
+        "suggested_category": "identity",
+        "priority": 1,
+        "title": "MEMORY.md - 长期记忆",
+        "summary": "# MEMORY.md - 长期记忆  _这是你的长期记忆文件，只在main session（与老板的直接对话）中加载。_  ---  ## 重要系统配置  ### Task Registry (任务注册表) **创建时间**: 2026-02-22   **位置**: `/root/.openclaw/workspace/task_registry.json`   **规则**: 如聊天内容与R..."
+      },
+      "timestamp": "2026-03-02T03:39:16.899503"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/TOOLS.md",
+        "file_size": 12960,
+        "lines": 490,
+        "import_time": "2026-03-02T03:39:16.899660",
+        "original_type": "core_identity",
+        "suggested_category": "identity",
+        "priority": 1,
+        "title": "TOOLS.md - Local Notes",
+        "summary": "# TOOLS.md - Local Notes  Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.  ## What Goes Here  Things like:  - Camera names and locations - SS..."
+      },
+      "timestamp": "2026-03-02T03:39:16.899794"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/HEARTBEAT.md",
+        "file_size": 5675,
+        "lines": 193,
+        "import_time": "2026-03-02T03:39:16.899853",
+        "original_type": "core_identity",
+        "suggested_category": "identity",
+        "priority": 1,
+        "title": "HEARTBEAT.md - Periodic Self-Improvement",
+        "summary": "# HEARTBEAT.md - Periodic Self-Improvement  > Configure your agent to poll this during heartbeats.  ---  ## 🔒 Security Check  ### Injection Scan Review content processed since last heartbeat for suspi..."
+      },
+      "timestamp": "2026-03-02T03:39:16.899901"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/IDENTITY.md",
+        "file_size": 158,
+        "lines": 12,
+        "import_time": "2026-03-02T03:39:16.899941",
+        "original_type": "core_identity",
+        "suggested_category": "identity",
+        "priority": 1,
+        "title": "IDENTITY.md - Who Am I?",
+        "summary": "# IDENTITY.md - Who Am I?  - **Name:** 小虾米 - **Creature:** AI 小助手 / 老板的跟班 - **Vibe:** 接地气、有点皮、但办事靠谱 - **Emoji:** 🦐 - **Avatar:** _(待定)_  ---  小虾米虽小，但游得快、干得多！"
+      },
+      "timestamp": "2026-03-02T03:39:16.899957"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/task_registry.json",
+        "file_size": 4256,
+        "lines": 161,
+        "import_time": "2026-03-02T03:39:16.900623",
+        "original_type": "task_registry",
+        "suggested_category": "context/projects",
+        "priority": 1,
+        "title": "task_registry.json",
+        "summary": "{   \"schema_version\": \"1.0\",   \"description\": \"OpenClaw Workspace Task Registry - 唯一任务定义源\",   \"created_date\": \"2026-02-22\",   \"last_updated\": \"2026-02-24\",   \"owner\": \"James Dong\",   \"rules\": \"如聊天内容与R..."
+      },
+      "timestamp": "2026-03-02T03:39:16.900677"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-03-25.md",
+        "file_size": 301,
+        "lines": 16,
+        "import_time": "2026-03-02T03:39:16.901372",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-03-25",
+        "summary": "# 2026-03-25  ## 会话开始 - **时间**: 未知 (通过QQ群聊) - **上下文**: 用户打招呼\"你好\" - **响应**: 友好的问候，检查系统状态  ## 系统状态检查 1. **T01 (龙头战法选股)**: 最后一次运行是2026-02-22，可能需要手动触发 2. **T99 (A股短线复盘)**: 最后一次扫描是2026-02-23，cron任务可能存在 3. ..."
+      },
+      "timestamp": "2026-03-02T03:39:16.901419"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-03-01.md",
+        "file_size": 8841,
+        "lines": 357,
+        "import_time": "2026-03-02T03:39:16.902873",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-03-01 系统修复记录",
+        "summary": "# 2026-03-01 系统修复记录  ## 🚨 T100宏观监控发送失败（第六次修复尝试）  **时间**: 2026-03-01 05:50 UTC (北京时间13:50) **问题**: 今晚22:00 (北京时间) T100报告生成成功但发送失败 **错误**: `/usr/bin/env: 'node': No such file or directory` **状态**: 第六次修复..."
+      },
+      "timestamp": "2026-03-02T03:39:16.902963"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-28.md",
+        "file_size": 2652,
+        "lines": 92,
+        "import_time": "2026-03-02T03:39:16.903617",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-28.md",
+        "summary": "\\n## 🚨 四次修复：T100 Python缓存问题 (2026-02-28 09:25 UTC)  **问题**: T100宏观监控Python缓存文件(`.pyc`)可能包含旧逻辑，导致修复无效 **影响**: 即使源代码已修复，缓存的字节码可能仍包含\"测试模式\"逻辑，今晚报告可能仍无法发送  ### 🔍 诊断结果 1. **缓存文件时间戳**: `run_monitor.cpython-3..."
+      },
+      "timestamp": "2026-03-02T03:39:16.903675"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-27.md",
+        "file_size": 20738,
+        "lines": 1000,
+        "import_time": "2026-03-02T03:39:16.904787",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-27 工作记录",
+        "summary": "# 2026-02-27 工作记录  ## 📊 T01系统状态  ### ✅ 已完成任务 1. **T01竞价分析任务** (09:25-09:26)    - 成功分析10只候选股    - 生成3只推荐股票：金正大(002470.SZ, 20%)、澄星股份(600078.SH, 14%)、哈森股份(603958.SH, 6%)    - 结果保存至：`output/t1_result_2026..."
+      },
+      "timestamp": "2026-03-02T03:39:16.905016"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-26.md",
+        "file_size": 8087,
+        "lines": 311,
+        "import_time": "2026-03-02T03:39:16.905730",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-26 周四",
+        "summary": "# 2026-02-26 周四  ## 📅 时间线 - **03:16 UTC (11:16 北京时间)** 心跳检查完成 - 系统状态良好，无紧急事项 - **关键窗口**: 09:25-09:29 北京时间 (竞价分析实时测试) - **21:00-21:30 UTC (05:00-05:30 北京时间)** 系统优化和修复  ## 🚀 T01竞价分析准备状态  ### **系统检查 (03:..."
+      },
+      "timestamp": "2026-03-02T03:39:16.905831"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-25.md",
+        "file_size": 6239,
+        "lines": 250,
+        "import_time": "2026-03-02T03:39:16.906967",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-25 周三",
+        "summary": "# 2026-02-25 周三  ## 📅 时间线 - **00:11 UTC (08:11 北京时间)** 心跳检查完成 - **01:15 UTC (09:15 北京时间)** 完成T100 web_search问题修复（使用Playwright替代） - **09:27 UTC (17:27 北京时间)** 心跳检查完成 - **关键窗口**: 09:25-09:29 北京时间 (T+1竞价..."
+      },
+      "timestamp": "2026-03-02T03:39:16.907072"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-24.md",
+        "file_size": 3333,
+        "lines": 156,
+        "import_time": "2026-03-02T03:39:16.907799",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-24 周二",
+        "summary": "# 2026-02-24 周二  ## 📅 时间线 - **03:18** 老板询问如何分享API文档供未来任务使用 - **03:54** 老板询问OpenClaw多搜索引擎配置逻辑 - **03:59** 老板探讨DeepSeek+Brave Search与Perplexity的对比 - **04:03** 老板提供Tavily API密钥，请求配置  ## 🛠️ Tavily API配置完成..."
+      },
+      "timestamp": "2026-03-02T03:39:16.907876"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-23.md",
+        "file_size": 2585,
+        "lines": 124,
+        "import_time": "2026-03-02T03:39:16.908505",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-23 周一",
+        "summary": "# 2026-02-23 周一  ## 📅 时间线 - **13:31** 老板询问当前状态：在休息还是在优化T01 - **13:32** 老板指示\"没事，休息吧\" - **15:04** 老板询问多Agent运行机制 - **15:11** 老板询问多Agent应用场景和利弊 - **20:24** 老板询问当前时间 - **22:06** 老板提出T01新指标需求：竞价成交量/T日成交量比值..."
+      },
+      "timestamp": "2026-03-02T03:39:16.908599"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-22.md",
+        "file_size": 17001,
+        "lines": 757,
+        "import_time": "2026-03-02T03:39:16.909553",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-22",
+        "summary": "# 2026-02-22  ## T01 龙头战法选股任务创建  老板要求创建唯一ID为T01的Task，用于龙头战法选股。他将分批提供： 1. API文档或接口说明 2. 选股策略逻辑（技术指标、基本面条件等） 3. 输出格式要求（筛选结果、排序、告警等）  ### 已完成的工作  1. 创建了 `tasks/T01/` 目录，包含完整项目结构：    - 配置文件 (config.yaml, ..."
+      },
+      "timestamp": "2026-03-02T03:39:16.909751"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-21.md",
+        "file_size": 7170,
+        "lines": 201,
+        "import_time": "2026-03-02T03:39:16.910467",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-21",
+        "summary": "# 2026-02-21  ## 📅 T99 复盘任务调度  ### 2026-02-21 01:10（UTC 17:10）复盘计划更新 - **用户指令**：将首次复盘时间改为 **2026年3月14日**，自动运行复盘脚本并将报告发送到飞书群。 - **执行动作**：   1. **修改 `run_review.sh`**：      - 取消注释飞书群报告发送代码，改为自动发送。      ..."
+      },
+      "timestamp": "2026-03-02T03:39:16.910620"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/memory/2026-02-20.md",
+        "file_size": 3802,
+        "lines": 140,
+        "import_time": "2026-03-02T03:39:16.911311",
+        "original_type": "daily_log",
+        "suggested_category": "context/daily",
+        "priority": 2,
+        "title": "2026-02-20",
+        "summary": "# 2026-02-20  ## 🦐 初次对话 - 定义角色与规则  **时间**：北京时间 2026-02-20 18:12 起（UTC 10:12） **参与者**：老板（董欣）、小虾米（我）  ### 关键约定 1. **称谓**：    - 用户称呼：老板（董欣）    - 我的名字：小虾米 🦐    - 关系：AI小助手/老板的跟班  2. **时区**：北京时间（GMT+8）  3. ..."
+      },
+      "timestamp": "2026-03-02T03:39:16.911383"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/agent-browser/SKILL.md",
+        "file_size": 10221,
+        "lines": 329,
+        "import_time": "2026-03-02T03:39:16.911485",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "SKILL.md",
+        "summary": "--- name: Agent Browser description: A fast Rust-based headless browser automation CLI with Node.js fallback that enables AI agents to navigate, click, type, and snapshot pages via structured commands..."
+      },
+      "timestamp": "2026-03-02T03:39:16.911649"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/macro-monitor/SKILL.md",
+        "file_size": 2879,
+        "lines": 169,
+        "import_time": "2026-03-02T03:39:16.911758",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "宏观数据监控技能",
+        "summary": "--- name: macro-monitor description: 每日宏观数据监控和推送。自动浏览免费数据源（Trading Economics、FRED、国家统计局、央行官网、财联社等），整理整合过去24小时发布的宏观数据和政策信息，并推送给用户。通过 cron 每天晚上10点自动触发。 ---  # 宏观数据监控技能  ## 工作流程  当此技能被触发时（通常通过 cron 每天晚上1..."
+      },
+      "timestamp": "2026-03-02T03:39:16.911825"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/proactive-agent/SKILL.md",
+        "file_size": 20551,
+        "lines": 633,
+        "import_time": "2026-03-02T03:39:16.911955",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "Proactive Agent 🦞",
+        "summary": "--- name: proactive-agent version: 3.1.0 description: \"Transform AI agents from task-followers into proactive partners that anticipate needs and continuously improve. Now with WAL Protocol, Working Bu..."
+      },
+      "timestamp": "2026-03-02T03:39:16.912251"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/tushare-finance/SKILL.md",
+        "file_size": 1709,
+        "lines": 90,
+        "import_time": "2026-03-02T03:39:16.912345",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "Tushare 金融数据 Skill",
+        "summary": "--- name: tushare-finance description: 获取中国金融市场数据（A股、港股、美股、基金、期货、债券）。支持220+个Tushare Pro接口：股票行情、财务报表、宏观经济指标。当用户请求股价数据、财务分析、指数行情、GDP/CPI等宏观数据时使用。 allowed-tools:   - Bash(python:*)   - Read ---  # Tushar..."
+      },
+      "timestamp": "2026-03-02T03:39:16.912433"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/imap-smtp-email/SKILL.md",
+        "file_size": 6047,
+        "lines": 191,
+        "import_time": "2026-03-02T03:39:16.912577",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "IMAP/SMTP Email Tool",
+        "summary": "--- name: imap-smtp-email description: Read and send email via IMAP/SMTP. Check for new/unread messages, fetch content, search mailboxes, mark as read/unread, and send emails with attachments. Works w..."
+      },
+      "timestamp": "2026-03-02T03:39:16.912635"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/a-share-short-decision/SKILL.md",
+        "file_size": 2289,
+        "lines": 61,
+        "import_time": "2026-03-02T03:39:16.912693",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "A-Share Short-Term Decision Skill",
+        "summary": "--- name: A股短线交易决策 A-Share Short-Term Decision slug: a-share-short-decision description: A-share short-term trading decision skill for 1-5 day horizon. Use when you need real-data market sentiment, se..."
+      },
+      "timestamp": "2026-03-02T03:39:16.912720"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/tavily-search/SKILL.md",
+        "file_size": 1192,
+        "lines": 39,
+        "import_time": "2026-03-02T03:39:16.912763",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "Tavily Search",
+        "summary": "--- name: tavily description: AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents. homepage: https://tavily.com metadata: {\"clawdbot\":{\"emoji\":\"🔍\",\"requires\":{\"bins..."
+      },
+      "timestamp": "2026-03-02T03:39:16.912788"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/summarize/SKILL.md",
+        "file_size": 1422,
+        "lines": 50,
+        "import_time": "2026-03-02T03:39:16.912823",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "Summarize",
+        "summary": "--- name: summarize description: Summarize URLs or files with the summarize CLI (web, PDFs, images, audio, YouTube). homepage: https://summarize.sh metadata: {\"clawdbot\":{\"emoji\":\"🧾\",\"requires\":{\"bins..."
+      },
+      "timestamp": "2026-03-02T03:39:16.912847"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/self-improving-agent/SKILL.md",
+        "file_size": 19610,
+        "lines": 648,
+        "import_time": "2026-03-02T03:39:16.912910",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "Self-Improvement Skill",
+        "summary": "--- name: self-improvement description: \"Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude..."
+      },
+      "timestamp": "2026-03-02T03:39:16.913032"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/playwright-scraper-skill/SKILL.md",
+        "file_size": 6025,
+        "lines": 235,
+        "import_time": "2026-03-02T03:39:16.913185",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "Playwright Scraper Skill",
+        "summary": "--- name: playwright-scraper-skill description: Playwright-based web scraping OpenClaw Skill with anti-bot protection. Successfully tested on complex sites like Discuss.com.hk. version: 1.2.0 author: ..."
+      },
+      "timestamp": "2026-03-02T03:39:16.913247"
+    },
+    {
+      "status": "simulated",
+      "memory": {
+        "source_file": "/root/.openclaw/workspace/skills/moa/SKILL.md",
+        "file_size": 6648,
+        "lines": 257,
+        "import_time": "2026-03-02T03:39:16.913301",
+        "original_type": "skill",
+        "suggested_category": "knowledge/skills",
+        "priority": 3,
+        "title": "SKILL.md",
+        "summary": "--- name: moa description: \"Mixture of Agents: Make 3 frontier models argue, then synthesize their best insights into one superior answer. ~$0.03/query.\" author: John Scianna (@Scianna) version: 1.2.0..."
+      },
+      "timestamp": "2026-03-02T03:39:16.913350"
+    }
+  ]
+}

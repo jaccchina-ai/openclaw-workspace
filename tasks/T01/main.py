@@ -16,7 +16,7 @@ import tushare as ts
 # 添加当前目录到Python路径
 sys.path.insert(0, str(Path(__file__).parent))
 
-from limit_up_strategy import LimitUpScoringStrategy
+from limit_up_strategy_new import LimitUpScoringStrategyV2 as LimitUpScoringStrategy
 from output_formatter import OutputFormatter
 
 
@@ -115,11 +115,11 @@ def get_trade_date(date_str: str = None, offset: int = 0) -> str:
     cal = pro.trade_cal(exchange='SSE', start_date=start_date, end_date=today)
     trade_dates = cal[cal['is_open'] == 1]['cal_date'].tolist()
     
-    if offset < 0 and abs(offset) <= len(trade_dates):
-        return trade_dates[offset]
+    if offset < 0 and abs(offset) < len(trade_dates):
+        return trade_dates[-offset]  # offset为负，-offset为正索引
     
-    # 默认返回最近交易日
-    return trade_dates[-1] if trade_dates else today
+    # 默认返回最近交易日 (列表是降序的，trade_dates[0]是最新的)
+    return trade_dates[0] if trade_dates else today
 
 
 def run_t_day_scoring(config: dict, trade_date: str, args):

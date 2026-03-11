@@ -1,0 +1,39 @@
+[Unit]
+Description=T01 Stock Selection Strategy Scheduler
+After=network.target
+Wants=network.target
+Documentation=https://github.com/jaccchina-ai/openclaw-workspace
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/.openclaw/workspace/tasks/T01
+ExecStart=/root/.openclaw/workspace/tasks/T01/scheduler_wrapper.sh
+Restart=on-failure
+RestartSec=30
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+# 进程管理
+PIDFile=/tmp/t01_scheduler.lock
+RemainAfterExit=no
+KillMode=process
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# 资源限制
+MemoryMax=500M
+CPUQuota=50%
+
+# 日志配置
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=t01-scheduler
+
+# 环境变量
+Environment="PYTHONPATH=/root/.openclaw/workspace/tasks/T01"
+Environment="TZ=Asia/Beijing"
+
+[Install]
+WantedBy=multi-user.target

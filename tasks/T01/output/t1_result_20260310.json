@@ -1,0 +1,311 @@
+{
+  "generated_at": "2026-03-11T09:25:14.785338",
+  "trade_date": "20260310",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "300936.SZ",
+        "name": "中英科技",
+        "trade_date": "20260310",
+        "close": 58.54,
+        "pct_chg": 20.01,
+        "industry": "元件",
+        "basic_score": 172.11386388425055,
+        "total_score": 172.11386388425055,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.182274775971921,
+          "liquidity": 7.8565891082786425,
+          "money_flow": 10.0,
+          "sector": 10.0,
+          "dragon_list": 99.07499999999999,
+          "sentiment": 0
+        },
+        "first_limit_time": "94851",
+        "seal_ratio": 0.09113738798596092,
+        "seal_to_mv": 0.015897505861480997,
+        "fd_amount": 44168430.0,
+        "amount": 484635680.0,
+        "float_mv": 2778324498.5,
+        "turnover_rate": 18.15,
+        "turnover_20ma_ratio": 0.7619767324835928,
+        "volume_ratio": 1.39,
+        "main_net_amount": 80464700.0,
+        "main_net_ratio": 16.6,
+        "medium_net_amount": -48071800.0,
+        "is_hot_sector": true,
+        "dragon_score": 99.07499999999999,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "002445.SZ",
+        "name": "中南文化",
+        "trade_date": "20260310",
+        "close": 3.37,
+        "pct_chg": 10.13,
+        "industry": "通用设备",
+        "basic_score": 171.79555126200574,
+        "total_score": 171.79555126200574,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 25.0,
+          "liquidity": 4.7955512620057394,
+          "money_flow": 9.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "92500",
+        "seal_ratio": 32.27846959755274,
+        "seal_to_mv": 0.060754953832862245,
+        "fd_amount": 484502766.0,
+        "amount": 15010091.0,
+        "float_mv": 7974703879.01,
+        "turnover_rate": 0.19,
+        "turnover_20ma_ratio": 0.9686653786017219,
+        "volume_ratio": 0.04,
+        "main_net_amount": 8838700.0,
+        "main_net_ratio": 58.89,
+        "medium_net_amount": -3625100.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "600172.SH",
+        "name": "黄河旋风",
+        "trade_date": "20260310",
+        "close": 10.08,
+        "pct_chg": 10.04,
+        "industry": "通用设备",
+        "basic_score": 167.1803996586879,
+        "total_score": 167.1803996586879,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.098717736657077,
+          "liquidity": 9.081681922030812,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "95703",
+        "seal_ratio": 0.049358868328538336,
+        "seal_to_mv": 0.007972163062468238,
+        "fd_amount": 102559151.0,
+        "amount": 2077826224.0,
+        "float_mv": 12864657960.0,
+        "turnover_rate": 16.49,
+        "turnover_20ma_ratio": 1.3245045766092436,
+        "volume_ratio": 1.0,
+        "main_net_amount": 625353500.0,
+        "main_net_ratio": 30.1,
+        "medium_net_amount": -321183100.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "603017.SH",
+        "name": "中衡设计",
+        "trade_date": "20260310",
+        "close": 13.48,
+        "pct_chg": 10.04,
+        "industry": "工程咨询",
+        "basic_score": 149.6229721918652,
+        "total_score": 149.6229721918652,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.74450965105278,
+          "liquidity": 6.778462540812397,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 84.1,
+          "sentiment": 0
+        },
+        "first_limit_time": "94406",
+        "seal_ratio": 0.37225482552639017,
+        "seal_to_mv": 0.017794253181808963,
+        "fd_amount": 66248808.0,
+        "amount": 177966284.0,
+        "float_mv": 3723045149.64,
+        "turnover_rate": 4.88,
+        "turnover_20ma_ratio": 0.28353876224371927,
+        "volume_ratio": 1.1,
+        "main_net_amount": 74014000.0,
+        "main_net_ratio": 41.59,
+        "medium_net_amount": -38607800.0,
+        "is_hot_sector": false,
+        "dragon_score": 84.1,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "002281.SZ",
+        "name": "光迅科技",
+        "trade_date": "20260310",
+        "close": 86.16,
+        "pct_chg": 10.0,
+        "industry": "通信设备",
+        "basic_score": 136.18596971202606,
+        "total_score": 136.18596971202606,
+        "score_details": {
+          "first_limit_time": 12.0,
+          "order_quality": 15.142474549492897,
+          "liquidity": 9.143495162533167,
+          "money_flow": 10.0,
+          "sector": 10.0,
+          "dragon_list": 79.9,
+          "sentiment": 0
+        },
+        "first_limit_time": "130409",
+        "seal_ratio": 0.07123727474644845,
+        "seal_to_mv": 0.004834136561495688,
+        "fd_amount": 324659496.0,
+        "amount": 4557438464.0,
+        "float_mv": 67159769251.44,
+        "turnover_rate": 7.11,
+        "turnover_20ma_ratio": 1.12804854875995,
+        "volume_ratio": 0.83,
+        "main_net_amount": 772895200.0,
+        "main_net_ratio": 16.96,
+        "medium_net_amount": -453690800.0,
+        "is_hot_sector": true,
+        "dragon_score": 79.9,
+        "sentiment_score": 0
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "002445.SZ",
+      "name": "中南文化",
+      "t_date": "20260310",
+      "t1_date": "20260311",
+      "t_day_score": 171.79555126200574,
+      "auction_score": 82.1367148,
+      "final_score": 144.897900323404,
+      "auction_data": {
+        "open_change_pct": 10.130718954248367,
+        "auction_volume_ratio": 9.05831,
+        "auction_turnover_rate": 0.0669841,
+        "auction_amount": 5341787.0,
+        "auction_volume_to_t_volume": 35.58797162032702,
+        "auction_volume": 1585100.0,
+        "t_day_volume": 44540.33,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "600172.SH",
+      "name": "黄河旋风",
+      "t_date": "20260310",
+      "t1_date": "20260311",
+      "t_day_score": 167.1803996586879,
+      "auction_score": 40.1526496768559,
+      "final_score": 129.07207466413828,
+      "auction_data": {
+        "open_change_pct": 2.6200873362445436,
+        "auction_volume_ratio": 0.503792,
+        "auction_turnover_rate": 0.0826715,
+        "auction_amount": 9917940.0,
+        "auction_volume_to_t_volume": 0.5014700544027281,
+        "auction_volume": 1055100.0,
+        "t_day_volume": 2104013.97,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "603017.SH",
+      "name": "中衡设计",
+      "t_date": "20260310",
+      "t1_date": "20260311",
+      "t_day_score": 149.6229721918652,
+      "auction_score": 34.62565714285714,
+      "final_score": 115.12377767716276,
+      "auction_data": {
+        "open_change_pct": 2.0408163265306123,
+        "auction_volume_ratio": 0.53845,
+        "auction_turnover_rate": 0.0238242,
+        "auction_amount": 822500.0,
+        "auction_volume_to_t_volume": 0.4882428451646892,
+        "auction_volume": 65800.0,
+        "t_day_volume": 134769.0,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2628777076224.0,
+    "margin_balance": 18048045149.0,
+    "financing_change_pct": 0.04789197924112483,
+    "margin_change_pct": -0.40094641064236763,
+    "financing_buy_repay_ratio": 1.0436177276623713,
+    "market_data": {
+      "trade_date": "20260310",
+      "total_financing_balance": 2628777076224.0,
+      "total_margin_balance": 18048045149.0,
+      "total_financing_margin_balance": 2646825121373.0,
+      "financing_change_ratio": 0.04789197924112483,
+      "margin_change_ratio": -0.40094641064236763,
+      "financing_buy_ratio": 1.0436177276623713,
+      "sse_data": {
+        "financing_balance": 1336711949377.0,
+        "financing_buy": 110718868075.0,
+        "financing_repay": 107266911651.0,
+        "margin_balance": 12181396589.0,
+        "margin_sell": 63534634.0,
+        "total_balance": 1348893345966.0,
+        "margin_remaining": 2270453138.0
+      },
+      "szse_data": {
+        "financing_balance": 1292065126847.0,
+        "financing_buy": 122665219867.0,
+        "financing_repay": 116362949893.0,
+        "margin_balance": 5866648560.0,
+        "margin_sell": 28683579.0,
+        "total_balance": 1297931775407.0,
+        "margin_remaining": 720060261.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}
