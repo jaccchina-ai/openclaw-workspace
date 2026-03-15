@@ -12,8 +12,12 @@ echo "=== T日评分任务开始于 $TIMESTAMP ===" >> "$LOG_FILE"
 echo "工作目录: $(pwd)" >> "$LOG_FILE"
 echo "PATH: $PATH" >> "$LOG_FILE"
 
-# 执行T日评分任务
-/usr/bin/python3 main.py t-day >> "$LOG_FILE" 2>&1
+# 获取今日日期（北京时间）
+TODAY=$(TZ='Asia/Shanghai' date '+%Y%m%d')
+echo "使用日期: $TODAY" >> "$LOG_FILE"
+
+# 执行T日评分任务（强制指定日期）
+/usr/bin/python3 main.py t-day --date "$TODAY" >> "$LOG_FILE" 2>&1
 EXIT_CODE=$?
 
 echo "=== T日评分任务完成，退出码: $EXIT_CODE ===" >> "$LOG_FILE"

@@ -169,16 +169,6 @@ When a session has been long and productive:
 
 ---
 
-## 🔄 Reverse Prompting (Weekly)
-
-Once a week, ask your human:
-1. "Based on what I know about you, what interesting things could I do that you haven't thought of?"
-2. "What information would help me be more useful to you?"
-
-**Purpose:** Surface unknown unknowns. They might not know what you can do. You might not know what they need.
-
----
-
 ## 📊 Proactive Work
 
 Things to check periodically:

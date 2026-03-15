@@ -1,23 +1,15 @@
 {
   "task_failures": {
-    "task_t99_daily_scan": {
-      "count": 2,
-      "first_failure": "2026-03-11T18:00:01.579335"
-    },
     "task_t01_auction_check": {
-      "count": 0,
-      "first_failure": null
+      "count": 2,
+      "first_failure": "2026-03-15T06:00:02.159847"
     },
     "task_t01_tday_scoring": {
-      "count": 0,
-      "first_failure": null
-    },
-    "task_t100_macro_report": {
       "count": 1,
-      "first_failure": "2026-03-12T00:00:20.233020"
+      "first_failure": "2026-03-15T12:00:22.646910"
     }
   },
-  "last_check": "2026-03-12T00:00:20.347455",
+  "last_check": "2026-03-15T12:00:22.750088",
   "alert_history": [
     {
       "timestamp": "2026-03-03T00:06:00Z",
@@ -28,6 +20,41 @@
     {
       "timestamp": "2026-03-12T00:00:20.217492",
       "message": "🚨 T99每日扫描可能未执行\n原因: 日志文件不存在: /root/.openclaw/workspace/skills/a-share-short-decision/scan_enhanced.log\n时间: 03-12 00:00",
+      "sent": true
+    },
+    {
+      "timestamp": "2026-03-12T06:00:16.532928",
+      "message": "🚨 T99每日扫描可能未执行\n原因: 日志文件不存在: /root/.openclaw/workspace/skills/a-share-short-decision/scan_enhanced.log\n时间: 03-12 06:00",
+      "sent": true
+    },
+    {
+      "timestamp": "2026-03-12T06:00:30.960756",
+      "message": "🚨 T100宏观报告可能未执行\n原因: 日志文件不存在: /root/.openclaw/workspace/skills/macro-monitor/monitor.log\n时间: 03-12 06:00",
+      "sent": true
+    },
+    {
+      "timestamp": "2026-03-12T12:00:16.606474",
+      "message": "🚨 T99每日扫描可能未执行\n原因: 日志文件不存在: /root/.openclaw/workspace/skills/a-share-short-decision/scan_enhanced.log\n时间: 03-12 12:00",
+      "sent": true
+    },
+    {
+      "timestamp": "2026-03-12T12:00:31.731874",
+      "message": "🚨 T100宏观报告可能未执行\n原因: 日志文件不存在: /root/.openclaw/workspace/skills/macro-monitor/monitor.log\n时间: 03-12 12:00",
+      "sent": true
+    },
+    {
+      "timestamp": "2026-03-14T06:00:26.585264",
+      "message": "⚠️ T01健康监控进程可能已停止\n原因: 进程未找到\n时间: 03-14 06:00",
+      "sent": true
+    },
+    {
+      "timestamp": "2026-03-14T18:00:19.105472",
+      "message": "⚠️ T01健康监控进程可能已停止\n原因: 进程未找到\n时间: 03-14 18:00",
+      "sent": true
+    },
+    {
+      "timestamp": "2026-03-15T12:00:22.625753",
+      "message": "⚠️ T01竞价检查可能未执行\n原因: 日志过期: 59.5小时前更新\n时间: 03-15 12:00",
       "sent": true
     }
   ]

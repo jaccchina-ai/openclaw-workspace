@@ -34,8 +34,13 @@ class RegistrySyncer:
         支持多种配置文件格式
         """
         task_id = task_config['id']
-        location = task_config['location']
+        location = task_config.get('location')
         config_file = task_config.get('configuration_file')
+        
+        # 检查 location 是否存在
+        if not location:
+            print(f"警告: Task {task_id} 没有配置 location")
+            return None
         
         # 构建完整路径
         source_dir = self.workspace_root / location

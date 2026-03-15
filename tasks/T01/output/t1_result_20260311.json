@@ -1,0 +1,298 @@
+{
+  "generated_at": "2026-03-12T09:25:16.493052",
+  "trade_date": "20260311",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "002455.SZ",
+        "name": "百川股份",
+        "trade_date": "20260311",
+        "close": 14.73,
+        "pct_chg": 10.01,
+        "industry": "化学制品",
+        "basic_score": 80.0,
+        "total_score": 80.0,
+        "score_details": {
+          "first_limit_time": 0,
+          "order_quality": 0,
+          "liquidity": 0,
+          "money_flow": 0,
+          "sector": 0,
+          "dragon_list": 0.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "093000",
+        "seal_ratio": 0.4862588486899242,
+        "seal_to_mv": 0.032269234860621505,
+        "fd_amount": 246803285.0,
+        "amount": 507555360.0,
+        "float_mv": 7648253392.62,
+        "turnover_rate": 0.0,
+        "main_net_amount": 0.0,
+        "main_net_ratio": 0.0,
+        "is_hot_sector": false,
+        "dragon_score": 0.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "603803.SH",
+        "name": "瑞斯康达",
+        "trade_date": "20260311",
+        "close": 12.1,
+        "pct_chg": 10.0,
+        "industry": "通信设备",
+        "basic_score": 75.0,
+        "total_score": 75.0,
+        "score_details": {
+          "first_limit_time": 0,
+          "order_quality": 0,
+          "liquidity": 0,
+          "money_flow": 0,
+          "sector": 0,
+          "dragon_list": 0.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "092503",
+        "seal_ratio": 0.20704132115721458,
+        "seal_to_mv": 0.0221232378733828,
+        "fd_amount": 113737580.0,
+        "amount": 549347248.0,
+        "float_mv": 5141091039.7,
+        "turnover_rate": 0.0,
+        "main_net_amount": 0.0,
+        "main_net_ratio": 0.0,
+        "is_hot_sector": false,
+        "dragon_score": 0.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "002445.SZ",
+        "name": "中南文化",
+        "trade_date": "20260311",
+        "close": 3.71,
+        "pct_chg": 10.09,
+        "industry": "通用设备",
+        "basic_score": 74.0,
+        "total_score": 74.0,
+        "score_details": {
+          "first_limit_time": 0,
+          "order_quality": 0,
+          "liquidity": 0,
+          "money_flow": 0,
+          "sector": 0,
+          "dragon_list": 0.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "092500",
+        "seal_ratio": 14.95839472285245,
+        "seal_to_mv": 0.05139309404520947,
+        "fd_amount": 451194024.0,
+        "amount": 30163265.0,
+        "float_mv": 8779273409.83,
+        "turnover_rate": 0.0,
+        "main_net_amount": 0.0,
+        "main_net_ratio": 0.0,
+        "is_hot_sector": false,
+        "dragon_score": 0.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "601700.SH",
+        "name": "风范股份",
+        "trade_date": "20260311",
+        "close": 6.9,
+        "pct_chg": 10.05,
+        "industry": "电网设备",
+        "basic_score": 73.0,
+        "total_score": 73.0,
+        "score_details": {
+          "first_limit_time": 0,
+          "order_quality": 0,
+          "liquidity": 0,
+          "money_flow": 0,
+          "sector": 0,
+          "dragon_list": 0.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "092500",
+        "seal_ratio": 0.20251745123675563,
+        "seal_to_mv": 0.01081794162812392,
+        "fd_amount": 85001169.0,
+        "amount": 419722688.0,
+        "float_mv": 7857425370.0,
+        "turnover_rate": 0.0,
+        "main_net_amount": 0.0,
+        "main_net_ratio": 0.0,
+        "is_hot_sector": false,
+        "dragon_score": 0.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "000545.SZ",
+        "name": "金浦钛业",
+        "trade_date": "20260311",
+        "close": 3.83,
+        "pct_chg": 10.06,
+        "industry": "化学原料",
+        "basic_score": 70.0,
+        "total_score": 70.0,
+        "score_details": {
+          "first_limit_time": 0,
+          "order_quality": 0,
+          "liquidity": 0,
+          "money_flow": 0,
+          "sector": 0,
+          "dragon_list": 0.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "102345",
+        "seal_ratio": 0.39867986089101637,
+        "seal_to_mv": 0.053701800920390515,
+        "fd_amount": 202675637.0,
+        "amount": 508366880.0,
+        "float_mv": 3774093857.68,
+        "turnover_rate": 0.0,
+        "main_net_amount": 0.0,
+        "main_net_ratio": 0.0,
+        "is_hot_sector": false,
+        "dragon_score": 0.0,
+        "sentiment_score": 0
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "002455.SZ",
+      "name": "百川股份",
+      "t_date": "20260311",
+      "t1_date": "20260312",
+      "t_day_score": 80.0,
+      "auction_score": 94.01418969380133,
+      "final_score": 84.2042569081404,
+      "auction_data": {
+        "open_change_pct": 8.289768483943236,
+        "auction_volume_ratio": 5.43733,
+        "auction_turnover_rate": 1.01169,
+        "auction_amount": 76168094.0,
+        "auction_volume_to_t_volume": 15.206244290933798,
+        "auction_volume": 5252972.0,
+        "t_day_volume": 345448.35,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "601700.SH",
+      "name": "风范股份",
+      "t_date": "20260311",
+      "t1_date": "20260312",
+      "t_day_score": 73.0,
+      "auction_score": 99.85557800000001,
+      "final_score": 81.0566734,
+      "auction_data": {
+        "open_change_pct": 10.047846889952167,
+        "auction_volume_ratio": 16.3379,
+        "auction_turnover_rate": 0.631746,
+        "auction_amount": 49638945.0,
+        "auction_volume_to_t_volume": 11.794855862009998,
+        "auction_volume": 7194050.0,
+        "t_day_volume": 609931.15,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "603803.SH",
+      "name": "瑞斯康达",
+      "t_date": "20260311",
+      "t1_date": "20260312",
+      "t_day_score": 75.0,
+      "auction_score": 88.99610799999999,
+      "final_score": 79.1988324,
+      "auction_data": {
+        "open_change_pct": 9.999999999999996,
+        "auction_volume_ratio": 19.0897,
+        "auction_turnover_rate": 0.437461,
+        "auction_amount": 22490270.0,
+        "auction_volume_to_t_volume": 4.093671358512823,
+        "auction_volume": 1858700.0,
+        "t_day_volume": 454042.31,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.14,
+        "confidence": "中",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2634199544732.0,
+    "margin_balance": 18550927900.0,
+    "financing_change_pct": -0.11724750723938102,
+    "margin_change_pct": 2.783629684336855,
+    "financing_buy_repay_ratio": 1.0230538696301628,
+    "market_data": {
+      "trade_date": "20260311",
+      "total_financing_balance": 2634199544732.0,
+      "total_margin_balance": 18550927900.0,
+      "total_financing_margin_balance": 2652750472632.0,
+      "financing_change_ratio": -0.11724750723938102,
+      "margin_change_ratio": 2.783629684336855,
+      "financing_buy_ratio": 1.0230538696301628,
+      "sse_data": {
+        "financing_balance": 1335979974200.0,
+        "financing_buy": 109985204214.0,
+        "financing_repay": 110700767168.0,
+        "margin_balance": 12568703126.0,
+        "margin_sell": 140178477.0,
+        "total_balance": 1348548677326.0,
+        "margin_remaining": 2366084518.0
+      },
+      "szse_data": {
+        "financing_balance": 1298219570532.0,
+        "financing_buy": 132437988666.0,
+        "financing_repay": 126259572924.0,
+        "margin_balance": 5982224774.0,
+        "margin_sell": 25835241.0,
+        "total_balance": 1304201795306.0,
+        "margin_remaining": 722857089.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}

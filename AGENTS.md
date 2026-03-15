@@ -265,6 +265,55 @@ Think of it like a human reviewing their journal and updating their mental model
 - 已完成融资融券风控模块和交易日计算系统
 - 准备2026-02-24（节后首个交易日）实时测试
 
+### T01交易日历数据错误紧急修复 (2026-03-14)
+- **问题**: 3月14日(周六)被错误标记为交易日，导致非交易日执行选股
+- **根因**: `trading_calendar.json` 数据错误，多个周六被错误列入交易日列表
+- **影响**: T01调度器在周末错误执行选股任务
+- **修复**:
+  1. 修正交易日历数据：移除3月14日、21日、28日等周六
+  2. 增强`is_trading_day()`函数：优先检查周末（周六/周日），再检查交易日历
+  3. 重启T01调度器服务，清理僵尸进程
+- **验证**: 今天(3月14日)正确识别为非交易日
+- **预防措施**: 交易日历更新时必须验证周末日期
+
+### T01僵尸进程防护方案 (2026-03-14)
+- **问题**: 多个scheduler.py进程同时运行（僵尸进程），内存耗尽
+- **根因**: 
+  1. systemd `Restart=on-failure`配置过于激进
+  2. 缺少进程唯一性检查机制
+  3. 异常退出时清理不彻底
+- **解决方案** (三层防护):
+  1. **包装脚本层** (`scheduler_wrapper.sh`): 使用flock文件锁确保单实例
+  2. **Python代码层** (`scheduler.py`): `_check_single_instance()`检测其他进程并警告
+  3. **健康检查层** (`scheduler_health_check.sh`): 每30分钟检查，自动清理僵尸进程
+- **systemd配置优化**:
+  - `RestartSec=60`: 延长重启间隔，避免快速重启
+  - `StartLimitBurst=2`: 限制10分钟内最多重启2次
+  - `KillMode=mixed`: 确保主进程和子进程都被终止
+- **监控机制**: cron每30分钟运行健康检查脚本
+- **验证**: 当前单实例运行正常
+
+### T100任务删除 (2026-03-14)
+- **老板指令**: 停止14:00运行并发送【每日宏观监控报告】
+- **操作**:
+  1. Task Registry标注T100为deleted状态
+  2. 归档macro-monitor目录到`.archived_tasks/`
+  3. 确认当前cron中无14:00的T100任务
+- **状态**: T100已完全停止，不再生成报告
+
+### T01健康监控误报修复 (2026-03-14)
+- **问题**: 18:00报错 "T01健康监控进程可能已停止"
+- **根因**: `enhanced_monitor.py` 配置错误，监控了不存在的`scheduler_health_monitor.py`进程
+- **分析**:
+  - `scheduler_health_monitor.py` 根本没有被systemd或cron管理
+  - 之前T99/T100失败掩盖了这个问题
+  - T99/T100删除后问题暴露
+- **修复**:
+  1. 从`PROCESS_MONITORS`中移除`scheduler_health_monitor.py`监控项
+  2. 重置监控状态文件，清除历史失败记录
+  3. 测试验证：所有系统运行正常
+- **验证**: 监控脚本运行正常，无警报
+
 ### Task Registry 系统 (2026-02-22)
 - 创建统一任务注册表 `task_registry.json`
 - 集中管理T01/T99/T100任务权威信息

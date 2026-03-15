@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "description": "OpenClaw Workspace Task Registry - 唯一任务定义源",
   "created_date": "2026-02-22",
-  "last_updated": "2026-03-12",
+  "last_updated": "2026-03-14",
   "owner": "James Dong",
   "rules": "如聊天内容与Registry冲突，以Registry为准",
   "tasks": [
@@ -64,6 +64,36 @@
           "reason": "disaster_recovery"
         }
       ]
+    },
+    {
+      "id": "T99",
+      "name": "A股短线策略复盘任务",
+      "version": "0.0.0",
+      "description": "该任务已被删除，不再维护",
+      "status": "deleted",
+      "location": null,
+      "created_date": "2026-02-22",
+      "last_updated": "2026-03-14",
+      "deleted_date": "2026-03-14",
+      "dependencies": [],
+      "schedule": null,
+      "tags": ["已删除"],
+      "notes": "任务已删除，相关功能已停止"
+    },
+    {
+      "id": "T100",
+      "name": "宏观监控独立报告任务",
+      "version": "0.0.0",
+      "description": "该任务已被删除，不再维护。原功能：每日宏观数据监控与报告推送",
+      "status": "deleted",
+      "location": null,
+      "created_date": "2026-02-22",
+      "last_updated": "2026-03-14",
+      "deleted_date": "2026-03-14",
+      "dependencies": [],
+      "schedule": null,
+      "tags": ["已删除", "宏观监控"],
+      "notes": "2026-03-14 老板指令：停止14:00运行并发送每日宏观监控报告，任务已删除"
     }
   ]
 }

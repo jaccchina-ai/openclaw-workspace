@@ -18,23 +18,8 @@ CONFIG = {
 }
 
 # 监控任务
+# 注意: T99和T100任务已于2026-03-11停用清理，此处仅保留T01监控
 MONITOR_TASKS = [
-    {
-        "id": "t99_daily_scan",
-        "name": "T99每日A股短线扫描",
-        "log_path": "/root/.openclaw/workspace/skills/a-share-short-decision/scan_enhanced.log",
-        "schedule": "工作日14:30",
-        "max_age_hours": 36,
-        "alert_message": "🚨 T99每日扫描可能未执行"
-    },
-    {
-        "id": "t100_macro_report",
-        "name": "T100宏观监控报告",
-        "log_path": "/root/.openclaw/workspace/skills/macro-monitor/monitor.log",
-        "schedule": "每日22:00",
-        "max_age_hours": 36,
-        "alert_message": "🚨 T100宏观报告可能未执行"
-    },
     {
         "id": "t01_auction_check",
         "name": "T01竞价准备检查",
@@ -54,19 +39,15 @@ MONITOR_TASKS = [
 ]
 
 # 进程监控
+# 注意: scheduler_health_monitor.py 已不再使用，只监控核心调度器
 PROCESS_MONITORS = [
     {
         "name": "T01调度器",
         "pattern": "python3 scheduler.py",
         "min_count": 1,
         "alert_message": "🚨 T01调度器进程可能已停止"
-    },
-    {
-        "name": "T01健康监控",
-        "pattern": "python3 scheduler_health_monitor.py",
-        "min_count": 1,
-        "alert_message": "⚠️ T01健康监控进程可能已停止"
     }
+    # 已删除: scheduler_health_monitor.py 监控 (该组件已不再使用)
 ]
 
 class HealthMonitor:

@@ -145,6 +145,12 @@ Add whatever helps you do your job. This is your cheat sheet.
    ls -la /root/.openclaw/workspace/tasks/T01/state/candidates_*.json
    ```
 
+### 时区注意事项
+**系统时区设置**: CST（中国标准时间/北京时间）
+- 正确命令: `date`（直接显示北京时间）
+- 错误命令: `date -d '+8 hours'`（会再加8小时，导致时间错误）
+- 验证: `date '+%Z'` 应输出 `CST`
+
 ### 解决方案
 #### A. 重启调度器服务
 ```bash

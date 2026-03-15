@@ -2,7 +2,9 @@
 """
 T01系统绩效跟踪模块
 统计胜率，计算绩效指标，为机器学习提供训练数据
-胜率标准: T+1日开盘价买入，T+2日收盘价卖出后有盈利算成功
+胜率标准: T+1日开盘价买入，T+2日收盘价卖出
+成功判定: 卖出价/买入价 >= success_threshold (默认1.03, 即3%收益)
+统计范围: T+1日竞价阶段最终推荐的top_n股票 (默认前3名)
 """
 
 import sys
@@ -37,6 +39,8 @@ class PerformanceTracker:
         self.sell_price = perf_config.get('sell_price', '收盘价')
         self.min_trades = perf_config.get('min_trades_for_statistics', 20)
         self.confidence_interval = perf_config.get('confidence_interval', 0.95)
+        # 成功阈值: 卖出价/买入价 >= success_threshold 算成功 (默认3%收益)
+        self.success_threshold = perf_config.get('success_threshold', 1.03)
         
         # 数据存储
         self.storage = T01DataStorage(config_path)
@@ -145,8 +149,9 @@ class PerformanceTracker:
             sell_price = sell_trade['price']
             return_pct = (sell_price - buy_price) / buy_price * 100 if buy_price > 0 else 0
             
-            # 判断盈亏
-            win_loss = 1 if return_pct > 0 else 0
+            # 判断盈亏 (使用成功阈值: 卖出价/买入价 >= success_threshold)
+            price_ratio = sell_price / buy_price if buy_price > 0 else 0
+            win_loss = 1 if price_ratio >= self.success_threshold else 0
             
             # 计算最大回撤（简化版：使用期间最低价）
             # 实际应该计算每日回撤，这里简化处理
@@ -304,18 +309,26 @@ class PerformanceTracker:
             logger.debug(f"计算最大回撤失败: {ts_code} {start_date}-{end_date} - {e}")
             return 0.0
     
-    def calculate_portfolio_performance(self, start_date: str = None, end_date: str = None) -> Dict[str, Any]:
+    def calculate_portfolio_performance(self, start_date: str = None, end_date: str = None, top_n: int = 3) -> Dict[str, Any]:
         """
         计算组合表现
         
         Args:
             start_date: 开始日期
             end_date: 结束日期
+            top_n: 只统计每天前N名推荐 (默认3名，对应T+1竞价阶段最终推荐)
             
         Returns:
             组合表现统计
         """
         try:
+            # 获取策略配置中的final_recommendation_count
+            strategy_config = self.config.get('strategy', {})
+            output_config = strategy_config.get('output', {})
+            final_count = output_config.get('final_recommendation_count', 3)
+            # 使用配置值或传入值
+            top_n = top_n or final_count
+            
             # 获取所有已完成的表现记录
             conditions = []
             params = []
@@ -331,12 +344,13 @@ class PerformanceTracker:
             where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
             
             query = f'''
-            SELECT p.*, r.ts_code, r.name, r.total_score, r.t_day_score, r.auction_score
+            SELECT p.*, r.ts_code, r.name, r.total_score, r.t_day_score, r.auction_score,
+                   ROW_NUMBER() OVER (PARTITION BY p.buy_date ORDER BY r.total_score DESC) as rank
             FROM {self.storage.table_performance} p
             JOIN {self.storage.table_recommendations} r ON p.recommendation_id = r.recommendation_id
             {where_clause}
             AND p.win_loss IN (0, 1)
-            ORDER BY p.buy_date
+            ORDER BY p.buy_date, rank
             '''
             
             self.storage.cursor.execute(query, params)
@@ -351,6 +365,14 @@ class PerformanceTracker:
             
             # 转换为DataFrame
             df = pd.DataFrame([dict(row) for row in rows])
+            
+            # 只统计每天前top_n名推荐 (T+1竞价阶段最终推荐)
+            original_count = len(df)
+            df = df[df['rank'] <= top_n]
+            filtered_count = len(df)
+            
+            if original_count != filtered_count:
+                logger.info(f"胜率统计范围过滤: 原始{original_count}条记录 -> 过滤后{filtered_count}条 (每天前{top_n}名)")
             
             # 计算基本统计
             total_trades = len(df)
@@ -461,10 +483,16 @@ class PerformanceTracker:
                 'win_rate': 0
             }
     
-    def generate_performance_report(self, start_date: str = None, end_date: str = None) -> str:
-        """生成绩效报告文本"""
+    def generate_performance_report(self, start_date: str = None, end_date: str = None, top_n: int = 3) -> str:
+        """生成绩效报告文本
+        
+        Args:
+            start_date: 开始日期
+            end_date: 结束日期
+            top_n: 只统计每天前N名推荐 (默认3名)
+        """
         try:
-            performance = self.calculate_portfolio_performance(start_date, end_date)
+            performance = self.calculate_portfolio_performance(start_date, end_date, top_n)
             
             if 'error' in performance:
                 return f"❌ 生成绩效报告失败: {performance['error']}"
@@ -479,6 +507,14 @@ class PerformanceTracker:
             report_parts.append("="*60)
             report_parts.append("📊 T01策略绩效报告")
             report_parts.append("="*60)
+            
+            # 统计规则说明
+            report_parts.append(f"📋 统计规则:")
+            report_parts.append(f"  - 买入: T+1日09:30开盘价")
+            report_parts.append(f"  - 卖出: T+2日15:00收盘价")
+            report_parts.append(f"  - 成功标准: 收益率 >= {(self.success_threshold - 1) * 100:.1f}%")
+            report_parts.append(f"  - 统计范围: 每天前{top_n}名推荐")
+            report_parts.append("")
             
             # 时间范围
             if time_period.get('start_date') or time_period.get('end_date'):

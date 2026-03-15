@@ -3,7 +3,7 @@
   "skills": {
     "agent-browser": {
       "version": "0.2.0",
-      "installedAt": 1770803375381
+      "installedAt": 1773414200661
     },
     "macro-monitor": {
       "version": "1.0.2",
@@ -27,11 +27,11 @@
     },
     "tavily-search": {
       "version": "1.0.0",
-      "installedAt": 1771588104117
+      "installedAt": 1773414193452
     },
     "summarize": {
       "version": "1.0.0",
-      "installedAt": 1771599730635
+      "installedAt": 1773414196333
     },
     "self-improving-agent": {
       "version": "1.0.11",
@@ -39,7 +39,7 @@
     },
     "github": {
       "version": "1.0.0",
-      "installedAt": 1771998968362
+      "installedAt": 1773414206799
     },
     "playwright-scraper-skill": {
       "version": "1.2.0",
@@ -48,6 +48,22 @@
     "moa": {
       "version": "1.2.0",
       "installedAt": 1772164460088
+    },
+    "superpowers": {
+      "version": "1.0.0",
+      "installedAt": 1773326358618
+    },
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1773414203915
+    },
+    "obsidian": {
+      "version": "1.0.0",
+      "installedAt": 1773414209823
+    },
+    "weather": {
+      "version": "1.0.0",
+      "installedAt": 1773414212878
     }
   }
 }

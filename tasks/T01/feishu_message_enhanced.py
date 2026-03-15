@@ -14,12 +14,12 @@ from datetime import datetime
 # 默认配置
 DEFAULT_CONFIG = {
     "openclaw_path": "/root/.nvm/versions/node/v22.22.0/bin/openclaw",
-    "max_retries": 3,
-    "retry_delay": 2,  # 秒
-    "timeout": 30,  # 秒
+    "max_retries": 5,  # 增加重试次数
+    "retry_delay": 3,  # 增加初始延迟
+    "timeout": 60,  # 增加超时时间到60秒
     "use_exponential_backoff": True,
     "backoff_factor": 2,
-    "max_backoff": 60,  # 秒
+    "max_backoff": 120,  # 增加最大退避时间
     "enable_fallback": True,
     "fallback_to_log": True,
     "log_file": "/root/.openclaw/workspace/logs/feishu_message.log",

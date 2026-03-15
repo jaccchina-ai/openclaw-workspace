@@ -1,16 +1,13 @@
 🏥 系统健康检查报告
-检查时间: 2026-03-12 00:00:20
+检查时间: 2026-03-15 12:00:22
 
-📊 任务状态 (2/4 健康):
-  ❌ T99每日A股短线扫描: 日志文件不存在: /root/.openclaw/workspace/skills/a-share-short-decision/scan_enhanced.log
-  ❌ T100宏观监控报告: 日志文件不存在: /root/.openclaw/workspace/skills/macro-monitor/monitor.log
-  ✅ T01竞价准备检查: 正常
-  ✅ T01 T日评分: 正常
+📊 任务状态 (0/2 健康):
+  ❌ T01竞价准备检查: 日志过期: 59.5小时前更新
+  ❌ T01 T日评分: 日志过期: 48.0小时前更新
 
-🖥️ 进程状态 (2/2 健康):
+🖥️ 进程状态 (1/1 健康):
   ✅ T01调度器: 正常
-  ✅ T01健康监控: 正常
 
 ⚠️ 发现系统问题，建议检查:
-  • T99每日A股短线扫描: 日志文件不存在: /root/.openclaw/workspace/skills/a-share-short-decision/scan_enhanced.log
-  • T100宏观监控报告: 日志文件不存在: /root/.openclaw/workspace/skills/macro-monitor/monitor.log
+  • T01竞价准备检查: 日志过期: 59.5小时前更新
+  • T01 T日评分: 日志过期: 48.0小时前更新
