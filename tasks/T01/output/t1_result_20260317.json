@@ -1,0 +1,363 @@
+{
+  "generated_at": "2026-03-18T09:25:16.859950",
+  "trade_date": "20260317",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "600396.SH",
+        "name": "华电辽能",
+        "trade_date": "20260317",
+        "close": 4.27,
+        "pct_chg": 10.05,
+        "industry": "电力",
+        "basic_score": 166.06095684335494,
+        "total_score": 166.06095684335494,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 16.155371315227764,
+          "liquidity": 6.905585528127167,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "92500",
+        "seal_ratio": 0.5776856576138828,
+        "seal_to_mv": 0.03092958856389849,
+        "fd_amount": 194499422.0,
+        "amount": 336687296.0,
+        "float_mv": 6288458108.59,
+        "turnover_rate": 5.35,
+        "turnover_20ma_ratio": 0.6466756584381502,
+        "volume_ratio": 0.45,
+        "main_net_amount": 171744500.0,
+        "main_net_ratio": 51.01,
+        "medium_net_amount": -89780200.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0,
+        "sentiment_analysis": NaN,
+        "sentiment_adjustment": NaN
+      },
+      {
+        "ts_code": "000617.SZ",
+        "name": "中油资本",
+        "trade_date": "20260317",
+        "close": 9.77,
+        "pct_chg": 10.02,
+        "industry": "多元金融",
+        "basic_score": 164.00369733527407,
+        "total_score": 164.00369733527407,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.109489271919111,
+          "liquidity": 17.219208063354934,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 88.67500000000001,
+          "sentiment": -2.0
+        },
+        "first_limit_time": "92500",
+        "seal_ratio": 0.05474463595955572,
+        "seal_to_mv": 0.001832580211379487,
+        "fd_amount": 226347686.0,
+        "amount": 4134609392.0,
+        "float_mv": 123513112601.83,
+        "turnover_rate": 3.35,
+        "turnover_20ma_ratio": 2.4657624190064795,
+        "volume_ratio": 4.59,
+        "main_net_amount": 983998800.0,
+        "main_net_ratio": 23.8,
+        "medium_net_amount": -607279200.0,
+        "is_hot_sector": false,
+        "dragon_score": 88.67500000000001,
+        "sentiment_score": -2,
+        "sentiment_analysis": NaN,
+        "sentiment_adjustment": NaN
+      },
+      {
+        "ts_code": "002426.SZ",
+        "name": "胜利精密",
+        "trade_date": "20260317",
+        "close": 4.47,
+        "pct_chg": 10.1,
+        "industry": "消费电子",
+        "basic_score": 144.72229431352687,
+        "total_score": 144.72229431352687,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.145334118799243,
+          "liquidity": 12.201960194727624,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 80.375,
+          "sentiment": 0.0
+        },
+        "first_limit_time": "105427",
+        "seal_ratio": 0.07266705939962108,
+        "seal_to_mv": 0.01048445340116541,
+        "fd_amount": 159464568.0,
+        "amount": 2194454672.0,
+        "float_mv": 15209621512.77,
+        "turnover_rate": 14.83,
+        "turnover_20ma_ratio": 1.4205880584182875,
+        "volume_ratio": 2.08,
+        "main_net_amount": 435455500.0,
+        "main_net_ratio": 19.84,
+        "medium_net_amount": -227069400.0,
+        "is_hot_sector": false,
+        "dragon_score": 80.375,
+        "sentiment_score": 0,
+        "sentiment_analysis": {
+          "enabled": true,
+          "score": 0.0,
+          "sentiment": "neutral",
+          "news_count": 5,
+          "positive_count": 0,
+          "negative_count": 0,
+          "neutral_count": 5,
+          "news": [
+            {
+              "title": "胜利精密涨停，龙虎榜上机构买入8865.71万元，卖出1236.74万元",
+              "date": "2026-03-16 17:12:17",
+              "sentiment": "neutral",
+              "source": ""
+            },
+            {
+              "title": "胜利精密涨停，龙虎榜上机构买入8865.71万元，卖出1236.74万元",
+              "date": "2026-03-16 17:12:17",
+              "sentiment": "neutral",
+              "source": ""
+            },
+            {
+              "title": "胜利精密：已取得头部客户复合铜箔技术授权，深化产业链协同",
+              "date": "2026-03-04 18:10:28",
+              "sentiment": "neutral",
+              "source": ""
+            },
+            {
+              "title": "胜利精密：公司复合集流体项目正在有序推进中",
+              "date": "2026-02-12 19:42:00",
+              "sentiment": "neutral",
+              "source": ""
+            },
+            {
+              "title": "胜利精密：公司已经取得头部客户关于复合铜箔产品的技术授权，双方正在积极推动后续合作事项",
+              "date": "2026-02-06 09:02:00",
+              "sentiment": "neutral",
+              "source": ""
+            }
+          ]
+        },
+        "sentiment_adjustment": 0.0
+      },
+      {
+        "ts_code": "603929.SH",
+        "name": "亚翔集成",
+        "trade_date": "20260317",
+        "close": 154.91,
+        "pct_chg": 10.0,
+        "industry": "专业工程",
+        "basic_score": 130.30972398305016,
+        "total_score": 130.30972398305016,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.256953673211452,
+          "liquidity": 12.932770309838716,
+          "money_flow": 9.245000000000001,
+          "sector": 3.0,
+          "dragon_list": 59.875,
+          "sentiment": 0
+        },
+        "first_limit_time": "94908",
+        "seal_ratio": 0.128476836605726,
+        "seal_to_mv": 0.00548168821346173,
+        "fd_amount": 181178553.0,
+        "amount": 1410204032.0,
+        "float_mv": 33051597600.0,
+        "turnover_rate": 4.34,
+        "turnover_20ma_ratio": 1.179831092951615,
+        "volume_ratio": 3.03,
+        "main_net_amount": 119726600.0,
+        "main_net_ratio": 8.49,
+        "medium_net_amount": -84037099.99999999,
+        "is_hot_sector": false,
+        "dragon_score": 59.875,
+        "sentiment_score": 0,
+        "sentiment_analysis": NaN,
+        "sentiment_adjustment": NaN
+      },
+      {
+        "ts_code": "600313.SH",
+        "name": "农发种业",
+        "trade_date": "20260317",
+        "close": 9.08,
+        "pct_chg": 10.06,
+        "industry": "种植业",
+        "basic_score": 128.80511115171774,
+        "total_score": 128.80511115171774,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.091539202966972,
+          "liquidity": 6.938571948750775,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 63.775,
+          "sentiment": 0
+        },
+        "first_limit_time": "93913",
+        "seal_ratio": 0.04576960148348625,
+        "seal_to_mv": 0.007696738394510472,
+        "fd_amount": 75630952.0,
+        "amount": 1652427584.0,
+        "float_mv": 9826363860.04,
+        "turnover_rate": 17.01,
+        "turnover_20ma_ratio": 0.2965715846252325,
+        "volume_ratio": 1.77,
+        "main_net_amount": 467856800.0,
+        "main_net_ratio": 28.31,
+        "medium_net_amount": -200482000.0,
+        "is_hot_sector": false,
+        "dragon_score": 63.775,
+        "sentiment_score": 0,
+        "sentiment_analysis": NaN,
+        "sentiment_adjustment": NaN
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "002426.SZ",
+      "name": "胜利精密",
+      "t_date": "20260317",
+      "t1_date": "20260318",
+      "t_day_score": 144.72229431352687,
+      "auction_score": 68.91498881431767,
+      "final_score": 121.98010266376411,
+      "auction_data": {
+        "open_change_pct": 1.1185682326621884,
+        "auction_volume_ratio": 7.44119,
+        "auction_turnover_rate": 0.636234,
+        "auction_amount": 97851220.0,
+        "auction_volume_to_t_volume": 3.4629807517600852,
+        "auction_volume": 21648500.0,
+        "t_day_volume": 6251406.39,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "603929.SH",
+      "name": "亚翔集成",
+      "t_date": "20260317",
+      "t1_date": "20260318",
+      "t_day_score": 130.30972398305016,
+      "auction_score": 71.39351147943971,
+      "final_score": 112.63486023196701,
+      "auction_data": {
+        "open_change_pct": 4.447743851268489,
+        "auction_volume_ratio": 4.62593,
+        "auction_turnover_rate": 0.0892388,
+        "auction_amount": 30806720.0,
+        "auction_volume_to_t_volume": 1.7619102216055538,
+        "auction_volume": 190400.0,
+        "t_day_volume": 108064.53,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价高开(3-5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "600545.SH",
+      "name": "卓郎智能",
+      "t_date": "20260317",
+      "t1_date": "20260318",
+      "t_day_score": 126.59406335501393,
+      "auction_score": 64.9001350232779,
+      "final_score": 108.0858848554931,
+      "auction_data": {
+        "open_change_pct": 5.225653206650825,
+        "auction_volume_ratio": 2.77985,
+        "auction_turnover_rate": 0.331135,
+        "auction_amount": 26227372.0,
+        "auction_volume_to_t_volume": 4.2299210284232345,
+        "auction_volume": 5920400.0,
+        "t_day_volume": 1399647.88,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比放大(2-3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2625550250825.0,
+    "margin_balance": 18041885093.0,
+    "financing_change_pct": -0.6602565627178276,
+    "margin_change_pct": -1.8328276897455038,
+    "financing_buy_repay_ratio": 0.9567256031673427,
+    "market_data": {
+      "trade_date": "20260317",
+      "total_financing_balance": 2625550250825.0,
+      "total_margin_balance": 18041885093.0,
+      "total_financing_margin_balance": 2643592135918.0,
+      "financing_change_ratio": -0.6602565627178276,
+      "margin_change_ratio": -1.8328276897455038,
+      "financing_buy_ratio": 0.9567256031673427,
+      "sse_data": {
+        "financing_balance": 1336356085559.0,
+        "financing_buy": 93794548660.0,
+        "financing_repay": 97679343236.0,
+        "margin_balance": 12139826117.0,
+        "margin_sell": 63569701.0,
+        "total_balance": 1348495911676.0,
+        "margin_remaining": 2335428239.0
+      },
+      "szse_data": {
+        "financing_balance": 1289194165266.0,
+        "financing_buy": 104924872196.0,
+        "financing_repay": 110028509672.0,
+        "margin_balance": 5902058976.0,
+        "margin_sell": 26456148.0,
+        "total_balance": 1295096224242.0,
+        "margin_remaining": 740604461.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}

@@ -15,10 +15,11 @@ import sys
 
 logger = logging.getLogger(__name__)
 
-# T01严格使用Tushare API - 禁用所有非Tushare数据源
-HAS_HYBRID_SENTIMENT_MODULE = False
-HAS_SENTIMENT_MODULE = False
-logger.info("T01策略初始化 - 严格使用Tushare API数据源")
+# T01使用Tushare API + 东方财富舆情分析
+import requests
+import json
+
+logger.info("T01策略初始化 - 使用Tushare API + 东方财富舆情分析")
 
 
 class LimitUpScoringStrategyV2:
@@ -49,16 +50,24 @@ class LimitUpScoringStrategyV2:
         self.t1_weights = self.strategy_config.get('t1_auction_scoring', {})
         self.risk_config = self.strategy_config.get('risk_control', {})
         
-        # 舆情分析配置 - T01严格使用Tushare API，禁用所有非Tushare数据源
+        # 舆情分析配置 - 启用东方财富eastmoney-financial-search
         self.sentiment_config = self.strategy_config.get('sentiment_analysis', {})
-        self.sentiment_enabled = False  # 强制禁用，只使用Tushare数据源
-        self.sentiment_top_n = 0
-        self.sentiment_days_back = 0
+        self.sentiment_enabled = self.sentiment_config.get('enabled', True)
+        self.sentiment_top_n = self.sentiment_config.get('top_n_for_analysis', 10)
+        self.sentiment_days_back = self.sentiment_config.get('days_back', 1)
+        self.sentiment_max_news = self.sentiment_config.get('max_news_per_stock', 5)
         
-        # 舆情分析器初始化 - 强制禁用
-        self.enable_sentiment = False
-        self.sentiment_analyzer = None
-        logger.info("T01策略: 舆情分析功能已强制禁用（只使用Tushare API数据源）")
+        # 东方财富API配置
+        self.eastmoney_apikey = os.getenv('EASTMONEY_APIKEY')
+        self.eastmoney_api_url = 'https://mkapi2.dfcfs.com/finskillshub/api/claw/news-search'
+        
+        if self.sentiment_enabled and self.eastmoney_apikey:
+            logger.info(f"T01策略: 舆情分析已启用（东方财富），分析前{self.sentiment_top_n}名，最近{self.sentiment_days_back}天新闻")
+        elif self.sentiment_enabled and not self.eastmoney_apikey:
+            logger.warning("T01策略: 舆情分析配置启用但未设置EASTMONEY_APIKEY，将禁用舆情分析")
+            self.sentiment_enabled = False
+        else:
+            logger.info("T01策略: 舆情分析已禁用")
         
         logger.info("涨停股评分策略V2初始化完成")
     
@@ -457,10 +466,10 @@ class LimitUpScoringStrategyV2:
         df = df.sort_values('basic_score', ascending=False)
         logger.info(f"基础评分完成，共 {len(df)} 只股票，最高基础分: {df.iloc[0]['basic_score']:.2f}")
         
-        # 第二阶段：对前N名进行舆情分析
-        if self.enable_sentiment and self.sentiment_analyzer:
+        # 第二阶段：对前N名进行舆情分析（使用东方财富eastmoney-financial-search）
+        if self.sentiment_enabled and self.eastmoney_apikey:
             top_n = min(self.sentiment_top_n, len(df))
-            logger.info(f"开始对前{top_n}名进行舆情分析")
+            logger.info(f"开始对前{top_n}名进行舆情分析（东方财富）")
             
             sentiment_processed = 0
             for i in range(top_n):
@@ -469,18 +478,34 @@ class LimitUpScoringStrategyV2:
                 name = stock['name']
                 
                 try:
-                    sentiment_score = self._score_sentiment(ts_code, name, trade_date)
+                    # 使用东方财富进行舆情分析
+                    sentiment_result = self.analyze_sentiment_eastmoney(name, ts_code)
                     
-                    # 更新分数
-                    df.at[df.index[i], 'sentiment_score'] = sentiment_score
-                    df.at[df.index[i], 'score_details']['sentiment'] = sentiment_score
-                    
-                    # 更新总分：基础分 + 舆情分
-                    new_total_score = stock['basic_score'] + sentiment_score
-                    df.at[df.index[i], 'total_score'] = new_total_score
-                    
-                    sentiment_processed += 1
-                    logger.debug(f"舆情分析: {name} ({ts_code}) - 舆情分: {sentiment_score:.2f}, 总分: {new_total_score:.2f}")
+                    if sentiment_result.get('enabled'):
+                        sentiment_score = sentiment_result.get('score', 0)
+                        sentiment_label = sentiment_result.get('sentiment', 'neutral')
+                        
+                        # 更新分数
+                        df.at[df.index[i], 'sentiment_score'] = sentiment_score
+                        df.at[df.index[i], 'score_details']['sentiment'] = sentiment_score
+                        df.at[df.index[i], 'sentiment_analysis'] = sentiment_result
+                        
+                        # 负面新闻大幅降分
+                        if sentiment_label == 'negative' and sentiment_result.get('negative_count', 0) > 0:
+                            logger.warning(f"{name} 发现负面新闻，大幅降分")
+                            adjustment = -15  # 大幅降分
+                        else:
+                            adjustment = sentiment_score
+                        
+                        # 更新总分：基础分 + 舆情调整
+                        new_total_score = stock['basic_score'] + adjustment
+                        df.at[df.index[i], 'total_score'] = new_total_score
+                        df.at[df.index[i], 'sentiment_adjustment'] = adjustment
+                        
+                        sentiment_processed += 1
+                        logger.info(f"舆情分析: {name} - 情感: {sentiment_label}, 调整: {adjustment:.1f}, 总分: {new_total_score:.1f}")
+                    else:
+                        logger.debug(f"舆情分析未启用或失败: {name}")
                     
                 except Exception as e:
                     logger.warning(f"舆情分析失败 {name} ({ts_code}): {e}")
@@ -488,7 +513,7 @@ class LimitUpScoringStrategyV2:
             
             logger.info(f"舆情分析完成，处理 {sentiment_processed}/{top_n} 只股票")
         else:
-            logger.info("跳过舆情分析，使用基础评分")
+            logger.info("舆情分析已禁用或未配置EASTMONEY_APIKEY，使用基础评分")
         
         # 按总分重新排序
         df = df.sort_values('total_score', ascending=False)
@@ -1582,6 +1607,181 @@ class LimitUpScoringStrategyV2:
             'financing_buy_repay_ratio': risk_factors['financing_buy_ratio'],
             'market_data': margin_data
         }
+    
+    def analyze_sentiment_eastmoney(self, stock_name: str, stock_code: str) -> Dict[str, Any]:
+        """
+        使用东方财富eastmoney-financial-search进行舆情分析
+        
+        Args:
+            stock_name: 股票名称
+            stock_code: 股票代码
+            
+        Returns:
+            舆情分析结果字典
+        """
+        if not self.sentiment_enabled or not self.eastmoney_apikey:
+            return {'enabled': False, 'score': 0, 'sentiment': 'neutral'}
+        
+        try:
+            # 构建查询语句
+            query = f"{stock_name}最新资讯"
+            
+            headers = {
+                'Content-Type': 'application/json',
+                'apikey': self.eastmoney_apikey
+            }
+            data = {'query': query}
+            
+            response = requests.post(
+                self.eastmoney_api_url,
+                headers=headers,
+                json=data,
+                timeout=10
+            )
+            
+            if response.status_code != 200:
+                logger.warning(f"舆情分析API调用失败: {stock_name} - 状态码 {response.status_code}")
+                return {'enabled': True, 'score': 0, 'sentiment': 'neutral', 'error': f'HTTP {response.status_code}'}
+            
+            result = response.json()
+            
+            if result.get('status') != 0:
+                logger.warning(f"舆情分析API返回错误: {stock_name} - {result.get('message', '未知错误')}")
+                return {'enabled': True, 'score': 0, 'sentiment': 'neutral', 'error': result.get('message')}
+            
+            # 解析返回数据
+            news_list = result.get('data', {}).get('data', {}).get('llmSearchResponse', {}).get('data', [])
+            
+            if not news_list:
+                logger.debug(f"未找到 {stock_name} 的相关新闻")
+                return {'enabled': True, 'score': 0, 'sentiment': 'neutral', 'news_count': 0}
+            
+            # 情感分析关键词
+            positive_keywords = ['预增', '增长', '突破', '利好', '买入', '增持', '推荐', '超预期', '景气', '复苏']
+            negative_keywords = ['预亏', '下滑', '减持', '处罚', '调查', '利空', '卖出', '风险', '暴雷', '诉讼', '违规']
+            
+            positive_count = 0
+            negative_count = 0
+            neutral_count = 0
+            
+            analyzed_news = []
+            
+            for news in news_list[:self.sentiment_max_news]:
+                title = news.get('title', '')
+                content = news.get('content', '')
+                text = title + ' ' + content
+                
+                # 情感判断
+                pos_score = sum(1 for kw in positive_keywords if kw in text)
+                neg_score = sum(1 for kw in negative_keywords if kw in text)
+                
+                if pos_score > neg_score:
+                    sentiment = 'positive'
+                    positive_count += 1
+                elif neg_score > pos_score:
+                    sentiment = 'negative'
+                    negative_count += 1
+                else:
+                    sentiment = 'neutral'
+                    neutral_count += 1
+                
+                analyzed_news.append({
+                    'title': title,
+                    'date': news.get('date', ''),
+                    'sentiment': sentiment,
+                    'source': news.get('insName', '')
+                })
+            
+            # 计算舆情得分 (-10 到 +10)
+            total_news = positive_count + negative_count + neutral_count
+            if total_news > 0:
+                sentiment_score = (positive_count * 2 - negative_count * 5) / total_news * 2
+                # 限制在 -10 到 +10 范围
+                sentiment_score = max(-10, min(10, sentiment_score))
+            else:
+                sentiment_score = 0
+            
+            # 确定情感倾向
+            if negative_count > 0:
+                overall_sentiment = 'negative'
+            elif positive_count > total_news * 0.3:
+                overall_sentiment = 'positive'
+            else:
+                overall_sentiment = 'neutral'
+            
+            logger.info(f"舆情分析完成: {stock_name} - 得分 {sentiment_score:.1f}, 情感 {overall_sentiment}")
+            
+            return {
+                'enabled': True,
+                'score': sentiment_score,
+                'sentiment': overall_sentiment,
+                'news_count': total_news,
+                'positive_count': positive_count,
+                'negative_count': negative_count,
+                'neutral_count': neutral_count,
+                'news': analyzed_news
+            }
+            
+        except Exception as e:
+            logger.error(f"舆情分析异常: {stock_name} - {e}")
+            return {'enabled': True, 'score': 0, 'sentiment': 'neutral', 'error': str(e)}
+    
+    def apply_sentiment_to_candidates(self, candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        对候选股票进行舆情分析并调整评分
+        
+        Args:
+            candidates: 候选股票列表（已按基础评分排序）
+            
+        Returns:
+            调整后的候选股票列表
+        """
+        if not self.sentiment_enabled:
+            logger.info("舆情分析已禁用，跳过")
+            return candidates
+        
+        if not candidates:
+            return candidates
+        
+        logger.info(f"开始对前{min(self.sentiment_top_n, len(candidates))}名候选股票进行舆情分析...")
+        
+        # 只对前N名进行舆情分析
+        top_candidates = candidates[:self.sentiment_top_n]
+        
+        for candidate in top_candidates:
+            stock_name = candidate.get('name', '')
+            stock_code = candidate.get('ts_code', '')
+            
+            # 进行舆情分析
+            sentiment_result = self.analyze_sentiment_eastmoney(stock_name, stock_code)
+            
+            # 保存舆情分析结果
+            candidate['sentiment_analysis'] = sentiment_result
+            
+            if sentiment_result.get('enabled'):
+                sentiment_score = sentiment_result.get('score', 0)
+                sentiment = sentiment_result.get('sentiment', 'neutral')
+                
+                # 调整总分
+                original_score = candidate.get('total_score', 0)
+                
+                # 负面新闻直接剔除或大幅降分
+                if sentiment == 'negative' and sentiment_result.get('negative_count', 0) > 0:
+                    logger.warning(f"{stock_name} 发现负面新闻，大幅降分")
+                    candidate['total_score'] = original_score - 15  # 大幅降分
+                    candidate['sentiment_adjustment'] = -15
+                else:
+                    # 正常调整
+                    candidate['total_score'] = original_score + sentiment_score
+                    candidate['sentiment_adjustment'] = sentiment_score
+                
+                logger.info(f"{stock_name} 舆情得分: {sentiment_score:.1f}, 调整后总分: {candidate['total_score']:.1f}")
+        
+        # 重新排序（舆情分析后总分可能变化）
+        candidates.sort(key=lambda x: x.get('total_score', 0), reverse=True)
+        
+        logger.info("舆情分析完成，候选股票已重新排序")
+        return candidates
 
 
 if __name__ == "__main__":

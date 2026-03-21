@@ -1,0 +1,312 @@
+{
+  "generated_at": "2026-03-19T09:25:15.556939",
+  "trade_date": "20260318",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "600468.SH",
+        "name": "百利电气",
+        "trade_date": "20260318",
+        "close": 8.97,
+        "pct_chg": 10.06,
+        "industry": "电网设备",
+        "basic_score": 171.73105111245175,
+        "total_score": 171.73105111245175,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.262388071522746,
+          "liquidity": 13.468663040929,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "93215",
+        "seal_ratio": 0.13119403576137303,
+        "seal_to_mv": 0.007688528436127058,
+        "fd_amount": 75016863.0,
+        "amount": 571800864.0,
+        "float_mv": 9756985829.37,
+        "turnover_rate": 5.91,
+        "turnover_20ma_ratio": 2.4905989122787,
+        "volume_ratio": 0.7,
+        "main_net_amount": 320072900.0,
+        "main_net_ratio": 55.98,
+        "medium_net_amount": -165245400.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "603052.SH",
+        "name": "可川科技",
+        "trade_date": "20260318",
+        "close": 63.49,
+        "pct_chg": 10.0,
+        "industry": "消费电子",
+        "basic_score": 156.50688800059046,
+        "total_score": 156.50688800059046,
+        "score_details": {
+          "first_limit_time": 18.0,
+          "order_quality": 15.050910612178129,
+          "liquidity": 10.455977388412327,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "110138",
+        "seal_ratio": 0.025455306089064288,
+        "seal_to_mv": 0.002254620149068646,
+        "fd_amount": 26896713.0,
+        "amount": 1056625008.0,
+        "float_mv": 11929598434.18,
+        "turnover_rate": 9.31,
+        "turnover_20ma_ratio": 1.0817932165236983,
+        "volume_ratio": 1.71,
+        "main_net_amount": 220302700.0,
+        "main_net_ratio": 20.85,
+        "medium_net_amount": -102983600.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "603387.SH",
+        "name": "基蛋生物",
+        "trade_date": "20260318",
+        "close": 10.38,
+        "pct_chg": 9.96,
+        "industry": "医疗器械",
+        "basic_score": 149.75236908062595,
+        "total_score": 149.75236908062595,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.439952539275097,
+          "liquidity": 10.702416541350862,
+          "money_flow": 9.135,
+          "sector": 3.0,
+          "dragon_list": 81.475,
+          "sentiment": 0
+        },
+        "first_limit_time": "93048",
+        "seal_ratio": 0.21997626963754846,
+        "seal_to_mv": 0.014344149632485745,
+        "fd_amount": 75511240.0,
+        "amount": 343269936.0,
+        "float_mv": 5264253506.46,
+        "turnover_rate": 6.6,
+        "turnover_20ma_ratio": 0.7057249624052587,
+        "volume_ratio": 2.61,
+        "main_net_amount": 28397199.999999996,
+        "main_net_ratio": 8.27,
+        "medium_net_amount": -18118000.0,
+        "is_hot_sector": false,
+        "dragon_score": 81.475,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "300302.SZ",
+        "name": "同有科技",
+        "trade_date": "20260318",
+        "close": 24.83,
+        "pct_chg": 20.01,
+        "industry": "计算机设",
+        "basic_score": 139.3244208735753,
+        "total_score": 139.3244208735753,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.21649392924818,
+          "liquidity": 10.0829269443271,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 71.025,
+          "sentiment": 0
+        },
+        "first_limit_time": "95321",
+        "seal_ratio": 0.10824696462409057,
+        "seal_to_mv": 0.022946174471760346,
+        "fd_amount": 210133012.0,
+        "amount": 1941236992.0,
+        "float_mv": 9157649012.85,
+        "turnover_rate": 22.22,
+        "turnover_20ma_ratio": 1.0748780832981304,
+        "volume_ratio": 3.36,
+        "main_net_amount": 401953700.0,
+        "main_net_ratio": 20.71,
+        "medium_net_amount": -193369500.0,
+        "is_hot_sector": false,
+        "dragon_score": 71.025,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "603615.SH",
+        "name": "茶花股份",
+        "trade_date": "20260318",
+        "close": 20.85,
+        "pct_chg": 10.03,
+        "industry": "家居用品",
+        "basic_score": 138.5349101296403,
+        "total_score": 138.5349101296403,
+        "score_details": {
+          "first_limit_time": 12.0,
+          "order_quality": 15.383202602624781,
+          "liquidity": 10.776707527015535,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 87.375,
+          "sentiment": 0
+        },
+        "first_limit_time": "132350",
+        "seal_ratio": 0.19160130131239064,
+        "seal_to_mv": 0.005128608055578529,
+        "fd_amount": 25858170.0,
+        "amount": 134958217.0,
+        "float_mv": 5041947000.0,
+        "turnover_rate": 2.78,
+        "turnover_20ma_ratio": 1.2930122581046606,
+        "volume_ratio": 1.48,
+        "main_net_amount": 28589899.999999996,
+        "main_net_ratio": 21.18,
+        "medium_net_amount": -11058599.999999998,
+        "is_hot_sector": false,
+        "dragon_score": 87.375,
+        "sentiment_score": 0
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "603387.SH",
+      "name": "基蛋生物",
+      "t_date": "20260318",
+      "t1_date": "20260319",
+      "t_day_score": 149.75236908062595,
+      "auction_score": 64.98628837966103,
+      "final_score": 124.32254487033647,
+      "auction_data": {
+        "open_change_pct": 3.3898305084745797,
+        "auction_volume_ratio": 16.1988,
+        "auction_turnover_rate": 0.410211,
+        "auction_amount": 20304704.0,
+        "auction_volume_to_t_volume": 6.212843031194869,
+        "auction_volume": 2080400.0,
+        "t_day_volume": 334854.75,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价高开(3-5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "300302.SZ",
+      "name": "同有科技",
+      "t_date": "20260318",
+      "t1_date": "20260319",
+      "t_day_score": 139.3244208735753,
+      "auction_score": 47.60510515611402,
+      "final_score": 111.8086261583369,
+      "auction_data": {
+        "open_change_pct": 3.4316094731754334,
+        "auction_volume_ratio": 1.74083,
+        "auction_turnover_rate": 0.115017,
+        "auction_amount": 9077880.0,
+        "auction_volume_to_t_volume": 0.5175822899104568,
+        "auction_volume": 424200.0,
+        "t_day_volume": 819579.82,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价高开(3-5%)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "001389.SZ",
+      "name": "广合科技",
+      "t_date": "20260318",
+      "t1_date": "20260319",
+      "t_day_score": 130.86800250680938,
+      "auction_score": 33.56057841176472,
+      "final_score": 101.67577527829599,
+      "auction_data": {
+        "open_change_pct": 1.516544117647064,
+        "auction_volume_ratio": 0.40119,
+        "auction_turnover_rate": 0.0245529,
+        "auction_amount": 4119785.0,
+        "auction_volume_to_t_volume": 0.4070274100769511,
+        "auction_volume": 37300.0,
+        "t_day_volume": 91640.02,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价小幅高开(0-3%)",
+          "竞价量比低迷(<0.5)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2628124337772.0,
+    "margin_balance": 18038471958.0,
+    "financing_change_pct": -0.2228484106852377,
+    "margin_change_pct": -0.020802755483259088,
+    "financing_buy_repay_ratio": 1.0136365122613857,
+    "market_data": {
+      "trade_date": "20260318",
+      "total_financing_balance": 2628124337772.0,
+      "total_margin_balance": 18038471958.0,
+      "total_financing_margin_balance": 2646162809730.0,
+      "financing_change_ratio": -0.2228484106852377,
+      "margin_change_ratio": -0.020802755483259088,
+      "financing_buy_ratio": 1.0136365122613857,
+      "sse_data": {
+        "financing_balance": 1337849683232.0,
+        "financing_buy": 90198174950.0,
+        "financing_repay": 88699734265.0,
+        "margin_balance": 12091397950.0,
+        "margin_sell": 61250011.0,
+        "total_balance": 1349941081182.0,
+        "margin_remaining": 2301003397.0
+      },
+      "szse_data": {
+        "financing_balance": 1290274654540.0,
+        "financing_buy": 101821768050.0,
+        "financing_repay": 100736953026.0,
+        "margin_balance": 5947074008.0,
+        "margin_sell": 23696658.0,
+        "total_balance": 1296221728548.0,
+        "margin_remaining": 731008780.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}

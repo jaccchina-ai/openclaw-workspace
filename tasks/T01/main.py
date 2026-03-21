@@ -180,7 +180,14 @@ def run_t1_auction_scoring(config: dict, trade_date: str, candidates_data: dict,
     strategy = LimitUpScoringStrategy(config)
     
     # 将候选数据转换为DataFrame
-    candidates_df = pd.DataFrame(candidates_data.get('candidates', []))
+    # 支持两种格式: 1) {'candidates': [...]}  2) 直接是列表 [...]
+    if isinstance(candidates_data, list):
+        candidates_list = candidates_data
+    elif isinstance(candidates_data, dict):
+        candidates_list = candidates_data.get('candidates', [])
+    else:
+        candidates_list = []
+    candidates_df = pd.DataFrame(candidates_list)
     
     if candidates_df.empty:
         logger.warning("没有候选股票数据")

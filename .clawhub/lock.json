@@ -64,6 +64,10 @@
     "weather": {
       "version": "1.0.0",
       "installedAt": 1773414212878
+    },
+    "eastmoney-financial-search": {
+      "version": "1.0.2",
+      "installedAt": 1773551846475
     }
   }
 }

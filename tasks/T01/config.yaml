@@ -80,8 +80,8 @@ strategy:
     include_reasons: true
     top_n_candidates: 10
   sentiment_analysis:
-    enabled: false
-    top_n_for_analysis: 10  # 只对前N名进行舆情分析
+    enabled: true  # 启用东方财富舆情分析
+    top_n_for_analysis: 10  # 对前10名进行舆情分析
     days_back: 1
     max_news_per_stock: 5
   risk_control:
@@ -134,3 +134,12 @@ system_optimization:
     # 系统健康预警
     system_health_warning: true
 version: 1.3.0
+
+# 通知配置
+notification:
+  channels:
+    - feishu
+  enabled: true
+  feishu_user_id: ou_b8a256a9cb526db6c196cb438d6893a6
+  # 飞书应用凭证（用于直接API发送，绕过CLI）
+  # 请设置环境变量：FEISHU_APP_ID 和 FEISHU_APP_SECRET

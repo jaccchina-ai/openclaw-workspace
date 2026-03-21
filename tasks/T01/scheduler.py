@@ -25,10 +25,66 @@ import pandas as pd
 import tushare as ts
 import psutil
 
-# OpenClaw message工具导入
+# OpenClaw message工具导入 - 使用subprocess调用CLI
 try:
-    from message import message
+    import subprocess
+    import os
     MESSAGE_TOOL_AVAILABLE = True
+    
+    def message(action=None, channel=None, message=None, **kwargs):
+        """通过subprocess调用openclaw message工具发送消息"""
+        try:
+            # 从环境变量获取飞书用户ID
+            feishu_user_id = os.environ.get('FEISHU_USER_ID', 'ou_b8a256a9cb526db6c196cb438d6893a6')
+            
+            # 构建命令 - 指定目标用户
+            cmd = ['/root/.nvm/versions/node/v22.22.0/bin/openclaw', 'message', 'send', 
+                   '--channel', channel,
+                   '--target', f'user:{feishu_user_id}',
+                   '--message', message]
+            
+            # 设置环境变量
+            env = os.environ.copy()
+            env['PATH'] = '/root/.nvm/versions/node/v22.22.0/bin:' + env.get('PATH', '')
+            
+            # 执行命令
+            result = subprocess.run(
+                cmd,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            
+            if result.returncode == 0:
+                return True
+            else:
+                # 如果失败，尝试使用fallback记录到日志
+                print(f"Message send failed: {result.stderr}")
+                # 记录到fallback日志
+                fallback_log = Path('/root/.openclaw/workspace/logs/feishu_fallback.log')
+                fallback_log.parent.mkdir(parents=True, exist_ok=True)
+                with open(fallback_log, 'a', encoding='utf-8') as f:
+                    f.write(f"\n{'='*60}\n")
+                    f.write(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                    f.write(f"Error: {result.stderr}\n")
+                    f.write(f"Message:\n{message}\n")
+                return False
+        except Exception as e:
+            print(f"Message send error: {e}")
+            # 记录到fallback日志
+            try:
+                fallback_log = Path('/root/.openclaw/workspace/logs/feishu_fallback.log')
+                fallback_log.parent.mkdir(parents=True, exist_ok=True)
+                with open(fallback_log, 'a', encoding='utf-8') as f:
+                    f.write(f"\n{'='*60}\n")
+                    f.write(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                    f.write(f"Exception: {e}\n")
+                    f.write(f"Message:\n{message}\n")
+            except:
+                pass
+            return False
+            
 except ImportError:
     MESSAGE_TOOL_AVAILABLE = False
     message = None
@@ -39,6 +95,27 @@ try:
     FEISHU_ENHANCED_AVAILABLE = True
 except ImportError:
     FEISHU_ENHANCED_AVAILABLE = False
+
+# 飞书直接发送模块导入（新方案 - 绕过CLI）
+try:
+    from feishu_direct_sender import FeishuDirectSender, send_feishu_message_direct
+    FEISHU_DIRECT_AVAILABLE = True
+except ImportError:
+    FEISHU_DIRECT_AVAILABLE = False
+
+# React Loop 飞书发送器导入（彻底解决Node.js内存溢出问题）
+try:
+    from react_loop_feishu_sender import ReactLoopFeishuSender, send_feishu_message
+    REACT_LOOP_AVAILABLE = True
+except ImportError:
+    REACT_LOOP_AVAILABLE = False
+
+# 增强版飞书发送器导入（优先使用直接API调用）
+try:
+    from enhanced_feishu_sender import EnhancedFeishuSender, send_message as send_feishu_enhanced
+    ENHANCED_SENDER_AVAILABLE = True
+except ImportError:
+    ENHANCED_SENDER_AVAILABLE = False
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -254,7 +331,7 @@ class T01Scheduler:
     def load_trading_calendar(self):
         """加载本地交易日历文件，避免Tushare API挂起问题"""
         import json
-        from datetime import datetime
+        # datetime已在模块顶部导入，避免重复导入导致变量冲突
         
         calendar_path = '/root/.openclaw/workspace/trading_calendar.json'
         try:
@@ -266,7 +343,7 @@ class T01Scheduler:
             self.trading_calendar = None
     
     def is_trading_day(self, date_str):
-        """检查给定日期是否为交易日
+        """检查给定日期是否为交易日 - 使用Tushare API实时查询
         
         Args:
             date_str: 日期字符串，格式可以是 YYYY-MM-DD 或 YYYYMMDD
@@ -277,8 +354,10 @@ class T01Scheduler:
         # 统一日期格式为 YYYY-MM-DD
         if len(date_str) == 8:  # YYYYMMDD
             formatted_date = f"{date_str[0:4]}-{date_str[4:6]}-{date_str[6:8]}"
+            api_date = date_str
         else:
             formatted_date = date_str
+            api_date = date_str.replace('-', '')
         
         # 首先检查是否为周末（周六/周日）- 这是硬性规则
         try:
@@ -291,22 +370,50 @@ class T01Scheduler:
             self.logger.warning(f"无法解析日期 {formatted_date}: {e}")
             return False
         
+        # 使用Tushare API实时查询交易日历
+        try:
+            import signal
+            
+            def timeout_handler(signum, frame):
+                raise TimeoutError("Tushare API timeout")
+            
+            # 设置5秒超时
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(5)
+            
+            try:
+                cal = self.pro.trade_cal(exchange='SSE', start_date=api_date, end_date=api_date)
+                signal.alarm(0)  # 取消超时
+                
+                if not cal.empty:
+                    is_open = cal.iloc[0]['is_open'] == 1
+                    self.logger.debug(f"📅 Tushare API查询: {formatted_date} 是{'交易日' if is_open else '非交易日'}")
+                    return is_open
+                else:
+                    self.logger.warning(f"⚠️ Tushare API返回空数据: {formatted_date}")
+                    return False
+                    
+            except TimeoutError:
+                self.logger.warning(f"⚠️ Tushare API超时，回退到本地交易日历: {formatted_date}")
+                signal.alarm(0)
+                return self._is_trading_day_fallback(formatted_date)
+                
+        except Exception as e:
+            self.logger.warning(f"⚠️ Tushare API查询失败: {e}，回退到本地交易日历")
+            return self._is_trading_day_fallback(formatted_date)
+    
+    def _is_trading_day_fallback(self, formatted_date):
+        """本地交易日历回退方案"""
         # 加载交易日历
         if not hasattr(self, 'trading_calendar') or self.trading_calendar is None:
             self.load_trading_calendar()
             if self.trading_calendar is None:
-                self.logger.error("无法加载交易日历，回退到Tushare API")
-                # 回退到原始API调用
-                try:
-                    cal = self.pro.trade_cal(exchange='SSE', start_date=date_str, end_date=date_str)
-                    return not cal.empty and cal.iloc[0]['is_open'] == 1
-                except:
-                    return False
+                self.logger.error("无法加载本地交易日历，默认视为非交易日")
+                return False
         
         # 检查是否为节假日
         holidays = self.trading_calendar.get('2026', {}).get('holidays', [])
         if formatted_date in holidays:
-            self.logger.debug(f"📅 {formatted_date} 是节假日，非交易日")
             return False
         
         # 检查是否在交易日列表中
@@ -314,8 +421,8 @@ class T01Scheduler:
         if formatted_date in trading_days:
             return True
         
-        # 如果不在交易日列表中，也不是节假日，但也不是周末，可能是数据不完整
-        self.logger.warning(f"⚠️ {formatted_date} 不在交易日历中，默认视为非交易日")
+        # 默认视为非交易日
+        self.logger.warning(f"⚠️ {formatted_date} 不在本地交易日历中，默认视为非交易日")
         return False
     
     def get_trade_date(self, date_str: str = None, offset: int = 0) -> str:
@@ -373,195 +480,37 @@ class T01Scheduler:
             self.logger.warning(f"正偏移量 {offset} 暂不支持，返回最近交易日")
             return trade_dates[0] if trade_dates else today
     
-    def send_feishu_message(self, message: str) -> bool:
-        """发送飞书消息（增强版）
-        
+    def send_feishu_message(self, message_content: str) -> bool:
+        """发送飞书消息 - 使用OpenClaw message工具
+
+        直接使用OpenClaw的message工具通过飞书channel发送消息。
+
         Args:
-            message: 消息内容
-            
+            message_content: 消息内容
+
         Returns:
             bool: 是否发送成功
         """
-        # 优先使用OpenClaw message工具直接发送
-        if MESSAGE_TOOL_AVAILABLE:
-            try:
-                self.logger.info("📤 尝试使用message工具直接发送飞书消息")
-                result = self.send_feishu_message_direct(message)
-                if result:
-                    return True
-                else:
-                    self.logger.warning("⚠️ message工具发送失败，尝试回退方法")
-            except Exception as e:
-                self.logger.error(f"❌ message工具发送异常，尝试回退方法: {e}")
-        else:
-            self.logger.debug("message工具不可用，使用回退方法")
-        
-        # 回退到原有逻辑（增强发送器 → 优化版 → 原始方法）
-        if FEISHU_ENHANCED_AVAILABLE:
-            try:
-                # 使用增强发送器（优化配置）
-                sender = FeishuMessageSender(
-                    config={
-                        "max_retries": 2,
-                        "timeout": 60,  # 增加超时时间，确保发送成功
-                        "enable_fallback": True,
-                        "log_file": "/root/.openclaw/workspace/logs/feishu_fallback.log",
-                        "pre_gc": True,  # 发送前执行GC
-                        "message_max_len": 2000  # 限制消息长度
-                    },
-                    logger=self.logger
-                )
-                
-                result = sender.send_with_retry(message, context="T01_scheduler")
-                
-                if result["success"]:
-                    self.logger.info(f"✅ 飞书消息发送成功 (尝试次数: {result['attempts']})")
-                    return True
-                else:
-                    if result.get("fallback_used") and result.get("fallback_success"):
-                        self.logger.warning(f"⚠️ 飞书消息发送失败，已记录到fallback日志")
-                        return True  # 视为成功，因为消息已保存
-                    else:
-                        self.logger.error(f"❌ 飞书消息发送失败: {result.get('last_error', '未知错误')}")
-                        return False
-                        
-            except Exception as e:
-                self.logger.error(f"❌ 增强发送器异常，回退到原始方法: {e}")
-                # 回退到原始方法
-                return self._send_feishu_message_legacy(message)
-        else:
-            # 增强模块不可用，使用原始方法
-            return self._send_feishu_message_legacy(message)
-    
-    def _send_feishu_message_optimized(self, message: str) -> bool:
-        """优化版飞书消息发送方法
-        
-        针对GC内存问题优化:
-        1. 更长的超时时间(60秒) - 确保发送成功
-        2. 预执行内存清理 - 减少GC压力
-        3. 使用Popen非阻塞执行 - 更好控制
-        4. 消息分片 - 避免超大消息
-        5. 进程超时强制终止
-        """
-        import gc
-        import signal
-        
         try:
-            # 预执行内存清理
-            gc.collect()
-            
-            # 使用绝对路径确保cron环境中可用
-            openclaw_path = "/root/.nvm/versions/node/v22.22.0/bin/openclaw"
-            
-            # 消息分片 - 如果消息过大，只发送前2000字符
-            max_msg_len = 2000
-            if len(message) > max_msg_len:
-                message = message[:max_msg_len] + "\n...(消息已截断)"
-                self.logger.warning(f"⚠️ 消息过长，已截断至{max_msg_len}字符")
-            
-            cmd = [
-                openclaw_path, 'message', 'send',
-                '--channel', 'feishu',
-                '--target', 'user:ou_b8a256a9cb526db6c196cb438d6893a6',
-                '--message', message
-            ]
-            
-            self.logger.info(f"📤 发送飞书消息(优化版): {len(message)} 字符")
-            
-            # 设置Node.js内存限制，避免GC问题
-            env = os.environ.copy()
-            env['NODE_OPTIONS'] = '--max-old-space-size=512'
-            
-            # 使用Popen非阻塞执行，更好控制超时
-            process = subprocess.Popen(
-                cmd, 
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.PIPE,
-                text=True,
-                env=env
-            )
-            
-            # 等待60秒，超时强制终止
-            try:
-                stdout, stderr = process.communicate(timeout=60)
-                
-                if process.returncode == 0:
-                    self.logger.info("✅ 飞书消息发送成功")
-                    return True
-                else:
-                    self.logger.error(f"❌ 飞书消息发送失败: {stderr}")
-                    return False
-                    
-            except subprocess.TimeoutExpired:
-                # 强制终止进程
-                process.kill()
-                stdout, stderr = process.communicate()
-                self.logger.error(f"❌ 飞书消息发送超时(60秒)，进程已强制终止")
-                return False
-                
-        except Exception as e:
-            self.logger.error(f"❌ 飞书消息发送异常: {e}")
-            return False
-    
-    def _send_feishu_message_legacy(self, message: str) -> bool:
-        """原始发送方法（已弃用，使用优化版）"""
-        return self._send_feishu_message_optimized(message)
-    
-    def send_feishu_message_direct(self, message_content: str) -> bool:
-        """使用OpenClaw message工具直接发送飞书消息
-        
-        该方法使用OpenClaw的message工具直接发送消息，替代subprocess调用openclaw CLI。
-        
-        Args:
-            message_content: 消息内容字符串
-            
-        Returns:
-            bool: 是否发送成功
-        """
-        if not MESSAGE_TOOL_AVAILABLE or message is None:
-            self.logger.error("❌ message工具不可用，无法使用直接发送方法")
-            return False
-        
-        try:
-            # 预执行内存清理，避免GC问题
-            import gc
-            gc.collect()
-            
-            # 消息长度限制 - 如果消息过大，只发送前2000字符
-            max_msg_len = 2000
-            original_len = len(message_content)
-            if original_len > max_msg_len:
-                message_content = message_content[:max_msg_len] + "\n...(消息已截断)"
-                self.logger.warning(f"⚠️ 消息过长({original_len}字符)，已截断至{max_msg_len}字符")
-            
-            self.logger.info(f"📤 使用message工具直接发送飞书消息: {len(message_content)} 字符")
-            
-            # 使用message工具发送飞书消息
+            self.logger.info(f"📤 使用OpenClaw message工具发送飞书消息: {len(message_content)} 字符")
+
+            # 使用OpenClaw message工具直接发送
+            # 注意：使用导入的message函数，不是参数名
             result = message(
                 action="send",
                 channel="feishu",
                 message=message_content
             )
-            
-            # 检查结果
-            if result and isinstance(result, dict):
-                if result.get("success") or result.get("ok") or result.get("message_id"):
-                    self.logger.info("✅ 飞书消息直接发送成功")
-                    return True
-                else:
-                    error_msg = result.get("error") or result.get("message") or "未知错误"
-                    self.logger.error(f"❌ 飞书消息发送失败: {error_msg}")
-                    return False
-            elif result:
-                # 非字典返回，视为成功
-                self.logger.info(f"✅ 飞书消息发送成功 (返回: {result})")
+
+            if result:
+                self.logger.info("✅ 飞书消息发送成功")
                 return True
             else:
-                self.logger.error("❌ 飞书消息发送失败: 无返回结果")
+                self.logger.error("❌ 飞书消息发送失败")
                 return False
-                
+
         except Exception as e:
-            self.logger.error(f"❌ 飞书消息直接发送异常: {e}", exc_info=True)
+            self.logger.error(f"❌ 发送飞书消息异常: {e}")
             return False
     
     def prepare_t_day_push_message(self, result: dict) -> str:
@@ -894,7 +843,7 @@ class T01Scheduler:
             except Exception as e:
                 self.logger.warning(f"无法获取下一个交易日: {e}")
                 # 如果无法获取，默认加1天 (简化处理)
-                from datetime import datetime, timedelta
+                # 使用已经导入的datetime和timedelta，避免变量冲突
                 current_dt = datetime.strptime(t_date, '%Y%m%d')
                 next_dt = current_dt + timedelta(days=1)
                 t1_date = next_dt.strftime('%Y%m%d')
@@ -940,7 +889,12 @@ class T01Scheduler:
             self.logger.error(f"保存候选股票失败: {e}")
     
     def load_candidates_for_t1(self, t1_date: str) -> list:
-        """加载T日候选股票用于T+1日分析"""
+        """加载T日候选股票用于T+1日分析
+        
+        支持两种文件格式:
+        1. 字典格式: {'t_date': '...', 't1_date': '...', 'candidates': [...]}
+        2. 列表格式: [...] (直接是候选股票列表)
+        """
         try:
             # 查找所有候选文件
             candidate_files = list(self.state_dir.glob("candidates_*.json"))
@@ -948,16 +902,49 @@ class T01Scheduler:
                 self.logger.warning(f"没有找到候选股票文件 (T+1日: {t1_date})")
                 return []
             
+            # 辅助函数：从文件名解析日期
+            def parse_dates_from_filename(file_path):
+                """从文件名解析t_date和t1_date"""
+                import re
+                match = re.search(r'candidates_(\d{8})_to_(\d{8})\.json', file_path.name)
+                if match:
+                    return match.group(1), match.group(2)
+                return None, None
+            
+            # 辅助函数：提取候选股票列表
+            def extract_candidates(data, file_path):
+                """从数据中提取候选股票列表，支持两种格式"""
+                if isinstance(data, list):
+                    # 列表格式：直接是候选股票列表
+                    self.logger.info(f"文件 {file_path.name} 使用列表格式")
+                    return data
+                elif isinstance(data, dict):
+                    # 字典格式：提取candidates字段
+                    return data.get('candidates', [])
+                else:
+                    self.logger.warning(f"文件 {file_path.name} 格式未知: {type(data)}")
+                    return []
+            
+            # 辅助函数：提取t_date
+            def extract_t_date(data, file_path):
+                """从数据中提取t_date，支持两种格式"""
+                if isinstance(data, dict):
+                    return data.get('trade_date') or data.get('t_date')
+                # 列表格式：尝试从文件名解析
+                t_date, _ = parse_dates_from_filename(file_path)
+                return t_date
+            
             # 优先查找文件名中包含目标T+1日的文件
             matched_files = []
             for file_path in candidate_files:
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
+                    # 从文件名解析日期
+                    file_t_date, file_t1_date = parse_dates_from_filename(file_path)
                     
                     # 检查t1_date是否匹配
-                    file_t1_date = data.get('t1_date')
                     if file_t1_date == t1_date:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
                         matched_files.append((file_path, data))
                         self.logger.debug(f"找到匹配的候选文件: {file_path} (T+1日: {file_t1_date})")
                 except Exception as e:
@@ -969,10 +956,11 @@ class T01Scheduler:
                 file_path, data = matched_files[0]
                 self.logger.info(f"加载候选股票: {file_path} (T+1日: {t1_date})")
                 
-                # 为每个候选股票添加trade_date字段
-                candidates = data.get('candidates', [])
-                # 尝试获取trade_date或t_date字段
-                t_date = data.get('trade_date') or data.get('t_date')
+                # 提取候选股票列表
+                candidates = extract_candidates(data, file_path)
+                
+                # 提取t_date
+                t_date = extract_t_date(data, file_path)
                 
                 if t_date:
                     for candidate in candidates:
@@ -993,10 +981,11 @@ class T01Scheduler:
             
             self.logger.info(f"加载最新候选股票: {latest_file}")
             
-            # 为每个候选股票添加trade_date字段
-            candidates = data.get('candidates', [])
-            # 尝试获取trade_date或t_date字段
-            t_date = data.get('trade_date') or data.get('t_date')
+            # 提取候选股票列表
+            candidates = extract_candidates(data, latest_file)
+            
+            # 提取t_date
+            t_date = extract_t_date(data, latest_file)
             
             if t_date:
                 for candidate in candidates:
@@ -1187,8 +1176,27 @@ class T01Scheduler:
             """T日评分任务"""
             self.logger.info("⏰ 执行T日评分任务")
             
+            # 强制使用北京时间
+            import os
+            os.environ['TZ'] = 'Asia/Shanghai'
+            import time
+            time.tzset()
+            from datetime import datetime
+            
             # 获取当日日期 (如果是交易日)
-            today = datetime.now().strftime('%Y%m%d')
+            now = datetime.now()
+            today = now.strftime('%Y%m%d')
+            current_hour = now.hour
+            
+            # 详细日志记录时区信息
+            self.logger.info(f"📍 T日评分 - 当前系统时区: {os.environ.get('TZ', 'not set')}")
+            self.logger.info(f"📍 T日评分 - 当前时间: {now.strftime('%Y-%m-%d %H:%M:%S')} (北京时间)")
+            self.logger.info(f"📍 T日评分 - 当前小时: {current_hour}")
+            
+            # 严格检查：必须在20:00左右执行（北京时间）
+            if not (20 <= current_hour <= 23):
+                self.logger.warning(f"⚠️ T日评分在非标准时间执行: {now.strftime('%H:%M')}")
+                self.logger.warning(f"    预期执行时间: 20:00-23:59（北京时间）")
             
             # 检查是否为交易日
             try:
@@ -1205,9 +1213,9 @@ class T01Scheduler:
             except Exception as e:
                 self.logger.error(f"T日评分任务异常: {e}")
         
-        # 调度任务
+        # 调度任务 - schedule库使用系统本地时间(北京时间)
         schedule.every().day.at("20:00").do(t_day_job)
-        self.logger.info(f"✅ T日评分任务已调度: 每天20:00")
+        self.logger.info(f"✅ T日评分任务已调度: 每天20:00 (北京时间)")
         return t_day_job
     
     def schedule_t1_task(self):
@@ -1267,15 +1275,29 @@ class T01Scheduler:
             """T+1日竞价分析任务"""
             self.logger.info("⏰ 执行T+1日竞价分析任务")
             
-            # 获取当前时间
+            # 获取当前时间（强制使用北京时间）
+            import os
+            os.environ['TZ'] = 'Asia/Shanghai'
+            import time
+            time.tzset()
+            from datetime import datetime
+            
             now = datetime.now()
             today = now.strftime('%Y%m%d')
             current_time = now.strftime('%H:%M')
+            current_hour = now.hour
             
-            # 检查是否为交易时间段（09:25-09:29）
-            if not ('09:25' <= current_time <= '09:29'):
-                self.logger.warning(f"❌ 非交易时间触发竞价分析: {current_time}")
-                self.logger.warning(f"    竞价分析应在09:25-09:29执行，当前时间{current_time}，跳过执行")
+            # 详细日志记录时区信息
+            self.logger.info(f"📍 当前系统时区: {os.environ.get('TZ', 'not set')}")
+            self.logger.info(f"📍 当前时间: {now.strftime('%Y-%m-%d %H:%M:%S')} (北京时间)")
+            self.logger.info(f"📍 当前小时: {current_hour}")
+            
+            # 严格检查：必须在09:25-09:29之间执行（北京时间）
+            if not (9 == current_hour and 25 <= now.minute <= 29):
+                self.logger.error(f"🚫 非交易时间触发竞价分析: {current_time}")
+                self.logger.error(f"    竞价分析必须在09:25-09:29（北京时间）执行")
+                self.logger.error(f"    当前小时: {current_hour}, 分钟: {now.minute}")
+                self.logger.error(f"    跳过执行！")
                 return
             
             # 检查是否为交易日
@@ -1315,9 +1337,10 @@ class T01Scheduler:
             except Exception as e:
                 self.logger.error(f"T+1日竞价分析任务异常: {e}")
         
-        # 调度任务
+        # 调度任务 - schedule库使用系统本地时间(北京时间)
         schedule.every().day.at("09:20").do(pre_auction_check)
         schedule.every().day.at("09:25").do(t1_job)
+        self.logger.info(f"✅ T+1竞价分析任务已调度: 每天09:20/09:25 (北京时间)")
         return t1_job
     
     def run_once(self, mode: str = 'test'):

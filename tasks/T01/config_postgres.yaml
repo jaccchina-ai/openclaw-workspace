@@ -1,0 +1,51 @@
+# T01 PostgreSQL + TimescaleDB 配置
+
+# PostgreSQL 数据库配置
+postgres:
+  host: localhost
+  port: 5432
+  database: t01_strategy
+  user: t01_user
+  password: t01_password
+  
+  # 连接池配置
+  pool:
+    min_size: 5
+    max_size: 20
+    timeout: 30
+  
+  # SSL 配置（生产环境启用）
+  ssl:
+    enabled: false
+    ca_cert: null
+    client_cert: null
+    client_key: null
+
+# 数据保留策略（TimescaleDB）
+retention:
+  # 原始数据保留时间（永久保留设为 null）
+  raw_data: null
+  
+  # 连续聚合数据保留时间
+  continuous_aggregates:
+    daily: 365 days
+    weekly: 730 days
+    monthly: null  # 永久保留
+
+# 备份配置
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # 每天凌晨2点
+  retention: 30  # 保留30天
+  path: ./backups
+
+# 性能配置
+performance:
+  # 查询超时（秒）
+  query_timeout: 30
+  
+  # 批量插入大小
+  batch_size: 1000
+  
+  # 自动刷新连续聚合
+  auto_refresh_aggregates: true

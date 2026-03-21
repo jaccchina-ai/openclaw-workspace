@@ -163,6 +163,42 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 **Don't overdo it:** One reaction per message max. Pick the one that fits best.
 
+## 🔧 Superpowers 技能 - 源代码修改的硬性要求
+
+**生效日期**: 2026-03-21
+
+**核心规则**: 所有涉及源代码修改的工作，**必须**使用 `superpowers` 技能。
+
+### 强制使用场景
+以下情况**严禁**直接编辑代码，必须使用 superpowers 工作流：
+1. **构建新功能或应用** - 触发 brainstorm → plan → subagent 执行循环
+2. **调试 Bug 或测试失败** - 触发系统性根因分析流程
+3. **添加/修改功能** - 用户说 "let's build", "help me plan", "I want to add X", "this is broken"
+4. **完成功能分支** - 触发测试验证 + 合并/PR 流程
+
+### 例外情况（可直接编辑）
+- 单行修复（one-liner fixes）
+- 仅读取代码
+- 非代码任务
+
+### 执行流程
+```
+Idea → Brainstorm → Plan → Subagent-Driven Build (TDD) → Code Review → Finish Branch
+```
+
+**硬性要求**:
+- **TDD 强制**: 每个任务必须先写测试 → 看测试失败 → 实现 → 看测试通过 → 提交
+- **设计先行**: 未经用户批准设计文档，不得编写任何代码
+- **双阶段审查**: 每个任务必须经过 spec-reviewer 和 code-quality reviewer 审查
+- **子代理执行**: 使用 `sessions_spawn` 派遣实现者和审查者子代理
+
+### 技能文档
+详细流程请参考: `/root/.openclaw/workspace/skills/superpowers/SKILL.md`
+
+**违反后果**: 直接编辑源代码而不使用 superpowers 技能，视为违反工作规范。
+
+---
+
 ## Tools
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
