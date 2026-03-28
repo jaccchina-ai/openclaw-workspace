@@ -2,6 +2,35 @@ api:
   api_key: 870008d508d2b0e57ecf2ccc586c23c4ecc37522f5e93890fb3d56ab
   endpoint: http://api.tushare.pro
   timeout: 30
+
+# PCA因子正交化配置
+pca:
+  enabled: false  # 默认关闭，不影响现有功能
+  variance_threshold: 0.9  # 方差保留阈值，保留90%的方差信息
+  standardize: true  # 是否在PCA前进行标准化
+  
+  # 测试模式配置
+  test_mode:
+    enabled: true  # 启用测试模式
+    duration_days: 14  # 测试持续14天
+    auto_promote: true  # 自动根据结果决定是否开启
+    min_samples: 10  # 最少需要10个样本才做决策
+    promote_threshold:
+      win_rate_improvement: 0.05  # 胜率提升5%则开启
+      sharpe_improvement: 0.1  # 夏普比率提升0.1则开启
+    demote_threshold:
+      win_rate_drop: -0.03  # 胜率下降3%则保持关闭
+      sharpe_drop: -0.05  # 夏普比率下降0.05则保持关闭
+    
+  # 观测指标
+  monitoring:
+    metrics:
+      - win_rate  # 胜率
+      - sharpe_ratio  # 夏普比率
+      - max_drawdown  # 最大回撤
+      - avg_return  # 平均收益
+    comparison_baseline: "pre_pca"  # 与PCA前基线对比
+    decision_interval_days: 7  # 每7天评估一次
 data_sources:
   akshare:
     enabled: false
@@ -143,3 +172,17 @@ notification:
   feishu_user_id: ou_b8a256a9cb526db6c196cb438d6893a6
   # 飞书应用凭证（用于直接API发送，绕过CLI）
   # 请设置环境变量：FEISHU_APP_ID 和 FEISHU_APP_SECRET
+
+# 回测配置
+backtest:
+  enabled: true  # 启用回测系统
+  lookback_days: 252  # 回测历史数据天数，252个交易日约等于1年
+  initial_capital: 1000000  # 初始资金100万人民币
+  commission_rate: 0.0003  # 手续费率0.03%（万3）
+  slippage: 0.005  # 滑点0.5%，模拟实际成交价格偏差
+  position_size: 0.2  # 单票仓位20%，控制个股风险
+  max_positions: 3  # 最大持仓3只，分散投资
+  report_schedule: "weekly"  # 回测报告生成频率：weekly每周
+  report_time: "06:00"  # 报告生成时间，北京时间周一早上6点
+  alerts:
+    backtest_vs_live_deviation: 0.20  # 回测vs实盘收益偏离20%时触发预警

@@ -123,6 +123,15 @@ from limit_up_strategy_new import LimitUpScoringStrategyV2
 from data_storage import T01DataStorage
 from performance_tracker import PerformanceTracker
 
+# IC监控模块导入
+try:
+    from ic_monitor import ICMonitor, send_ic_report_to_feishu
+    IC_MONITOR_AVAILABLE = True
+except ImportError:
+    IC_MONITOR_AVAILABLE = False
+    ICMonitor = None
+    send_ic_report_to_feishu = None
+
 # 健壮调度器修复 - 防止30分钟重启问题
 class RobustScheduler:
     """健壮调度器，防止异常导致退出"""
@@ -271,6 +280,18 @@ class T01Scheduler:
         self.data_storage = T01DataStorage(config_path)
         self.performance_tracker = PerformanceTracker(config_path)
         
+        # 初始化IC监控器
+        if IC_MONITOR_AVAILABLE:
+            try:
+                self.ic_monitor = ICMonitor(config_path)
+                self.logger.info("IC监控器初始化完成")
+            except Exception as e:
+                self.logger.warning(f"IC监控器初始化失败: {e}")
+                self.ic_monitor = None
+        else:
+            self.logger.warning("IC监控模块不可用")
+            self.ic_monitor = None
+        
         # 状态文件路径
         self.state_dir = Path("state")
         self.state_dir.mkdir(exist_ok=True)
@@ -279,7 +300,7 @@ class T01Scheduler:
         self.output_dir = Path("output")
         self.output_dir.mkdir(exist_ok=True)
         
-        self.logger.info("T01调度器初始化完成 (集成数据存储和绩效跟踪)")
+        self.logger.info("T01调度器初始化完成 (集成数据存储、绩效跟踪和IC监控)")
     
     def _check_single_instance(self):
         """检查是否已有其他scheduler实例运行"""
@@ -481,9 +502,9 @@ class T01Scheduler:
             return trade_dates[0] if trade_dates else today
     
     def send_feishu_message(self, message_content: str) -> bool:
-        """发送飞书消息 - 使用OpenClaw message工具
+        """发送飞书消息 - 使用飞书Open API直接发送
 
-        直接使用OpenClaw的message工具通过飞书channel发送消息。
+        绕过OpenClaw CLI，直接使用飞书API发送消息，解决访问令牌问题。
 
         Args:
             message_content: 消息内容
@@ -492,10 +513,20 @@ class T01Scheduler:
             bool: 是否发送成功
         """
         try:
-            self.logger.info(f"📤 使用OpenClaw message工具发送飞书消息: {len(message_content)} 字符")
+            self.logger.info(f"📤 使用飞书Open API发送消息: {len(message_content)} 字符")
 
-            # 使用OpenClaw message工具直接发送
-            # 注意：使用导入的message函数，不是参数名
+            # 优先使用直接API发送
+            if FEISHU_DIRECT_AVAILABLE:
+                user_id = self.config.get('notification', {}).get('feishu_user_id', 'ou_b8a256a9cb526db6c196cb438d6893a6')
+                sender = FeishuDirectSender()
+                result = sender.send_message_to_user(user_id, message_content)
+                if result:
+                    self.logger.info("✅ 飞书消息直接发送成功")
+                    return True
+                else:
+                    self.logger.error("❌ 飞书直接发送失败，尝试备用方案")
+            
+            # 备用：使用OpenClaw message工具
             result = message(
                 action="send",
                 channel="feishu",
@@ -503,7 +534,7 @@ class T01Scheduler:
             )
 
             if result:
-                self.logger.info("✅ 飞书消息发送成功")
+                self.logger.info("✅ 飞书消息发送成功(备用方案)")
                 return True
             else:
                 self.logger.error("❌ 飞书消息发送失败")
@@ -529,6 +560,14 @@ class T01Scheduler:
         candidates = result.get('candidates', [])
         summary = result.get('summary', {})
         
+        # 获取风控数据
+        risk_control = result.get('risk_control', {})
+        risk_level = risk_control.get('risk_level', '未知')
+        risk_score = risk_control.get('risk_score', 0)
+        position_multiplier = risk_control.get('position_multiplier', 1.0)
+        financing_change = risk_control.get('financing_change_pct', 0)
+        margin_change = risk_control.get('margin_change_pct', 0)
+
         message_parts = []
         message_parts.append(f"📊 **T01策略 - T日评分结果 ({trade_date})**")
         message_parts.append("="*40)
@@ -536,6 +575,11 @@ class T01Scheduler:
         message_parts.append(f"涨停股票: {summary.get('total_limit_up', 0)} 只")
         message_parts.append(f"有效评分: {summary.get('total_scored', 0)} 只")
         message_parts.append(f"候选筛选: {summary.get('top_n_selected', 0)} 只")
+        message_parts.append("")
+        message_parts.append(f"**⚠️ 风控指标**:")
+        message_parts.append(f"风险等级: {risk_level} (评分: {risk_score}/10)")
+        message_parts.append(f"仓位乘数: {position_multiplier:.0%}")
+        message_parts.append(f"融资变化: {financing_change:+.2f}% | 融券变化: {margin_change:+.2f}%")
         message_parts.append("")
         message_parts.append(f"**🎯 候选股票榜单**")
         
@@ -616,21 +660,32 @@ class T01Scheduler:
                 }
             
             self.logger.info(f"成功评分 {len(scored_stocks)} 只股票")
-            
+
+            # 计算风控指标
+            self.logger.info("开始计算风控指标...")
+            risk_control = self.strategy.calculate_risk_control(trade_date)
+            self.logger.info(f"风控指标计算完成: 风险等级={risk_control.get('risk_level', '未知')}, "
+                           f"风险评分={risk_control.get('risk_score', 0)}, "
+                           f"仓位乘数={risk_control.get('position_multiplier', 1.0)}")
+
             # 选择前N名候选
             top_n = self.config['strategy']['output'].get('top_n_candidates', 5)
             candidates = scored_stocks.head(top_n).copy()
-            
+
             # 准备结果
             result = {
                 'success': True,
                 'trade_date': trade_date,
                 'candidates': candidates.to_dict('records'),
+                'risk_control': risk_control,
                 'summary': {
                     'total_limit_up': len(limit_up_stocks),
                     'total_scored': len(scored_stocks),
                     'top_n_selected': len(candidates),
                     'top_score': candidates.iloc[0]['total_score'] if not candidates.empty else 0,
+                    'risk_level': risk_control.get('risk_level', '未知'),
+                    'risk_score': risk_control.get('risk_score', 0),
+                    'position_multiplier': risk_control.get('position_multiplier', 1.0),
                     'generated_at': datetime.now().isoformat()
                 }
             }
@@ -739,10 +794,13 @@ class T01Scheduler:
             
             # 保存结果
             self.save_t1_result(final_report)
-            
+
+            # 保存竞价数据到数据库
+            self._save_auction_data_to_database(final_report, trade_date)
+
             # 准备推送消息
             push_message = self.prepare_push_message(final_report)
-            
+
             return {
                 'success': True,
                 'trade_date': trade_date,
@@ -782,6 +840,10 @@ class T01Scheduler:
                 t1_date = '20260224'  # 简化处理
             
             saved_count = 0
+
+            # 获取风控数据
+            risk_control = result.get('risk_control', {})
+
             for candidate in candidates:
                 try:
                     # 准备推荐数据
@@ -798,7 +860,8 @@ class T01Scheduler:
                         'seal_to_mv': candidate.get('seal_to_mv', 0),
                         'turnover_ratio': candidate.get('turnover_ratio', 0),
                         'is_hot_sector': candidate.get('is_hot_sector', False),
-                        'pct_chg': candidate.get('pct_chg', 0)
+                        'pct_chg': candidate.get('pct_chg', 0),
+                        'risk_control': risk_control  # 添加风控数据
                     }
                     
                     # 保存到数据库
@@ -1010,6 +1073,68 @@ class T01Scheduler:
             self.logger.info(f"T+1日结果已保存: {filename}")
         except Exception as e:
             self.logger.error(f"保存T+1日结果失败: {e}")
+
+    def _save_auction_data_to_database(self, final_report: dict, trade_date: str):
+        """保存竞价数据到数据库"""
+        try:
+            recommendations = final_report.get('t1_recommendations', [])
+            if not recommendations:
+                self.logger.warning("没有竞价推荐数据需要保存")
+                return
+
+            # 获取T日日期
+            t_date = final_report.get('t_date', '')
+            if not t_date:
+                # 尝试从trade_date推算T日
+                try:
+                    t_date = self.strategy._get_prev_trading_day(trade_date)
+                except:
+                    t_date = ''
+
+            saved_count = 0
+            for rec in recommendations:
+                try:
+                    # 提取竞价数据
+                    auction_data = rec.get('auction_data', {})
+                    rec_info = rec.get('recommendation', {})
+
+                    # 构建竞价数据字典
+                    auction_record = {
+                        'trade_date': trade_date,
+                        't_date': t_date,
+                        'ts_code': rec.get('ts_code', ''),
+                        'name': rec.get('name', ''),
+                        'open_price': auction_data.get('open_price', 0),
+                        'pre_close': auction_data.get('pre_close', 0),
+                        'open_change_pct': auction_data.get('open_change_pct', 0),
+                        'auction_volume': auction_data.get('auction_volume', 0),
+                        'auction_amount': auction_data.get('auction_amount', 0),
+                        'auction_volume_ratio': auction_data.get('auction_volume_ratio', 0),
+                        'auction_turnover_rate': auction_data.get('auction_turnover_rate', 0),
+                        'auction_volume_to_t_volume': auction_data.get('auction_volume_to_t_volume', 0),
+                        't_day_volume': auction_data.get('t_day_volume', 0),
+                        'auction_score': rec.get('auction_score', 0),
+                        'data_source': auction_data.get('data_source', 'unknown'),
+                        'final_score': rec.get('final_score', 0),
+                        'recommendation': rec_info.get('action', '观望'),
+                        'confidence': rec_info.get('confidence', '低'),
+                        'position_pct': rec_info.get('position', 0),
+                        'reasons': rec_info.get('reasons', [])
+                    }
+
+                    # 保存到数据库
+                    auction_id = self.data_storage.save_auction_data(auction_record)
+                    if auction_id:
+                        saved_count += 1
+
+                except Exception as e:
+                    self.logger.warning(f"保存单个竞价数据失败: {e}")
+                    continue
+
+            self.logger.info(f"已将 {saved_count}/{len(recommendations)} 条竞价数据保存到数据库")
+
+        except Exception as e:
+            self.logger.error(f"保存竞价数据到数据库失败: {e}")
     
     def prepare_push_message(self, report: dict) -> str:
         """准备推送消息"""
@@ -1424,6 +1549,104 @@ class T01Scheduler:
         else:
             print(f"❌ 未知模式: {mode}")
     
+    def schedule_ic_monitor_task(self):
+        """调度IC监控任务 (收盘后15:30运行)"""
+        self.logger.info("调度IC监控任务: 每天15:30 (收盘后)")
+        
+        def ic_monitor_job():
+            """IC监控任务"""
+            self.logger.info("⏰ 执行IC监控任务")
+            
+            # 强制使用北京时间
+            import os
+            os.environ['TZ'] = 'Asia/Shanghai'
+            import time
+            time.tzset()
+            from datetime import datetime
+            
+            # 获取当前时间
+            now = datetime.now()
+            today = now.strftime('%Y%m%d')
+            current_hour = now.hour
+            
+            # 详细日志记录时区信息
+            self.logger.info(f"📍 IC监控 - 当前系统时区: {os.environ.get('TZ', 'not set')}")
+            self.logger.info(f"📍 IC监控 - 当前时间: {now.strftime('%Y-%m-%d %H:%M:%S')} (北京时间)")
+            self.logger.info(f"📍 IC监控 - 当前小时: {current_hour}")
+            
+            # 检查IC监控器是否可用
+            if self.ic_monitor is None:
+                self.logger.error("❌ IC监控器未初始化，跳过IC监控任务")
+                return
+            
+            # 检查是否为交易日
+            try:
+                is_trading_day = self.is_trading_day(today)
+                
+                if is_trading_day:
+                    # 运行IC计算
+                    report = self.ic_monitor.run_daily_ic_calculation(today)
+                    
+                    # 发送飞书通知
+                    try:
+                        send_ic_report_to_feishu(report, self.config)
+                        self.logger.info("✅ IC监控报告已发送到飞书")
+                    except Exception as e:
+                        self.logger.error(f"发送IC监控报告失败: {e}")
+                    
+                    # 记录失效因子警告
+                    if report.invalid_factors:
+                        self.logger.warning(f"🚨 发现{len(report.invalid_factors)}个失效因子: {report.invalid_factors}")
+                    
+                    if report.warning_factors:
+                        self.logger.warning(f"⚠️ 发现{len(report.warning_factors)}个预警因子: {report.warning_factors}")
+                    
+                    self.logger.info(f"✅ IC监控任务完成: {len(report.factors)}个因子计算完成")
+                else:
+                    self.logger.info(f"📅 今日 {today} 不是交易日，跳过IC监控")
+            except Exception as e:
+                self.logger.error(f"IC监控任务异常: {e}", exc_info=True)
+        
+        # 调度任务 - 每天收盘后15:30运行
+        schedule.every().day.at("15:30").do(ic_monitor_job)
+        self.logger.info(f"✅ IC监控任务已调度: 每天15:30 (北京时间)")
+        return ic_monitor_job
+    
+    def run_ic_monitor_once(self, trade_date: str = None):
+        """
+        手动运行一次IC监控
+        
+        Args:
+            trade_date: 交易日期，默认为今天
+        """
+        if self.ic_monitor is None:
+            self.logger.error("IC监控器未初始化")
+            return None
+        
+        if trade_date is None:
+            trade_date = datetime.now().strftime('%Y%m%d')
+        
+        self.logger.info(f"手动运行IC监控: {trade_date}")
+        
+        try:
+            report = self.ic_monitor.run_daily_ic_calculation(trade_date)
+            
+            # 打印报告
+            message = self.ic_monitor.format_report_for_feishu(report)
+            print(message)
+            
+            # 发送飞书通知
+            try:
+                send_ic_report_to_feishu(report, self.config)
+                self.logger.info("IC监控报告已发送到飞书")
+            except Exception as e:
+                self.logger.error(f"发送IC监控报告失败: {e}")
+            
+            return report
+        except Exception as e:
+            self.logger.error(f"运行IC监控失败: {e}", exc_info=True)
+            return None
+    
     def run_scheduler(self):
         """运行调度器主循环"""
         self.logger.info("启动T01策略调度器")
@@ -1438,6 +1661,7 @@ class T01Scheduler:
         self.logger.info("开始注册定时任务...")
         t_day_job = self.schedule_t_day_task()
         t1_job = self.schedule_t1_task()
+        ic_monitor_job = self.schedule_ic_monitor_task()
         
         # 检查作业注册情况
         import schedule
@@ -1472,9 +1696,10 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='T01策略定时调度器')
-    parser.add_argument('--mode', choices=['run', 'test', 't-day', 't1-auction', 'full'],
+    parser.add_argument('--mode', choices=['run', 'test', 't-day', 't1-auction', 'full', 'ic-monitor'],
                        default='test', help='运行模式')
     parser.add_argument('--config', default='config.yaml', help='配置文件路径')
+    parser.add_argument('--date', type=str, help='指定日期(YYYYMMDD)，用于ic-monitor模式')
     
     args = parser.parse_args()
     
@@ -1484,6 +1709,10 @@ def main():
     if args.mode == 'run':
         # 运行调度器
         scheduler.run_scheduler()
+    elif args.mode == 'ic-monitor':
+        # 运行IC监控
+        trade_date = args.date if args.date else datetime.now().strftime('%Y%m%d')
+        scheduler.run_ic_monitor_once(trade_date)
     else:
         # 运行一次任务
         scheduler.run_once(args.mode)

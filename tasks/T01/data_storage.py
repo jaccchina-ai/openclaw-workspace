@@ -41,6 +41,7 @@ class T01DataStorage:
         self.table_performance = tables_config.get('performance', 't01_performance')
         self.table_factors = tables_config.get('factors', 't01_factors')
         self.table_learning_logs = tables_config.get('learning_logs', 't01_learning_logs')
+        self.table_auction_data = tables_config.get('auction_data', 't01_auction_data')  # 竞价数据表
         
         # 创建数据库连接
         self.conn = None
@@ -77,6 +78,12 @@ class T01DataStorage:
                 auction_score REAL,                      -- 竞价评分
                 open_change_pct REAL,                    -- 开盘涨幅
                 recommendation_json TEXT,                -- 完整推荐信息 (JSON)
+                risk_level TEXT,                         -- 风险等级 (低/中/高/极高)
+                risk_score REAL,                         -- 风险评分 (0-10)
+                financing_change_pct REAL,               -- 融资余额变化率 (%)
+                margin_change_pct REAL,                  -- 融券余额变化率 (%)
+                financing_buy_ratio REAL,                -- 融资买入/偿还比率
+                position_multiplier REAL,                -- 仓位乘数
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -167,7 +174,42 @@ class T01DataStorage:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
-            
+
+            # 创建竞价数据表
+            self.cursor.execute(f'''
+            CREATE TABLE IF NOT EXISTS {self.table_auction_data} (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                auction_id TEXT UNIQUE NOT NULL,         -- 竞价记录ID (日期+股票代码的哈希)
+                trade_date TEXT NOT NULL,                -- T+1交易日期 (YYYYMMDD)
+                t_date TEXT NOT NULL,                    -- T日日期 (YYYYMMDD)
+                ts_code TEXT NOT NULL,                   -- 股票代码
+                name TEXT NOT NULL,                      -- 股票名称
+                open_price REAL,                         -- 开盘价
+                pre_close REAL,                          -- 前收盘价
+                open_change_pct REAL,                    -- 开盘涨幅 (%)
+                auction_volume INTEGER,                  -- 竞价成交量 (手)
+                auction_amount REAL,                     -- 竞价成交额 (元)
+                auction_volume_ratio REAL,               -- 竞价量比
+                auction_turnover_rate REAL,              -- 竞价换手率 (%)
+                auction_volume_to_t_volume REAL,         -- 竞价成交量/T日成交量比值
+                t_day_volume INTEGER,                    -- T日成交量 (手)
+                auction_score REAL,                      -- 竞价评分
+                data_source TEXT,                        -- 数据来源 (realtime/history/simulated)
+                final_score REAL,                        -- 最终评分 (T日评分*0.7 + 竞价评分*0.3)
+                recommendation TEXT,                     -- 推荐建议 (买入/观望)
+                confidence TEXT,                         -- 置信度 (高/中/低)
+                position_pct REAL,                       -- 建议仓位 (%)
+                reasons_json TEXT,                       -- 推荐理由 (JSON数组)
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+
+            # 创建竞价数据表索引
+            self.cursor.execute(f'CREATE INDEX IF NOT EXISTS idx_auction_trade_date ON {self.table_auction_data}(trade_date)')
+            self.cursor.execute(f'CREATE INDEX IF NOT EXISTS idx_auction_ts_code ON {self.table_auction_data}(ts_code)')
+            self.cursor.execute(f'CREATE INDEX IF NOT EXISTS idx_auction_t_date ON {self.table_auction_data}(t_date)')
+
             self.conn.commit()
             logger.info("数据库表结构初始化完成")
             
@@ -341,19 +383,30 @@ class T01DataStorage:
             t_day_score = recommendation_data.get('t_day_score', total_score)
             auction_score = recommendation_data.get('auction_score', 0.0)
             open_change_pct = recommendation_data.get('auction_data', {}).get('open_change_pct', 0.0)
-            
+
+            # 风控数据
+            risk_data = recommendation_data.get('risk_control', {})
+            risk_level = risk_data.get('risk_level', '')
+            risk_score = risk_data.get('risk_score', 0.0)
+            financing_change_pct = risk_data.get('financing_change_pct', 0.0)
+            margin_change_pct = risk_data.get('margin_change_pct', 0.0)
+            financing_buy_ratio = risk_data.get('financing_buy_repay_ratio', 0.0)
+            position_multiplier = risk_data.get('position_multiplier', 1.0)
+
             # 转换为JSON字符串
             recommendation_json = json.dumps(recommendation_data, ensure_ascii=False)
-            
+
             # 插入或更新记录
             self.cursor.execute(f'''
             INSERT OR REPLACE INTO {self.table_recommendations}
-            (recommendation_id, trade_date, t1_date, ts_code, name, 
-             total_score, t_day_score, auction_score, open_change_pct, recommendation_json)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (recommendation_id, trade_date, t1_date, ts_code, name,
+             total_score, t_day_score, auction_score, open_change_pct, recommendation_json,
+             risk_level, risk_score, financing_change_pct, margin_change_pct, financing_buy_ratio, position_multiplier)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 recommendation_id, trade_date, t1_date, ts_code, name,
-                total_score, t_day_score, auction_score, open_change_pct, recommendation_json
+                total_score, t_day_score, auction_score, open_change_pct, recommendation_json,
+                risk_level, risk_score, financing_change_pct, margin_change_pct, financing_buy_ratio, position_multiplier
             ))
             
             self.conn.commit()
@@ -661,35 +714,157 @@ class T01DataStorage:
         except Exception as e:
             logger.error(f"数据库备份失败: {e}")
     
+    def save_auction_data(self, auction_data: Dict[str, Any]) -> str:
+        """
+        保存竞价数据到数据库
+
+        Args:
+            auction_data: 竞价数据字典，包含以下字段:
+                - trade_date: T+1日期
+                - t_date: T日日期
+                - ts_code: 股票代码
+                - name: 股票名称
+                - open_price: 开盘价
+                - pre_close: 前收盘价
+                - open_change_pct: 开盘涨幅
+                - auction_volume: 竞价成交量
+                - auction_amount: 竞价成交额
+                - auction_volume_ratio: 竞价量比
+                - auction_turnover_rate: 竞价换手率
+                - auction_volume_to_t_volume: 竞价成交量/T日成交量比值
+                - t_day_volume: T日成交量
+                - auction_score: 竞价评分
+                - data_source: 数据来源
+                - final_score: 最终评分
+                - recommendation: 推荐建议
+                - confidence: 置信度
+                - position_pct: 建议仓位
+                - reasons: 推荐理由列表
+
+        Returns:
+            auction_id: 竞价记录ID
+        """
+        try:
+            # 生成唯一ID
+            trade_date = auction_data.get('trade_date', '')
+            ts_code = auction_data.get('ts_code', '')
+            auction_id = hashlib.md5(f"{trade_date}_{ts_code}".encode()).hexdigest()
+
+            # 提取字段
+            t_date = auction_data.get('t_date', '')
+            name = auction_data.get('name', '')
+            open_price = auction_data.get('open_price', 0)
+            pre_close = auction_data.get('pre_close', 0)
+            open_change_pct = auction_data.get('open_change_pct', 0)
+            auction_volume = auction_data.get('auction_volume', 0)
+            auction_amount = auction_data.get('auction_amount', 0)
+            auction_volume_ratio = auction_data.get('auction_volume_ratio', 0)
+            auction_turnover_rate = auction_data.get('auction_turnover_rate', 0)
+            auction_volume_to_t_volume = auction_data.get('auction_volume_to_t_volume', 0)
+            t_day_volume = auction_data.get('t_day_volume', 0)
+            auction_score = auction_data.get('auction_score', 0)
+            data_source = auction_data.get('data_source', 'unknown')
+            final_score = auction_data.get('final_score', 0)
+            recommendation = auction_data.get('recommendation', '观望')
+            confidence = auction_data.get('confidence', '低')
+            position_pct = auction_data.get('position_pct', 0)
+            reasons = auction_data.get('reasons', [])
+            reasons_json = json.dumps(reasons, ensure_ascii=False)
+
+            # 插入或更新数据
+            self.cursor.execute(f'''
+            INSERT OR REPLACE INTO {self.table_auction_data}
+            (auction_id, trade_date, t_date, ts_code, name, open_price, pre_close,
+             open_change_pct, auction_volume, auction_amount, auction_volume_ratio,
+             auction_turnover_rate, auction_volume_to_t_volume, t_day_volume,
+             auction_score, data_source, final_score, recommendation, confidence,
+             position_pct, reasons_json, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ''', (
+                auction_id, trade_date, t_date, ts_code, name, open_price, pre_close,
+                open_change_pct, auction_volume, auction_amount, auction_volume_ratio,
+                auction_turnover_rate, auction_volume_to_t_volume, t_day_volume,
+                auction_score, data_source, final_score, recommendation, confidence,
+                position_pct, reasons_json
+            ))
+
+            self.conn.commit()
+            logger.info(f"保存竞价数据: {ts_code} ({name}) - 开盘涨幅: {open_change_pct:.2f}%, 竞价评分: {auction_score:.2f}")
+            return auction_id
+
+        except Exception as e:
+            logger.error(f"保存竞价数据失败: {e}")
+            return ""
+
+    def get_auction_data(self, trade_date: str = None, ts_code: str = None) -> pd.DataFrame:
+        """
+        获取竞价数据
+
+        Args:
+            trade_date: 交易日期 (可选)
+            ts_code: 股票代码 (可选)
+
+        Returns:
+            DataFrame: 竞价数据
+        """
+        try:
+            query = f"SELECT * FROM {self.table_auction_data} WHERE 1=1"
+            params = []
+
+            if trade_date:
+                query += " AND trade_date = ?"
+                params.append(trade_date)
+            if ts_code:
+                query += " AND ts_code = ?"
+                params.append(ts_code)
+
+            query += " ORDER BY final_score DESC"
+
+            df = pd.read_sql_query(query, self.conn, params=params)
+            return df
+        except Exception as e:
+            logger.error(f"获取竞价数据失败: {e}")
+            return pd.DataFrame()
+
     def cleanup_old_data(self):
         """清理旧数据"""
         try:
             retention_config = self.config.get('data_storage', {}).get('retention', {})
-            
+
             # 清理推荐记录
             rec_retention = retention_config.get('recommendations', 365)
             cutoff_date = (datetime.now() - timedelta(days=rec_retention)).strftime('%Y%m%d')
-            
+
             self.cursor.execute(
                 f"DELETE FROM {self.table_recommendations} WHERE trade_date < ?",
                 (cutoff_date,)
             )
             rec_deleted = self.cursor.rowcount
-            
+
             # 清理交易记录
             trade_retention = retention_config.get('trades', 730)
             cutoff_date = (datetime.now() - timedelta(days=trade_retention)).strftime('%Y%m%d')
-            
+
             self.cursor.execute(
                 f"DELETE FROM {self.table_trades} WHERE trade_date < ?",
                 (cutoff_date,)
             )
             trade_deleted = self.cursor.rowcount
-            
+
+            # 清理竞价数据
+            auction_retention = retention_config.get('auction_data', 365)
+            cutoff_date = (datetime.now() - timedelta(days=auction_retention)).strftime('%Y%m%d')
+
+            self.cursor.execute(
+                f"DELETE FROM {self.table_auction_data} WHERE trade_date < ?",
+                (cutoff_date,)
+            )
+            auction_deleted = self.cursor.rowcount
+
             self.conn.commit()
-            
-            logger.info(f"数据清理完成: 删除 {rec_deleted} 条推荐记录, {trade_deleted} 条交易记录")
-            
+
+            logger.info(f"数据清理完成: 删除 {rec_deleted} 条推荐记录, {trade_deleted} 条交易记录, {auction_deleted} 条竞价记录")
+
         except Exception as e:
             logger.error(f"数据清理失败: {e}")
     

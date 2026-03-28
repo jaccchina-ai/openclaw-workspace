@@ -1,0 +1,91 @@
+# 反转抄底型策略配置
+# ReversalStrategy Configuration
+
+strategy:
+  name: "ReversalStrategy"
+  description: "基于RSI指标和价格偏离度的反转抄底策略"
+  version: "1.0.0"
+  author: "T01 System"
+  type: "reversal"
+  
+# 策略参数
+params:
+  # RSI计算周期
+  rsi_period: 14
+  
+  # RSI超卖阈值（RSI < 此值视为超卖）
+  rsi_oversold: 30
+  
+  # 价格偏离阈值（相对于MA20的偏离度，负值表示下跌）
+  # 默认-0.15表示价格低于MA20 15%以上视为超跌
+  price_deviation_threshold: -0.15
+  
+  # 成交量萎缩阈值（当前成交量/平均成交量 < 此值视为萎缩）
+  volume_contraction_threshold: 0.7
+  
+  # 支撑位回看周期（检测近期多少天的低点作为支撑）
+  support_lookback: 20
+
+# 选股条件配置
+selection:
+  # RSI超卖条件
+  rsi_oversold_enabled: true
+  
+  # 价格偏离条件
+  price_deviation_enabled: true
+  
+  # 成交量条件
+  volume_condition_enabled: true
+  
+  # 支撑位条件
+  support_level_enabled: true
+
+# 评分权重配置
+scoring:
+  # 超跌程度权重
+  oversold_weight: 0.4
+  
+  # 反转信号强度权重
+  reversal_weight: 0.3
+  
+  # 成交量配合权重
+  volume_weight: 0.2
+  
+  # 支撑强度权重
+  support_weight: 0.1
+
+# 运行配置
+execution:
+  # 是否启用
+  enabled: true
+  
+  # 执行时间（如每日收盘后）
+  schedule: "20:00"
+  
+  # 最大选股数量
+  max_selections: 20
+  
+  # 最小评分阈值
+  min_score_threshold: 60
+
+# 风险控制
+risk_control:
+  # 最大持仓比例
+  max_position_pct: 0.1
+  
+  # 止损比例
+  stop_loss_pct: 0.05
+  
+  # 止盈比例
+  take_profit_pct: 0.1
+
+# 市场环境过滤
+market_filter:
+  # 是否启用大盘过滤
+  enabled: true
+  
+  # 大盘下跌超过此比例时减少选股
+  market_decline_threshold: -0.03
+  
+  # 恐慌指数阈值（VIX等）
+  fear_index_threshold: 25

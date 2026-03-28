@@ -19,6 +19,16 @@ logger = logging.getLogger(__name__)
 import requests
 import json
 
+# 导入PCA因子正交化模块
+try:
+    from factor_orthogonalization import FactorOrthogonalizer
+    from factor_transformer import FactorTransformer
+    PCA_AVAILABLE = True
+    logger.info("PCA因子正交化模块加载成功")
+except ImportError as e:
+    PCA_AVAILABLE = False
+    logger.warning(f"PCA因子正交化模块加载失败: {e}")
+
 logger.info("T01策略初始化 - 使用Tushare API + 东方财富舆情分析")
 
 
@@ -68,6 +78,26 @@ class LimitUpScoringStrategyV2:
             self.sentiment_enabled = False
         else:
             logger.info("T01策略: 舆情分析已禁用")
+        
+        # PCA因子正交化配置
+        self.pca_config = config.get('pca', {
+            'enabled': False,
+            'variance_threshold': 0.9,
+            'standardize': True
+        })
+        self.pca_enabled = self.pca_config.get('enabled', False) and PCA_AVAILABLE
+        self.factor_transformer = None
+        
+        if self.pca_enabled:
+            logger.info(f"PCA因子正交化已启用 (方差阈值: {self.pca_config.get('variance_threshold', 0.9)})")
+            self.factor_transformer = FactorTransformer(
+                variance_threshold=self.pca_config.get('variance_threshold', 0.9)
+            )
+        else:
+            if not PCA_AVAILABLE:
+                logger.warning("PCA因子正交化不可用（模块未加载）")
+            else:
+                logger.info("PCA因子正交化已禁用")
         
         logger.info("涨停股评分策略V2初始化完成")
     
@@ -267,6 +297,112 @@ class LimitUpScoringStrategyV2:
         
         logger.error(f"获取下一个交易日完全失败: {trade_date}")
         return None
+    
+    def _apply_pca_transform(self, factor_df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        应用PCA因子正交化转换
+        
+        将原始因子数据转换为正交主成分，并计算基于主成分的评分。
+        此方法在PCA启用时被调用，用于消除因子间的多重共线性。
+        
+        Args:
+            factor_df: 原始因子DataFrame，形状为 (n_stocks, n_factors)
+                      列名为因子名称，行索引为股票代码
+        
+        Returns:
+            Dict包含:
+                - 'scores': 基于主成分的评分Series，索引为股票代码
+                - 'pca_info': PCA转换信息字典，包含:
+                    - 'n_components': 使用的主成分数量
+                    - 'explained_variance_ratio': 各主成分方差解释度
+                    - 'cumulative_variance_ratio': 累积方差解释度
+                    - 'feature_names': 原始因子名称列表
+                    - 'variance_threshold': 使用的方差阈值
+                    - 'error': 错误信息（如果转换失败）
+        
+        Example:
+            >>> factor_data = pd.DataFrame({
+            ...     'momentum': [0.5, 0.3, 0.8],
+            ...     'volume': [1.2, 0.8, 1.5],
+            ...     ...
+            ... }, index=['000001.SZ', '000002.SZ', '600000.SH'])
+            >>> result = strategy._apply_pca_transform(factor_data)
+            >>> scores = result['scores']
+            >>> pca_info = result['pca_info']
+        """
+        result = {
+            'scores': pd.Series(),
+            'pca_info': {}
+        }
+        
+        try:
+            # 验证输入数据
+            if factor_df.empty:
+                logger.warning("PCA转换: 输入数据为空")
+                result['pca_info']['error'] = 'Empty input data'
+                return result
+            
+            if len(factor_df) < 2:
+                logger.warning(f"PCA转换: 样本数量不足 ({len(factor_df)} < 2)")
+                result['pca_info']['error'] = f'Insufficient samples: {len(factor_df)}'
+                # 对于单只股票，返回原始因子之和作为评分
+                if len(factor_df) == 1:
+                    result['scores'] = factor_df.sum(axis=1)
+                return result
+            
+            # 检查是否有缺失值
+            if factor_df.isnull().any().any():
+                logger.debug("PCA转换: 填充缺失值")
+                factor_df = factor_df.fillna(0)
+            
+            # 执行PCA转换
+            if self.factor_transformer is None:
+                self.factor_transformer = FactorTransformer(
+                    variance_threshold=self.pca_config.get('variance_threshold', 0.9)
+                )
+            
+            # 映射因子到主成分
+            mapping_result = self.factor_transformer.map_factors_to_components(factor_df)
+            components_df = mapping_result['components']
+            mapping_info = mapping_result['mapping_info']
+            
+            # 将主成分转换为评分（使用基于方差的权重）
+            scores = self.factor_transformer.components_to_scores(
+                use_variance_weights=True
+            )
+            
+            # 标准化评分到0-100范围
+            if scores.std() > 0:
+                scores = (scores - scores.min()) / (scores.max() - scores.min()) * 100
+            else:
+                scores = pd.Series(50.0, index=scores.index)
+            
+            # 构建PCA信息
+            result['scores'] = scores
+            result['pca_info'] = {
+                'n_components': mapping_info['n_components'],
+                'explained_variance_ratio': mapping_info['explained_variance_ratio'].tolist(),
+                'cumulative_variance_ratio': mapping_info['cumulative_variance_ratio'].tolist(),
+                'total_explained_variance': float(mapping_info['total_explained_variance']),
+                'feature_names': mapping_info['feature_names'],
+                'variance_threshold': mapping_info['variance_threshold'],
+                'n_original_features': mapping_info['n_original_features']
+            }
+            
+            logger.info(f"PCA转换完成: {mapping_info['n_original_features']}个因子 → "
+                       f"{mapping_info['n_components']}个主成分，"
+                       f"保留{mapping_info['total_explained_variance']:.1%}方差")
+            
+        except Exception as e:
+            logger.error(f"PCA转换失败: {e}")
+            result['pca_info']['error'] = str(e)
+            # 失败时返回原始因子之和作为回退
+            try:
+                result['scores'] = factor_df.sum(axis=1)
+            except:
+                pass
+        
+        return result
     
     def get_limit_up_stocks(self, trade_date: str) -> pd.DataFrame:
         """
@@ -514,6 +650,60 @@ class LimitUpScoringStrategyV2:
             logger.info(f"舆情分析完成，处理 {sentiment_processed}/{top_n} 只股票")
         else:
             logger.info("舆情分析已禁用或未配置EASTMONEY_APIKEY，使用基础评分")
+        
+        # 第三阶段：PCA因子正交化（如果启用）
+        if self.pca_enabled and len(df) >= 2:
+            logger.info("开始PCA因子正交化处理")
+            
+            try:
+                # 提取因子数据用于PCA
+                factor_columns = [
+                    'first_limit_time', 'order_quality', 'liquidity',
+                    'money_flow', 'sector', 'dragon_list', 'sentiment_score'
+                ]
+                
+                # 构建因子DataFrame
+                factor_data = []
+                for idx, row in df.iterrows():
+                    score_details = row.get('score_details', {})
+                    factor_data.append({
+                        'first_limit_time': score_details.get('first_limit_time', 0),
+                        'order_quality': score_details.get('order_quality', 0),
+                        'liquidity': score_details.get('liquidity', 0),
+                        'money_flow': score_details.get('money_flow', 0),
+                        'sector': score_details.get('sector', 0),
+                        'dragon_list': score_details.get('dragon_list', 0),
+                        'sentiment': score_details.get('sentiment', 0)
+                    })
+                
+                factor_df = pd.DataFrame(factor_data, index=df['ts_code'].values)
+                
+                # 应用PCA转换
+                pca_result = self._apply_pca_transform(factor_df)
+                pca_scores = pca_result['scores']
+                pca_info = pca_result['pca_info']
+                
+                if not pca_scores.empty and 'error' not in pca_info:
+                    # 更新总分为主成分评分
+                    for ts_code in pca_scores.index:
+                        mask = df['ts_code'] == ts_code
+                        if mask.any():
+                            df.loc[mask, 'pca_score'] = pca_scores[ts_code]
+                            # 综合评分：PCA评分 * 0.7 + 基础评分 * 0.3
+                            base_score = df.loc[mask, 'basic_score'].iloc[0]
+                            combined_score = pca_scores[ts_code] * 0.7 + base_score * 0.3
+                            df.loc[mask, 'total_score'] = combined_score
+                    
+                    # 记录PCA信息
+                    df.attrs['pca_info'] = pca_info
+                    logger.info(f"PCA处理完成: {pca_info.get('n_original_features', 0)}个因子 → "
+                               f"{pca_info.get('n_components', 0)}个主成分，"
+                               f"保留{pca_info.get('total_explained_variance', 0):.1%}方差")
+                else:
+                    logger.warning(f"PCA处理失败: {pca_info.get('error', '未知错误')}，使用原始评分")
+                    
+            except Exception as e:
+                logger.error(f"PCA处理异常: {e}，使用原始评分")
         
         # 按总分重新排序
         df = df.sort_values('total_score', ascending=False)
@@ -1110,15 +1300,32 @@ class LimitUpScoringStrategyV2:
         # 如果在交易时间 (9:25-9:29) 则只允许使用实时接口
         if is_trading_hours:
             try:
+                # 方案2: 延迟到09:25:30后获取，确保是最终竞价结果
+                import time
+                current_time = datetime.now()
+                if current_time.hour == 9 and current_time.minute == 25 and current_time.second < 30:
+                    wait_seconds = 30 - current_time.second
+                    logger.info(f"等待{wait_seconds}秒到09:25:30后获取最终竞价数据...")
+                    time.sleep(wait_seconds)
+                
                 realtime_df = self.pro.stk_auction(
                     ts_code=ts_code,
-                    fields='price,pre_close,amount,turnover_rate,volume_ratio,vol'
+                    fields='ts_code,price,pre_close,amount,turnover_rate,volume_ratio,vol'
                 )
                 
                 if not realtime_df.empty:
-                    price = realtime_df.iloc[0]['price']
-                    pre_close = realtime_df.iloc[0]['pre_close']
-                    auction_volume = realtime_df.iloc[0].get('vol', 0)  # T+1竞价成交量
+                    # 方案2: 添加ts_code过滤 - 确保只获取指定股票的数据
+                    # stk_auction返回全市场数据，需要筛选
+                    stock_data = realtime_df[realtime_df['ts_code'] == ts_code]
+                    
+                    if stock_data.empty:
+                        logger.warning(f"实时竞价接口未返回指定股票数据: {ts_code}")
+                        return None
+                    
+                    # 使用筛选后的数据
+                    price = stock_data.iloc[0]['price']
+                    pre_close = stock_data.iloc[0]['pre_close']
+                    auction_volume = stock_data.iloc[0].get('vol', 0)  # T+1竞价成交量
                     
                     # 计算竞价成交量/T日成交量比值
                     auction_volume_to_t_volume = 0.0
@@ -1135,9 +1342,9 @@ class LimitUpScoringStrategyV2:
                         
                         return {
                             'open_change_pct': open_change_pct,
-                            'auction_volume_ratio': realtime_df.iloc[0].get('volume_ratio', 1),
-                            'auction_turnover_rate': realtime_df.iloc[0].get('turnover_rate', 0),
-                            'auction_amount': realtime_df.iloc[0].get('amount', 0),
+                            'auction_volume_ratio': stock_data.iloc[0].get('volume_ratio', 1),
+                            'auction_turnover_rate': stock_data.iloc[0].get('turnover_rate', 0),
+                            'auction_amount': stock_data.iloc[0].get('amount', 0),
                             'auction_volume_to_t_volume': auction_volume_to_t_volume,
                             'auction_volume': auction_volume,
                             't_day_volume': t_day_volume,
@@ -1158,40 +1365,46 @@ class LimitUpScoringStrategyV2:
             # 先尝试实时接口 (可能仍有数据)
             realtime_df = self.pro.stk_auction(
                 ts_code=ts_code,
-                fields='price,pre_close,amount,turnover_rate,volume_ratio,vol'
+                fields='ts_code,price,pre_close,amount,turnover_rate,volume_ratio,vol'
             )
             
             if not realtime_df.empty:
-                price = realtime_df.iloc[0]['price']
-                pre_close = realtime_df.iloc[0]['pre_close']
-                auction_volume = realtime_df.iloc[0].get('vol', 0)
+                # 方案2: 添加ts_code过滤
+                stock_data = realtime_df[realtime_df['ts_code'] == ts_code]
                 
-                # 计算竞价成交量/T日成交量比值
-                auction_volume_to_t_volume = 0.0
-                if t_day_volume > 0:
-                    auction_volume_to_t_volume = auction_volume / t_day_volume
-                
-                # 验证数据有效性
-                if price > 0 and pre_close > 0:
-                    open_change_pct = (price - pre_close) / pre_close * 100
-                    # 限制涨幅范围
-                    open_change_pct = max(-30, min(30, open_change_pct))
+                if not stock_data.empty:
+                    price = stock_data.iloc[0]['price']
+                    pre_close = stock_data.iloc[0]['pre_close']
+                    auction_volume = stock_data.iloc[0].get('vol', 0)
                     
-                    logger.debug(f"使用实时竞价数据: {ts_code}, 开盘涨幅: {open_change_pct:.2f}%, 竞价/T日成交量比: {auction_volume_to_t_volume:.2%}")
+                    # 计算竞价成交量/T日成交量比值
+                    auction_volume_to_t_volume = 0.0
+                    if t_day_volume > 0:
+                        auction_volume_to_t_volume = auction_volume / t_day_volume
                     
-                    return {
-                        'open_change_pct': open_change_pct,
-                        'auction_volume_ratio': realtime_df.iloc[0].get('volume_ratio', 1),
-                        'auction_turnover_rate': realtime_df.iloc[0].get('turnover_rate', 0),
-                        'auction_amount': realtime_df.iloc[0].get('amount', 0),
-                        'auction_volume_to_t_volume': auction_volume_to_t_volume,
-                        'auction_volume': auction_volume,
-                        't_day_volume': t_day_volume,
-                        'data_source': 'realtime'
-                    }
+                    # 验证数据有效性
+                    if price > 0 and pre_close > 0:
+                        open_change_pct = (price - pre_close) / pre_close * 100
+                        # 限制涨幅范围
+                        open_change_pct = max(-30, min(30, open_change_pct))
+                        
+                        logger.debug(f"使用实时竞价数据: {ts_code}, 开盘涨幅: {open_change_pct:.2f}%, 竞价/T日成交量比: {auction_volume_to_t_volume:.2%}")
+                        
+                        return {
+                            'open_change_pct': open_change_pct,
+                            'auction_volume_ratio': stock_data.iloc[0].get('volume_ratio', 1),
+                            'auction_turnover_rate': stock_data.iloc[0].get('turnover_rate', 0),
+                            'auction_amount': stock_data.iloc[0].get('amount', 0),
+                            'auction_volume_to_t_volume': auction_volume_to_t_volume,
+                            'auction_volume': auction_volume,
+                            't_day_volume': t_day_volume,
+                            'data_source': 'realtime'
+                        }
+                    else:
+                        logger.warning(f"非交易时间实时数据无效: {ts_code}, price={price}, pre_close={pre_close}")
                 else:
-                    logger.warning(f"非交易时间实时数据无效: {ts_code}, price={price}, pre_close={pre_close}")
-                    # 继续尝试历史接口
+                    logger.debug(f"非交易时间未找到指定股票实时数据: {ts_code}")
+                # 继续尝试历史接口
         except Exception as e:
             logger.debug(f"实时竞价接口不可用或返回空数据: {e}")
         
@@ -1782,6 +1995,135 @@ class LimitUpScoringStrategyV2:
         
         logger.info("舆情分析完成，候选股票已重新排序")
         return candidates
+    
+    def calculate_risk_control(self, trade_date: str) -> Dict[str, Any]:
+        """
+        计算风控指标
+        
+        Args:
+            trade_date: 交易日期 (YYYYMMDD格式)
+            
+        Returns:
+            风控指标字典，包含:
+            - risk_level: 风险等级 (low/medium/high/critical)
+            - risk_score: 风险评分 (0-10)
+            - position_multiplier: 仓位乘数 (0.0-1.0)
+            - financing_change_pct: 融资余额变化率
+            - margin_change_pct: 融券余额变化率
+        """
+        try:
+            logger.info(f"开始计算风控指标: {trade_date}")
+            
+            # 默认风控指标
+            default_risk = {
+                'risk_level': 'medium',
+                'risk_score': 5.0,
+                'position_multiplier': 1.0,
+                'financing_change_pct': 0.0,
+                'margin_change_pct': 0.0,
+                'data_source': 'default'
+            }
+            
+            if not self.pro:
+                logger.warning("Tushare API未初始化，使用默认风控指标")
+                return default_risk
+            
+            # 尝试获取融资融券数据
+            try:
+                # 获取最近两个交易日的融资融券数据
+                prev_date = self._get_prev_trading_day(trade_date)
+                if not prev_date:
+                    logger.warning("无法获取前一个交易日，使用默认风控指标")
+                    return default_risk
+                
+                # 查询融资融券数据
+                margin_df = self.pro.margin(trade_date=trade_date)
+                prev_margin_df = self.pro.margin(trade_date=prev_date)
+                
+                if margin_df is None or margin_df.empty or prev_margin_df is None or prev_margin_df.empty:
+                    logger.warning("融资融券数据为空，使用默认风控指标")
+                    return default_risk
+                
+                # 计算融资余额变化
+                current_financing = margin_df['fin_value'].sum() if 'fin_value' in margin_df.columns else 0
+                prev_financing = prev_margin_df['fin_value'].sum() if 'fin_value' in prev_margin_df.columns else 0
+                
+                financing_change_pct = 0.0
+                if prev_financing > 0:
+                    financing_change_pct = (current_financing - prev_financing) / prev_financing * 100
+                
+                # 计算融券余额变化
+                current_margin = margin_df['sec_value'].sum() if 'sec_value' in margin_df.columns else 0
+                prev_margin = prev_margin_df['sec_value'].sum() if 'sec_value' in prev_margin_df.columns else 0
+                
+                margin_change_pct = 0.0
+                if prev_margin > 0:
+                    margin_change_pct = (current_margin - prev_margin) / prev_margin * 100
+                
+                # 计算风险评分 (0-10)
+                risk_score = 5.0  # 基础分
+                
+                # 融资余额下降 > 2%: 风险增加
+                if financing_change_pct < -2:
+                    risk_score += 2
+                elif financing_change_pct < -1:
+                    risk_score += 1
+                elif financing_change_pct > 2:
+                    risk_score -= 1
+                
+                # 融券余额上升 > 5%: 风险增加
+                if margin_change_pct > 5:
+                    risk_score += 2
+                elif margin_change_pct > 2:
+                    risk_score += 1
+                
+                # 融资余额绝对值 > 8000亿: 风险增加
+                if current_financing > 800000000000:  # 8000亿
+                    risk_score += 1
+                
+                # 限制风险评分范围
+                risk_score = max(0, min(10, risk_score))
+                
+                # 确定风险等级
+                if risk_score >= 8:
+                    risk_level = 'critical'
+                    position_multiplier = 0.0
+                elif risk_score >= 6:
+                    risk_level = 'high'
+                    position_multiplier = 0.5
+                elif risk_score >= 4:
+                    risk_level = 'medium'
+                    position_multiplier = 1.0
+                else:
+                    risk_level = 'low'
+                    position_multiplier = 1.0
+                
+                logger.info(f"风控指标计算完成: 风险等级={risk_level}, 评分={risk_score:.1f}, 仓位乘数={position_multiplier}")
+                
+                return {
+                    'risk_level': risk_level,
+                    'risk_score': risk_score,
+                    'position_multiplier': position_multiplier,
+                    'financing_change_pct': round(financing_change_pct, 2),
+                    'margin_change_pct': round(margin_change_pct, 2),
+                    'data_source': 'margin'
+                }
+                
+            except Exception as e:
+                logger.error(f"计算融资融券风控指标失败: {e}")
+                return default_risk
+                
+        except Exception as e:
+            logger.error(f"风控指标计算异常: {e}")
+            return {
+                'risk_level': 'medium',
+                'risk_score': 5.0,
+                'position_multiplier': 1.0,
+                'financing_change_pct': 0.0,
+                'margin_change_pct': 0.0,
+                'data_source': 'error',
+                'error': str(e)
+            }
 
 
 if __name__ == "__main__":

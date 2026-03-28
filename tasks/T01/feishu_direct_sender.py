@@ -40,8 +40,10 @@ class FeishuDirectSender:
     def _get_access_token(self) -> Optional[str]:
         """获取飞书访问令牌"""
         # 检查令牌是否过期
-        if self.access_token and self.token_expire_time and datetime.now() < self.token_expire_time:
-            return self.access_token
+        if self.access_token and self.token_expire_time:
+            # 将当前时间转换为timestamp进行比较
+            if datetime.now().timestamp() < self.token_expire_time:
+                return self.access_token
         
         try:
             url = f"{self.base_url}/auth/v3/tenant_access_token/internal"
