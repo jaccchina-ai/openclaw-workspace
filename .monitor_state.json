@@ -5,11 +5,11 @@
       "first_failure": null
     },
     "task_t01_tday_scoring": {
-      "count": 0,
-      "first_failure": null
+      "count": 3,
+      "first_failure": "2026-03-29T18:00:29.653593"
     }
   },
-  "last_check": "2026-03-28T12:00:01.695738",
+  "last_check": "2026-03-30T06:00:29.137572",
   "alert_history": [
     {
       "timestamp": "2026-03-03T00:06:00Z",

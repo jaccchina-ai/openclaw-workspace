@@ -1,0 +1,106 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T05:35:00Z",
+  "description": "Learning entries index for quick lookup",
+  "entries": {
+    "learnings": [
+      {
+        "id": "LRN-20260225-001",
+        "category": "best_practice",
+        "title": "Tushare stk_auction实时接口参数使用",
+        "status": "promoted",
+        "promoted_to": "TOOLS.md Tushare API 注意事项",
+        "priority": "high",
+        "logged": "2026-02-25T09:30:00Z",
+        "area": "config",
+        "summary": "Tushare stk_auction实时接口在竞价窗口(09:25-09:29)期间，调用时不能使用trade_date参数"
+      },
+      {
+        "id": "LRN-20260227-001",
+        "category": "pattern",
+        "title": "系统内部执行失败模式",
+        "status": "promoted",
+        "promoted_to": "TOOLS.md 重复问题 #2 & AGENTS.md 系统内部执行失败模式",
+        "priority": "high",
+        "logged": "2026-02-27T05:58:00Z",
+        "area": "infra",
+        "summary": "频繁出现Exec failed (session-name-fragment, code 0)系统消息，OpenClaw内部会话管理机制产生的日志噪音"
+      },
+      {
+        "id": "LRN-20260307-001",
+        "category": "best_practice",
+        "title": "MoA增强分析调用规则",
+        "status": "promoted",
+        "promoted_to": "AGENTS.md MoA增强分析调用规则 & MEMORY.md 重要规则第5条",
+        "priority": "critical",
+        "logged": "2026-03-07T15:18:00Z",
+        "area": "config",
+        "summary": "在Task功能受阻、API限制、逻辑难题时，必须调用MoA增强版进行系统性分析"
+      }
+    ],
+    "errors": [
+      {
+        "id": "ERR-20260224-001",
+        "title": "macro-monitor T99 data sharing failure",
+        "status": "promoted",
+        "promoted_to": "TOOLS.md 宏观监控数据获取模式",
+        "priority": "medium",
+        "logged": "2026-02-24T21:41:00Z",
+        "area": "data",
+        "summary": "Failed to save T99 shared data due to type comparison error between NoneType and int"
+      },
+      {
+        "id": "ERR-20260225-001",
+        "title": "macro-monitor web_search integration failure",
+        "status": "promoted",
+        "promoted_to": "TOOLS.md 宏观监控数据获取模式",
+        "priority": "medium",
+        "logged": "2026-02-25T23:11:00Z",
+        "area": "integration",
+        "summary": "macro-monitor skill fails to call web_search via openclaw CLI due to missing command in PATH"
+      },
+      {
+        "id": "ERR-20260225-002",
+        "title": "macro-monitor crude oil data parsing failure",
+        "status": "promoted",
+        "promoted_to": "TOOLS.md 宏观监控数据获取模式",
+        "priority": "medium",
+        "logged": "2026-02-25T22:54:00Z",
+        "area": "data",
+        "summary": "Playwright scraper for crude oil price returns data but parsing fails"
+      },
+      {
+        "id": "ERR-20260226-001",
+        "title": "T100 macro-monitor execution failure",
+        "status": "resolved",
+        "priority": "medium",
+        "logged": "2026-02-26T06:08:00Z",
+        "area": "integration",
+        "summary": "T100 macro-monitor cron job failed due to missing Node.js environment and data source issues",
+        "resolved_at": "2026-03-01T22:00:00Z"
+      },
+      {
+        "id": "ERR-20260227-001",
+        "title": "T99 short-term signal engine timeout",
+        "status": "resolved",
+        "priority": "high",
+        "logged": "2026-02-27T07:02:00Z",
+        "area": "data",
+        "summary": "T99 daily scan times out after 300 seconds, causing scan process to hang",
+        "resolved_at": "2026-03-29T05:35:00Z"
+      }
+    ]
+  },
+  "statistics": {
+    "total_learnings": 3,
+    "total_errors": 5,
+    "promoted": 7,
+    "resolved": 2,
+    "pending": 0
+  },
+  "metadata": {
+    "index_format": "JSON",
+    "auto_generated": true,
+    "generation_timestamp": "2026-03-29T05:35:00Z"
+  }
+}
