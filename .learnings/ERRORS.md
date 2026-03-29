@@ -260,8 +260,16 @@ T100 macro-monitor cron job failed to generate daily report due to missing Node.
 
 **Logged**: 2026-02-27T07:02:00Z
 **Priority**: high
-**Status**: in_progress
+**Status**: resolved
 **Area**: data
+
+### Resolution (2026-03-29 05:35 UTC)
+- **状态更新**: 已修复并验证
+- **修复措施**: 
+  1. 交易日历本地缓存化，避免API调用挂起
+  2. 超时机制优化（300秒→900秒）
+  3. 非交易日自动跳过扫描
+- **验证结果**: T99扫描连续多日成功执行，策略推荐正常生成
 
 ### Diagnosis (2026-02-28 06:45 UTC)
 - **根本原因**: 在非交易日/非交易时段，akshare/Tushare API调用挂起或返回空

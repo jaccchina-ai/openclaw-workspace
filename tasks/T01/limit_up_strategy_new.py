@@ -583,7 +583,7 @@ class LimitUpScoringStrategyV2:
                     'medium_net_amount': medium_net,
                     'is_hot_sector': is_hot_sector,
                     'dragon_score': dragon_score,
-                    'sentiment_score': 0  # 初始为0
+                    'sentiment_score': 0.0  # 初始为0.0 (浮点数，避免dtype冲突)
                 }
                 
                 basic_results.append(result)
@@ -594,6 +594,10 @@ class LimitUpScoringStrategyV2:
         
         # 转换为DataFrame并按基础分排序
         df = pd.DataFrame(basic_results)
+        
+        # 确保sentiment_score列为float类型，避免后续赋值浮点数时出现dtype错误
+        if 'sentiment_score' in df.columns:
+            df['sentiment_score'] = df['sentiment_score'].astype(float)
         if df.empty:
             logger.warning("没有有效评分结果")
             return df
