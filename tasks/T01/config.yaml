@@ -2,35 +2,18 @@ api:
   api_key: 870008d508d2b0e57ecf2ccc586c23c4ecc37522f5e93890fb3d56ab
   endpoint: http://api.tushare.pro
   timeout: 30
-
-# PCA因子正交化配置
-pca:
-  enabled: false  # 默认关闭，不影响现有功能
-  variance_threshold: 0.9  # 方差保留阈值，保留90%的方差信息
-  standardize: true  # 是否在PCA前进行标准化
-  
-  # 测试模式配置
-  test_mode:
-    enabled: true  # 启用测试模式
-    duration_days: 14  # 测试持续14天
-    auto_promote: true  # 自动根据结果决定是否开启
-    min_samples: 10  # 最少需要10个样本才做决策
-    promote_threshold:
-      win_rate_improvement: 0.05  # 胜率提升5%则开启
-      sharpe_improvement: 0.1  # 夏普比率提升0.1则开启
-    demote_threshold:
-      win_rate_drop: -0.03  # 胜率下降3%则保持关闭
-      sharpe_drop: -0.05  # 夏普比率下降0.05则保持关闭
-    
-  # 观测指标
-  monitoring:
-    metrics:
-      - win_rate  # 胜率
-      - sharpe_ratio  # 夏普比率
-      - max_drawdown  # 最大回撤
-      - avg_return  # 平均收益
-    comparison_baseline: "pre_pca"  # 与PCA前基线对比
-    decision_interval_days: 7  # 每7天评估一次
+backtest:
+  alerts:
+    backtest_vs_live_deviation: 0.2
+  commission_rate: 0.0003
+  enabled: true
+  initial_capital: 1000000
+  lookback_days: 252
+  max_positions: 3
+  position_size: 0.2
+  report_schedule: weekly
+  report_time: 06:00
+  slippage: 0.005
 data_sources:
   akshare:
     enabled: false
@@ -54,7 +37,7 @@ data_storage:
     performance: t01_performance
     recommendations: t01_recommendations
     trades: t01_trades
-last_updated: '2026-02-23'
+last_updated: '2026-03-30'
 machine_learning:
   enabled: true
   factor_discovery:
@@ -71,12 +54,16 @@ machine_learning:
   self_evolution:
     enabled: true
     optimization_cycles: 3
-    # 进化方案：改为每周反思 (原为30天)
     review_interval: 7
   training:
     cross_validation: 5
     early_stopping: 10
     test_size: 0.2
+notification:
+  channels:
+  - feishu
+  enabled: true
+  feishu_user_id: ou_b8a256a9cb526db6c196cb438d6893a6
 output:
   alert_thresholds:
     price_change: 5
@@ -85,6 +72,29 @@ output:
   format: table
   save_to_file: true
   top_n: 10
+pca:
+  enabled: false
+  monitoring:
+    comparison_baseline: pre_pca
+    decision_interval_days: 7
+    metrics:
+    - win_rate
+    - sharpe_ratio
+    - max_drawdown
+    - avg_return
+  standardize: true
+  test_mode:
+    auto_promote: true
+    demote_threshold:
+      sharpe_drop: -0.05
+      win_rate_drop: -0.03
+    duration_days: 14
+    enabled: true
+    min_samples: 10
+    promote_threshold:
+      sharpe_improvement: 0.1
+      win_rate_improvement: 0.05
+  variance_threshold: 0.9
 performance_tracking:
   buy_price: 开盘价
   buy_time: T+1日09:30
@@ -96,23 +106,108 @@ performance_tracking:
   - max_drawdown
   - profit_factor
   min_trades_for_statistics: 20
+  no_selection_warning_threshold: 3
   sell_price: 收盘价
   sell_time: T+2日15:00
-  # 进化方案：成功标准 (T+2收盘/T+1开盘 > 1.03%)
   success_threshold: 1.03
-  # 预警机制：连续无选股天数监控
-  no_selection_warning_threshold: 3
+phase3:
+  adaptive_threshold_manager:
+    adjustment_step: 2.0
+    base_entry: 70.0
+    base_exit: 75.0
+    enabled: true
+    max_adjustment: 10.0
+    regimes:
+      bear:
+        entry: 75.0
+        exit: 80.0
+        position_size: 0.15
+        stop_loss: 0.03
+        take_profit: 0.08
+      bull:
+        entry: 65.0
+        exit: 70.0
+        position_size: 0.25
+        stop_loss: 0.05
+        take_profit: 0.15
+      sideways:
+        entry: 70.0
+        exit: 75.0
+        position_size: 0.2
+        stop_loss: 0.04
+        take_profit: 0.1
+  alpha_factor_discovery:
+    discovery_methods:
+    - genetic_algorithm
+    - neural_network
+    enabled: true
+    ic_threshold: 0.03
+    lookback_days: 252
+    max_factors: 50
+    min_sharpe: 0.5
+  attribution_analyzer:
+    enabled: true
+    lookback_days: 90
+    min_observations: 30
+    significance_level: 0.05
+  auto_closed_loop:
+    check_interval_minutes: 60
+    enabled: true
+    max_iterations_per_day: 10
+  enabled: true
+  evolution_trigger:
+    enabled: true
+    multi_condition:
+      confidence_threshold: 0.7
+      enabled: true
+      min_conditions: 2
+    rolling_windows:
+      long: 60
+      short: 20
+    scheduled:
+      monthly: true
+      monthly_day: 1
+      weekly: true
+      weekly_day: 0
+    sudden_change:
+      drawdown_change_threshold: 5.0
+      enabled: true
+      win_rate_change_threshold: 10.0
+    thresholds:
+      ic_value: 0.03
+      max_drawdown: 20.0
+      profit_factor: 1.0
+      win_rate: 40.0
+  performance_guardian:
+    alert_cooldown_minutes: 60
+    check_interval_minutes: 30
+    enabled: true
+    thresholds:
+      cpu_percent: 80.0
+      disk_percent: 85.0
+      ic_value: 0.03
+      max_drawdown: 20.0
+      memory_percent: 80.0
+      win_rate: 40.0
+  safe_deploy_manager:
+    auto_rollback_on_failure: true
+    backup_retention_days: 30
+    enabled: true
+    validation_checks:
+    - config_syntax
+    - required_keys
+    - data_directory
+    - logs_directory
+scoring:
+  weights:
+    factor1: 0.5
+    factor2: 0.5
 strategy:
   output:
     final_recommendation_count: 3
     include_position: true
     include_reasons: true
     top_n_candidates: 10
-  sentiment_analysis:
-    enabled: true  # 启用东方财富舆情分析
-    top_n_for_analysis: 10  # 对前10名进行舆情分析
-    days_back: 1
-    max_news_per_stock: 5
   risk_control:
     index_5ma_relation: true
     index_above_5ma_weight: 1.0
@@ -123,6 +218,11 @@ strategy:
     daily_screening_time: '20:00'
     morning_review_time: 09:25
     push_time: 09:30
+  sentiment_analysis:
+    days_back: 1
+    enabled: true
+    max_news_per_stock: 5
+    top_n_for_analysis: 10
   t1_auction_scoring:
     auction_amount: 20
     auction_turnover_rate: 0
@@ -137,10 +237,10 @@ strategy:
     main_net_ratio: 5
     medium_net_amount: 5
     order_amount_to_circ_mv: 15
+    sentiment: 10
     turnover_rate: 5
     turnover_rate_to_20ma: 10
     volume_ratio: 5
-    sentiment: 10
 system_optimization:
   auto_optimize: true
   optimization_goals:
@@ -152,37 +252,10 @@ system_optimization:
     risk_parameters: true
     score_weights: true
     thresholds: true
-  # 进化方案：预警与监控
   warnings:
-    # 策略失效预警：连续3天无选股
-    strategy_failure_warning: true
-    no_selection_days_threshold: 3
-    # 因子失效预警：IC值 < 0.03
     factor_decay_warning: true
     factor_ic_threshold: 0.03
-    # 系统健康预警
+    no_selection_days_threshold: 3
+    strategy_failure_warning: true
     system_health_warning: true
 version: 1.3.0
-
-# 通知配置
-notification:
-  channels:
-    - feishu
-  enabled: true
-  feishu_user_id: ou_b8a256a9cb526db6c196cb438d6893a6
-  # 飞书应用凭证（用于直接API发送，绕过CLI）
-  # 请设置环境变量：FEISHU_APP_ID 和 FEISHU_APP_SECRET
-
-# 回测配置
-backtest:
-  enabled: true  # 启用回测系统
-  lookback_days: 252  # 回测历史数据天数，252个交易日约等于1年
-  initial_capital: 1000000  # 初始资金100万人民币
-  commission_rate: 0.0003  # 手续费率0.03%（万3）
-  slippage: 0.005  # 滑点0.5%，模拟实际成交价格偏差
-  position_size: 0.2  # 单票仓位20%，控制个股风险
-  max_positions: 3  # 最大持仓3只，分散投资
-  report_schedule: "weekly"  # 回测报告生成频率：weekly每周
-  report_time: "06:00"  # 报告生成时间，北京时间周一早上6点
-  alerts:
-    backtest_vs_live_deviation: 0.20  # 回测vs实盘收益偏离20%时触发预警

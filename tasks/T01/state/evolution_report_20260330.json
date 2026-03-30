@@ -1,0 +1,38 @@
+{
+  "report_date": "2026-03-30 08:27:27",
+  "phase": "Phase2-中期增强",
+  "performance": {
+    "total_trades": 0,
+    "winning_trades": 0,
+    "losing_trades": 0,
+    "win_rate": 0.0,
+    "avg_profit": 0.0,
+    "avg_loss": 0.0,
+    "profit_factor": 0.0,
+    "max_drawdown": 0.0,
+    "sharpe_ratio": 0.0,
+    "success_rate": 0.0
+  },
+  "recommendations": [
+    "建议提高选股标准，减少交易频率",
+    "建议优化止损策略，提高盈亏比"
+  ],
+  "factor_adjustments": {
+    "limit_up_time": 0.15,
+    "seal_amount_ratio": 0.2,
+    "turnover": 0.1,
+    "volume_ratio": 0.1,
+    "main_force_net": 0.15,
+    "hot_sector": 0.15,
+    "dragon_leader": 0.15
+  },
+  "warnings": [
+    "⚠️ 策略胜率过低: 0.00% < 40.00%",
+    "⚠️ 策略成功率过低: 0.00%"
+  ],
+  "next_actions": [
+    "监控下一周期策略表现",
+    "验证优化后的因子权重效果",
+    "关注策略失效警告，准备应对措施"
+  ]
+}

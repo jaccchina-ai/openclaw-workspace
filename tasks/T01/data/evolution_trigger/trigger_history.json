@@ -1,0 +1,48 @@
+[
+  {
+    "timestamp": "2026-03-30T07:58:06.894146",
+    "triggered": true,
+    "trigger_type": "PERFORMANCE_DROP",
+    "confidence": 0.8,
+    "message": "Test 1",
+    "details": {},
+    "severity": 0.0,
+    "evolution_executed": false,
+    "execution_result": null
+  },
+  {
+    "timestamp": "2026-03-30T07:58:06.894431",
+    "triggered": true,
+    "trigger_type": "IC_DECAY",
+    "confidence": 0.7,
+    "message": "Test 2",
+    "details": {},
+    "severity": 0.0,
+    "evolution_executed": false,
+    "execution_result": null
+  },
+  {
+    "timestamp": "2026-03-30T07:58:06.902322",
+    "triggered": true,
+    "trigger_type": "MANUAL",
+    "confidence": 1.0,
+    "message": "手动触发: 系统维护",
+    "details": {
+      "triggered_by": "admin",
+      "reason": "系统维护"
+    },
+    "severity": 0.5,
+    "evolution_executed": false,
+    "execution_result": null
+  },
+  {
+    "timestamp": "2026-03-30T07:58:06.927072",
+    "triggered": true,
+    "trigger_type": "PERFORMANCE_DROP",
+    "confidence": 0.9125,
+    "message": "多条件触发: 5个条件满足",
+    "details": {
+      "triggered_conditions": [
+        {
+          "name": "performance_drop",
+          "type": 

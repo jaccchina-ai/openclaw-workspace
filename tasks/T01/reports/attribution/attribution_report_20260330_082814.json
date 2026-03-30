@@ -1,0 +1,13 @@
+{
+  "analysis_period": {
+    "start_date": "20251220",
+    "end_date": "20260329",
+    "total_trades": 100
+  },
+  "factor_contributions": {
+    "volatility": {
+      "contribution": 0.004173391149931467,
+      "contribution_pct": 0.22561427621282218,
+      "t_stat": 2.6185959271344337,
+      "p_value": 0.0102308789002669,
+      "significant": 

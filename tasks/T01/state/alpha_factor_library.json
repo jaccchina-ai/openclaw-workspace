@@ -1,0 +1,46 @@
+[
+  {
+    "name": "volume_price",
+    "expression": "volume * close / ts_mean(volume * close, 20)",
+    "ic_value": 0.07536459992178392,
+    "sharpe": 1.840435680608329,
+    "win_rate": 0.4790897974677427,
+    "max_drawdown": 0.16290658313153608,
+    "description": "Genetic factor: volume_price",
+    "discovered_date": "20260330",
+    "status": "active"
+  },
+  {
+    "name": "high_low_range",
+    "expression": "(high - low) / close",
+    "ic_value": 0.06441602704214877,
+    "sharpe": 1.175338450675812,
+    "win_rate": 0.5675053245924895,
+    "max_drawdown": 0.2080873515484284,
+    "description": "Genetic factor: high_low_range",
+    "discovered_date": "20260330",
+    "status": "active"
+  },
+  {
+    "name": "volatility_20d",
+    "expression": "ts_std(close, 20) / ts_mean(close, 20)",
+    "ic_value": 0.03329483179259623,
+    "sharpe": 0.7782740679112468,
+    "win_rate": 0.5339860128028426,
+    "max_drawdown": 0.20907172125196433,
+    "description": "Genetic factor: volatility_20d",
+    "discovered_date": "20260330",
+    "status": "active"
+  },
+  {
+    "name": "return_volatility",
+    "expression": "abs(close - open) / (high - low + 0.001)",
+    "ic_value": 0.03214928492637717,
+    "sharpe": 1.5814310608282574,
+    "win_rate": 0.47116965317511306,
+    "max_drawdown": 0.1552032552418951,
+    "description": "Genetic factor: return_volatility",
+    "discovered_date": "20260330",
+    "status": "active"
+  }
+]
