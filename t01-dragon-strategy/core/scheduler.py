@@ -35,7 +35,10 @@ try:
         """通过subprocess调用openclaw message工具发送消息"""
         try:
             # 从环境变量获取飞书用户ID
-            feishu_user_id = os.environ.get('FEISHU_USER_ID', 'ou_b8a256a9cb526db6c196cb438d6893a6')
+            feishu_user_id = os.environ.get('FEISHU_USER_ID', '')
+            if not feishu_user_id:
+                logging.error("FEISHU_USER_ID 环境变量未设置")
+                return False
             
             # 构建命令 - 指定目标用户
             cmd = ['/root/.nvm/versions/node/v22.22.0/bin/openclaw', 'message', 'send', 
@@ -517,7 +520,7 @@ class T01Scheduler:
 
             # 优先使用直接API发送
             if FEISHU_DIRECT_AVAILABLE:
-                user_id = self.config.get('notification', {}).get('feishu_user_id', 'ou_b8a256a9cb526db6c196cb438d6893a6')
+                user_id = self.config.get('notification', {}).get('feishu_user_id', os.getenv('FEISHU_USER_ID', ''))
                 sender = FeishuDirectSender()
                 result = sender.send_message_to_user(user_id, message_content)
                 if result:
@@ -1295,7 +1298,7 @@ class T01Scheduler:
     
     def schedule_t_day_task(self):
         """调度T日评分任务 (晚上8点)"""
-        self.logger.info("调度T日评分任务: 每天20:30")
+        self.logger.info("调度T日评分任务: 每天20:00")
         
         def t_day_job():
             """T日评分任务"""
@@ -1318,10 +1321,10 @@ class T01Scheduler:
             self.logger.info(f"📍 T日评分 - 当前时间: {now.strftime('%Y-%m-%d %H:%M:%S')} (北京时间)")
             self.logger.info(f"📍 T日评分 - 当前小时: {current_hour}")
             
-            # 严格检查：必须在20:30左右执行（北京时间）
+            # 严格检查：必须在20:00左右执行（北京时间）
             if not (20 <= current_hour <= 23):
                 self.logger.warning(f"⚠️ T日评分在非标准时间执行: {now.strftime('%H:%M')}")
-                self.logger.warning(f"    预期执行时间: 20:30-23:59（北京时间）")
+                self.logger.warning(f"    预期执行时间: 20:00-23:59（北京时间）")
             
             # 检查是否为交易日
             try:
@@ -1339,8 +1342,8 @@ class T01Scheduler:
                 self.logger.error(f"T日评分任务异常: {e}")
         
         # 调度任务 - schedule库使用系统本地时间(北京时间)
-        schedule.every().day.at("20:30").do(t_day_job)
-        self.logger.info(f"✅ T日评分任务已调度: 每天20:30 (北京时间)")
+        schedule.every().day.at("20:00").do(t_day_job)
+        self.logger.info(f"✅ T日评分任务已调度: 每天20:00 (北京时间)")
         return t_day_job
     
     def schedule_t1_task(self):

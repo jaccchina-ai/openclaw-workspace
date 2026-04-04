@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-04-03T14:00:01.696795",
+  "type": "weekly_strategy_review",
+  "status": "pending",
+  "week_data": {
+    "week_start": "2026-03-27",
+    "week_end": "2026-04-03",
+    "selection_count": 70,
+    "days_with_selection": 7
+  },
+  "prompt_template": "t01_weekly_review"
+}

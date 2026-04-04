@@ -1,0 +1,313 @@
+{
+  "generated_at": "2026-03-31T09:25:09.706401",
+  "trade_date": "20260330",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "301008.SZ",
+        "name": "宏昌科技",
+        "trade_date": "20260330",
+        "close": 35.24,
+        "pct_chg": 19.99,
+        "industry": "家电零部",
+        "basic_score": 171.6373479209925,
+        "total_score": 171.6373479209925,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 16.014400723397625,
+          "liquidity": 12.622947197594865,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "92500",
+        "seal_ratio": 0.5072003616988124,
+        "seal_to_mv": 0.03178660392539437,
+        "fd_amount": 129762948.0,
+        "amount": 255841592.0,
+        "float_mv": 4082315566.16,
+        "turnover_rate": 6.27,
+        "turnover_20ma_ratio": 1.0868841592784595,
+        "volume_ratio": 4.57,
+        "main_net_amount": 61028800.0,
+        "main_net_ratio": 23.85,
+        "medium_net_amount": -40917300.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "600502.SH",
+        "name": "安徽建工",
+        "trade_date": "20260330",
+        "close": 5.12,
+        "pct_chg": 10.11,
+        "industry": "基础建设",
+        "basic_score": 168.96603414250006,
+        "total_score": 168.96603414250006,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.240696701016223,
+          "liquidity": 10.725337441483859,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "93021",
+        "seal_ratio": 0.12034835050811135,
+        "seal_to_mv": 0.004343866880116996,
+        "fd_amount": 38176742.0,
+        "amount": 317218656.0,
+        "float_mv": 8788653762.56,
+        "turnover_rate": 3.62,
+        "turnover_20ma_ratio": 0.9076012324451573,
+        "volume_ratio": 2.22,
+        "main_net_amount": 91995100.0,
+        "main_net_ratio": 29.0,
+        "medium_net_amount": -52245600.00000001,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "601388.SH",
+        "name": "怡球资源",
+        "trade_date": "20260330",
+        "close": 3.94,
+        "pct_chg": 10.06,
+        "industry": "工业金属",
+        "basic_score": 167.13703421230596,
+        "total_score": 167.13703421230596,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.153809090713278,
+          "liquidity": 14.283225121592684,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 94.69999999999999,
+          "sentiment": 0
+        },
+        "first_limit_time": "93004",
+        "seal_ratio": 0.07690454535663883,
+        "seal_to_mv": 0.0051245611952226095,
+        "fd_amount": 44444382.0,
+        "amount": 577916192.0,
+        "float_mv": 8672817107.04,
+        "turnover_rate": 6.75,
+        "turnover_20ma_ratio": 1.6699675364778055,
+        "volume_ratio": 2.83,
+        "main_net_amount": 158694400.0,
+        "main_net_ratio": 27.46,
+        "medium_net_amount": -75516000.0,
+        "is_hot_sector": false,
+        "dragon_score": 94.69999999999999,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "000592.SZ",
+        "name": "平潭发展",
+        "trade_date": "20260330",
+        "close": 11.62,
+        "pct_chg": 10.04,
+        "industry": "林业Ⅱ",
+        "basic_score": 147.925426808148,
+        "total_score": 147.925426808148,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.061306766047228,
+          "liquidity": 8.289120042100782,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 87.57499999999999,
+          "sentiment": 0
+        },
+        "first_limit_time": "100533",
+        "seal_ratio": 0.030653383023613704,
+        "seal_to_mv": 0.006749862616910153,
+        "fd_amount": 150207219.0,
+        "amount": 4900184064.0,
+        "float_mv": 22253374257.38,
+        "turnover_rate": 22.49,
+        "turnover_20ma_ratio": 1.1767360126302346,
+        "volume_ratio": 1.72,
+        "main_net_amount": 1788807300.0,
+        "main_net_ratio": 36.5,
+        "medium_net_amount": -896493000.0,
+        "is_hot_sector": false,
+        "dragon_score": 87.57499999999999,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "300385.SZ",
+        "name": "雪浪环境",
+        "trade_date": "20260330",
+        "close": 19.82,
+        "pct_chg": 19.98,
+        "industry": "环境治理",
+        "basic_score": 144.8033672595118,
+        "total_score": 144.8033672595118,
+        "score_details": {
+          "first_limit_time": 18.0,
+          "order_quality": 15.185890119841968,
+          "liquidity": 6.497477139669801,
+          "money_flow": 9.469999999999999,
+          "sector": 3.0,
+          "dragon_list": 92.65,
+          "sentiment": 0
+        },
+        "first_limit_time": "111157",
+        "seal_ratio": 0.0929450599209836,
+        "seal_to_mv": 0.018795343348702327,
+        "fd_amount": 108278721.0,
+        "amount": 1164975536.0,
+        "float_mv": 5760933386.06,
+        "turnover_rate": 22.74,
+        "turnover_20ma_ratio": 0.9092431419009404,
+        "volume_ratio": 1.18,
+        "main_net_amount": 104131100.0,
+        "main_net_ratio": 8.94,
+        "medium_net_amount": -45729300.0,
+        "is_hot_sector": false,
+        "dragon_score": 92.65,
+        "sentiment_score": 0
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "301008.SZ",
+      "name": "宏昌科技",
+      "t_date": "20260330",
+      "t1_date": "20260331",
+      "t_day_score": 171.6373479209925,
+      "auction_score": 93.63647040000001,
+      "final_score": 148.23708466469475,
+      "auction_data": {
+        "open_change_pct": 19.986380660537968,
+        "auction_volume_ratio": 60.8479,
+        "auction_turnover_rate": 0.835094,
+        "auction_amount": 34091176.0,
+        "auction_volume_to_t_volume": 13.317888950777776,
+        "auction_volume": 967400.0,
+        "t_day_volume": 72639.14,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "600502.SH",
+      "name": "安徽建工",
+      "t_date": "20260330",
+      "t1_date": "20260331",
+      "t_day_score": 168.96603414250006,
+      "auction_score": 87.13842602580644,
+      "final_score": 144.41775170749196,
+      "auction_data": {
+        "open_change_pct": 9.032258064516126,
+        "auction_volume_ratio": 18.5482,
+        "auction_turnover_rate": 0.302359,
+        "auction_amount": 26313807.0,
+        "auction_volume_to_t_volume": 8.36069232608746,
+        "auction_volume": 5190100.0,
+        "t_day_volume": 620773.95,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "601388.SH",
+      "name": "怡球资源",
+      "t_date": "20260330",
+      "t1_date": "20260331",
+      "t_day_score": 167.13703421230596,
+      "auction_score": 89.614388,
+      "final_score": 143.88024034861417,
+      "auction_data": {
+        "open_change_pct": 10.055865921787706,
+        "auction_volume_ratio": 11.6217,
+        "auction_turnover_rate": 0.277141,
+        "auction_amount": 24035970.0,
+        "auction_volume_to_t_volume": 4.106405173549519,
+        "auction_volume": 6100500.0,
+        "t_day_volume": 1485605.96,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2590495142289.0,
+    "margin_balance": 18300179153.0,
+    "financing_change_pct": -0.012264716654255398,
+    "margin_change_pct": 1.4889703197925002,
+    "financing_buy_repay_ratio": 1.0473084945614295,
+    "market_data": {
+      "trade_date": "20260330",
+      "total_financing_balance": 2590495142289.0,
+      "total_margin_balance": 18300179153.0,
+      "total_financing_margin_balance": 2608795321442.0,
+      "financing_change_ratio": -0.012264716654255398,
+      "margin_change_ratio": 1.4889703197925002,
+      "financing_buy_ratio": 1.0473084945614295,
+      "sse_data": {
+        "financing_balance": 1319468230266.0,
+        "financing_buy": 82497234732.0,
+        "financing_repay": 78716064400.0,
+        "margin_balance": 12174975059.0,
+        "margin_sell": 85889637.0,
+        "total_balance": 1331643205325.0,
+        "margin_remaining": 2454470329.0
+      },
+      "szse_data": {
+        "financing_balance": 1271026912023.0,
+        "financing_buy": 90417302946.0,
+        "financing_repay": 86387664421.0,
+        "margin_balance": 6125204094.0,
+        "margin_sell": 36663510.0,
+        "total_balance": 1277152116117.0,
+        "margin_remaining": 810877320.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}

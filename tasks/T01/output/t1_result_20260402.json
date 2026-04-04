@@ -1,0 +1,313 @@
+{
+  "generated_at": "2026-04-03T09:25:15.730248",
+  "trade_date": "20260402",
+  "t_day_summary": {
+    "total_candidates": 10,
+    "top_scores": [
+      {
+        "ts_code": "600488.SH",
+        "name": "津药药业",
+        "trade_date": "20260402",
+        "close": 6.34,
+        "pct_chg": 10.07,
+        "industry": "化学制药",
+        "basic_score": 172.65674383620242,
+        "total_score": 172.65674383620242,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 21.516625481239718,
+          "liquidity": 8.140118354962716,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "92502",
+        "seal_ratio": 3.2583127406198584,
+        "seal_to_mv": 0.04440149686306772,
+        "fd_amount": 307372095.0,
+        "amount": 94334743.0,
+        "float_mv": 6922561551.2,
+        "turnover_rate": 1.36,
+        "turnover_20ma_ratio": 1.3870355064888151,
+        "volume_ratio": 0.31,
+        "main_net_amount": 38700300.0,
+        "main_net_ratio": 41.02,
+        "medium_net_amount": -20046500.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "300839.SZ",
+        "name": "博汇股份",
+        "trade_date": "20260402",
+        "close": 16.69,
+        "pct_chg": 19.99,
+        "industry": "炼化及贸",
+        "basic_score": 167.39984967384092,
+        "total_score": 167.39984967384092,
+        "score_details": {
+          "first_limit_time": 30.0,
+          "order_quality": 15.518509834846933,
+          "liquidity": 8.881339838993984,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 100.0,
+          "sentiment": 0
+        },
+        "first_limit_time": "93103",
+        "seal_ratio": 0.2592549174234666,
+        "seal_to_mv": 0.020022927368889113,
+        "fd_amount": 96809059.0,
+        "amount": 373412624.0,
+        "float_mv": 4834910361.33,
+        "turnover_rate": 7.82,
+        "turnover_20ma_ratio": 0.4694019516981955,
+        "volume_ratio": 1.99,
+        "main_net_amount": 128732700.0,
+        "main_net_ratio": 34.47,
+        "medium_net_amount": -80524500.0,
+        "is_hot_sector": false,
+        "dragon_score": 100.0,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "920230.BJ",
+        "name": "欧康医药",
+        "trade_date": "20260402",
+        "close": 14.61,
+        "pct_chg": 29.98,
+        "industry": "化学制药",
+        "basic_score": 142.79622027723087,
+        "total_score": 142.79622027723087,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.127557196751399,
+          "liquidity": 10.11866308047945,
+          "money_flow": 12.5,
+          "sector": 3.0,
+          "dragon_list": 78.05000000000001,
+          "sentiment": 0
+        },
+        "first_limit_time": "100840",
+        "seal_ratio": 0.06377859837569912,
+        "seal_to_mv": 0.0153644557681687,
+        "fd_amount": 10605924.0,
+        "amount": 166292836.0,
+        "float_mv": 690289598.28,
+        "turnover_rate": 25.1,
+        "turnover_20ma_ratio": 1.0855989241438349,
+        "volume_ratio": 13.21,
+        "main_net_amount": 93656200.00000001,
+        "main_net_ratio": 56.32,
+        "medium_net_amount": 23237600.000000004,
+        "is_hot_sector": false,
+        "dragon_score": 78.05000000000001,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "600339.SH",
+        "name": "中油工程",
+        "trade_date": "20260402",
+        "close": 4.46,
+        "pct_chg": 10.12,
+        "industry": "油服工程",
+        "basic_score": 142.71789740591876,
+        "total_score": 142.71789740591876,
+        "score_details": {
+          "first_limit_time": 12.0,
+          "order_quality": 15.130689634480202,
+          "liquidity": 12.687207771438562,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 89.9,
+          "sentiment": 0
+        },
+        "first_limit_time": "130129",
+        "seal_ratio": 0.06534481724010062,
+        "seal_to_mv": 0.002438806424155532,
+        "fd_amount": 60728323.0,
+        "amount": 929351792.0,
+        "float_mv": 24900837720.66,
+        "turnover_rate": 3.85,
+        "turnover_20ma_ratio": 1.4061623314315683,
+        "volume_ratio": 2.4,
+        "main_net_amount": 280944400.0,
+        "main_net_ratio": 30.23,
+        "medium_net_amount": -150987100.0,
+        "is_hot_sector": false,
+        "dragon_score": 89.9,
+        "sentiment_score": 0
+      },
+      {
+        "ts_code": "603477.SH",
+        "name": "巨星农牧",
+        "trade_date": "20260402",
+        "close": 17.03,
+        "pct_chg": 10.01,
+        "industry": "养殖业",
+        "basic_score": 136.30323712351293,
+        "total_score": 136.30323712351293,
+        "score_details": {
+          "first_limit_time": 24.0,
+          "order_quality": 15.13373723278968,
+          "liquidity": 12.994499890723262,
+          "money_flow": 10.0,
+          "sector": 3.0,
+          "dragon_list": 71.175,
+          "sentiment": 0
+        },
+        "first_limit_time": "104654",
+        "seal_ratio": 0.06686861639484024,
+        "seal_to_mv": 0.004402333386870387,
+        "fd_amount": 38240865.0,
+        "amount": 571880608.0,
+        "float_mv": 8686499099.33,
+        "turnover_rate": 6.79,
+        "turnover_20ma_ratio": 1.2183499672169786,
+        "volume_ratio": 2.96,
+        "main_net_amount": 123990400.00000001,
+        "main_net_ratio": 21.68,
+        "medium_net_amount": -49167200.0,
+        "is_hot_sector": false,
+        "dragon_score": 71.175,
+        "sentiment_score": 0
+      }
+    ]
+  },
+  "t1_recommendations": [
+    {
+      "ts_code": "600488.SH",
+      "name": "津药药业",
+      "t_date": "20260402",
+      "t1_date": "20260403",
+      "t_day_score": 172.65674383620242,
+      "auction_score": 89.9435292,
+      "final_score": 147.84277944534168,
+      "auction_data": {
+        "open_change_pct": 10.069444444444446,
+        "auction_volume_ratio": 8.0673,
+        "auction_turnover_rate": 0.359099,
+        "auction_amount": 24858823.0,
+        "auction_volume_to_t_volume": 26.351715406984617,
+        "auction_volume": 3920950.0,
+        "t_day_volume": 148792.97,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "300839.SZ",
+      "name": "博汇股份",
+      "t_date": "20260402",
+      "t1_date": "20260403",
+      "t_day_score": 167.39984967384092,
+      "auction_score": 94.5283344,
+      "final_score": 145.53839509168864,
+      "auction_data": {
+        "open_change_pct": 17.61322789360172,
+        "auction_volume_ratio": 19.4657,
+        "auction_turnover_rate": 0.766373,
+        "auction_amount": 36320836.0,
+        "auction_volume_to_t_volume": 9.80256449145637,
+        "auction_volume": 2220100.0,
+        "t_day_volume": 226481.55,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    },
+    {
+      "ts_code": "300834.SZ",
+      "name": "星辉环材",
+      "t_date": "20260402",
+      "t1_date": "20260403",
+      "t_day_score": 135.15952151446527,
+      "auction_score": 100.0,
+      "final_score": 124.61166506012569,
+      "auction_data": {
+        "open_change_pct": 13.16225165562913,
+        "auction_volume_ratio": 19.4574,
+        "auction_turnover_rate": 0.744647,
+        "auction_amount": 58763229.0,
+        "auction_volume_to_t_volume": 6.390719652834379,
+        "auction_volume": 1432900.0,
+        "t_day_volume": 224215.75,
+        "data_source": "realtime"
+      },
+      "recommendation": {
+        "position": 0.2,
+        "confidence": "高",
+        "reasons": [
+          "竞价大幅高开(>5%)",
+          "竞价量比极高(>3)",
+          "竞价成交量极强(>30%，热度高度延续)"
+        ],
+        "action": "买入"
+      }
+    }
+  ],
+  "market_condition": {
+    "condition": "正常",
+    "risk_level": "低",
+    "risk_score": 2,
+    "suggestion": "可适当增加仓位",
+    "position_multiplier": 1.0,
+    "financing_balance": 2572055528853.0,
+    "margin_balance": 18463752715.0,
+    "financing_change_pct": -0.73907142881792,
+    "margin_change_pct": -0.5851864261281192,
+    "financing_buy_repay_ratio": 0.9368041308239233,
+    "market_data": {
+      "trade_date": "20260402",
+      "total_financing_balance": 2572055528853.0,
+      "total_margin_balance": 18463752715.0,
+      "total_financing_margin_balance": 2590519281568.0,
+      "financing_change_ratio": -0.73907142881792,
+      "margin_change_ratio": -0.5851864261281192,
+      "financing_buy_ratio": 0.9368041308239233,
+      "sse_data": {
+        "financing_balance": 1311104175276.0,
+        "financing_buy": 82932981463.0,
+        "financing_repay": 88270872890.0,
+        "margin_balance": 12380763129.0,
+        "margin_sell": 87182438.0,
+        "total_balance": 1323484938405.0,
+        "margin_remaining": 2496650751.0
+      },
+      "szse_data": {
+        "financing_balance": 1260951353577.0,
+        "financing_buy": 79470582165.0,
+        "financing_repay": 85088272618.0,
+        "margin_balance": 6082989586.0,
+        "margin_sell": 26503889.0,
+        "total_balance": 1267034343163.0,
+        "margin_remaining": 809567850.0
+      }
+    }
+  },
+  "next_steps": [
+    "监控推荐股票的盘中表现",
+    "设置止损位（建议-6%）",
+    "关注大盘走势变化"
+  ],
+  "is_trading_hours": true
+}
