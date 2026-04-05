@@ -379,3 +379,52 @@ phase3_completion_date: null
 phase3_integration:
   status: completed
   deployed_at: 2026-03-30 10:50:49
+
+# 情绪指标预警系统配置
+sentiment_monitor:
+  enabled: true
+  alert_cooldown_minutes: 30
+  thresholds:
+    explosion_rate:
+      extreme_high: 0.7
+      high: 0.5
+      warning: 0.3
+    consecutive_limits:
+      extreme_low: 2
+      low: 3
+      normal: 5
+    advance_decline_ratio:
+      extreme_bear: 0.3
+      bear: 0.5
+      bull: 2.0
+      extreme_bull: 3.0
+    limit_up_count:
+      extreme_low: 20
+      low: 40
+      normal: 60
+      high: 100
+    limit_down_count:
+      warning: 10
+      danger: 30
+      extreme: 50
+    yesterday_limit_up_premium:
+      extreme_low: -2.0
+      low: 0
+      normal: 2.0
+      high: 5.0
+    seal_rate:
+      extreme_low: 0.5
+      low: 0.6
+      normal: 0.75
+  schedule:
+    - time: "09:35"
+      description: "开盘情绪监控"
+    - time: "14:55"
+      description: "收盘前情绪监控"
+  notification:
+    enabled: true
+    channels:
+      - feishu
+    extreme_bear_alert: true
+    bear_alert: true
+    high_sentiment_alert: true

@@ -1,15 +1,15 @@
 {
   "task_failures": {
     "task_t01_auction_check": {
-      "count": 0,
-      "first_failure": null
+      "count": 4,
+      "first_failure": "2026-04-05T06:00:01.888723"
     },
     "task_t01_tday_scoring": {
-      "count": 0,
-      "first_failure": null
+      "count": 2,
+      "first_failure": "2026-04-05T18:00:10.350625"
     }
   },
-  "last_check": "2026-04-04T12:00:01.619804",
+  "last_check": "2026-04-06T00:00:21.423188",
   "alert_history": [
     {
       "timestamp": "2026-03-03T00:06:00Z",

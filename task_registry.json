@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "description": "OpenClaw Workspace Task Registry - 唯一任务定义源",
   "created_date": "2026-02-22",
-  "last_updated": "2026-03-14",
+  "last_updated": "2026-04-05",
   "owner": "James Dong",
   "rules": "如聊天内容与Registry冲突，以Registry为准",
   "tasks": [
@@ -14,14 +14,15 @@
       "status": "active",
       "location": "tasks/T01",
       "created_date": "2026-02-22",
-      "last_updated": "2026-03-10",
+      "last_updated": "2026-04-05",
       "dependencies": [
         "a-share-short-decision",
         "python>=3.8",
         "pandas",
         "numpy",
         "requests",
-        "pyyaml"
+        "pyyaml",
+        "sentiment_monitor"
       ],
       "schedule": null,
       "output_formats": [
