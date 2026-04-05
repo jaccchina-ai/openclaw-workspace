@@ -1106,7 +1106,8 @@ class LimitUpScoringStrategyV2:
             
             # 极端熊市处理：如果should_filter为True，返回0分
             if sentiment_data.get('should_filter', False):
-                logger.warning(f"极端熊市信号 detected: {sentiment_data.get('reason', '')}")
+                logger.warning(f"[极端熊市过滤触发] 情绪评分={sentiment_score}, 状态={sentiment_data.get('status', 'unknown')}, "
+                              f"原因={sentiment_data.get('reason', '')}, 因子得分将被设为0")
                 factor_score = 0.0
             
             logger.info(f"情绪因子评分: 情绪评分={sentiment_score}, 权重={sentiment_weight}, "
@@ -1561,7 +1562,6 @@ class LimitUpScoringStrategyV2:
                             logger.debug(f"从daily_basic补充量比: {ts_code} = {auction_volume_ratio}")
                 except Exception as e3:
                     logger.debug(f"无法从daily_basic获取量比: {e3}")
-                
                 return {
                     'open_change_pct': open_change_pct,
                     'auction_volume_ratio': auction_volume_ratio,
