@@ -29,6 +29,15 @@ except ImportError as e:
     PCA_AVAILABLE = False
     logger.warning(f"PCA因子正交化模块加载失败: {e}")
 
+# 导入情绪监控模块
+try:
+    from sentiment_monitor import get_sentiment_factor, MarketSentimentMonitor
+    SENTIMENT_MONITOR_AVAILABLE = True
+    logger.info("情绪监控模块加载成功")
+except ImportError as e:
+    SENTIMENT_MONITOR_AVAILABLE = False
+    logger.warning(f"情绪监控模块加载失败: {e}")
+
 logger.info("T01策略初始化 - 使用Tushare API + 东方财富舆情分析")
 
 
@@ -1048,6 +1057,74 @@ class LimitUpScoringStrategyV2:
             logger.debug(f"获取龙虎榜数据失败或无数据: {e}")
         
         return 0.0
+    
+    def _score_sentiment_factor(self, trade_date: str, config: Dict[str, Any] = None) -> Tuple[float, Dict[str, Any]]:
+        """
+        评分情绪因子
+        
+        调用get_sentiment_factor()获取情绪数据，将情绪评分(0-100)转换为因子得分(0-10)
+        极端熊市返回0分，牛市返回高分
+        
+        Args:
+            trade_date: 交易日期 (YYYYMMDD格式)
+            config: 可选的情绪监控配置字典
+            
+        Returns:
+            Tuple[情绪因子得分(0-10), 情绪数据字典]
+        """
+        if not SENTIMENT_MONITOR_AVAILABLE:
+            logger.warning("情绪监控模块不可用，返回中性评分")
+            return 5.0, {
+                'score': 50,
+                'status': 'neutral',
+                'factor_value': 0.5,
+                'should_filter': False,
+                'reason': '情绪监控模块不可用，使用默认中性值',
+                'indicators': {}
+            }
+        
+        try:
+            # 构建情绪监控配置
+            sentiment_config = config or {}
+            
+            # 如果没有传入配置，使用策略配置中的阈值
+            if not sentiment_config and hasattr(self, 'config'):
+                sentiment_config = self.config.get('sentiment_monitor', {})
+            
+            # 调用情绪监控模块获取情绪因子
+            sentiment_data = get_sentiment_factor(trade_date, sentiment_config)
+            
+            # 获取情绪评分 (0-100)
+            sentiment_score = sentiment_data.get('score', 50)
+            
+            # 获取情绪权重（从t_day_weights，默认10）
+            sentiment_weight = self.t_day_weights.get('sentiment', 10)
+            
+            # 将情绪评分(0-100)转换为因子得分(0-10)
+            # 公式: 因子得分 = (情绪评分 / 100) * 权重
+            factor_score = (sentiment_score / 100.0) * sentiment_weight
+            
+            # 极端熊市处理：如果should_filter为True，返回0分
+            if sentiment_data.get('should_filter', False):
+                logger.warning(f"极端熊市信号 detected: {sentiment_data.get('reason', '')}")
+                factor_score = 0.0
+            
+            logger.info(f"情绪因子评分: 情绪评分={sentiment_score}, 权重={sentiment_weight}, "
+                       f"因子得分={factor_score:.2f}, 状态={sentiment_data.get('status', 'unknown')}")
+            
+            return factor_score, sentiment_data
+            
+        except Exception as e:
+            logger.error(f"情绪因子评分失败: {e}")
+            # 出错时返回中性评分
+            return 5.0, {
+                'score': 50,
+                'status': 'neutral',
+                'factor_value': 0.5,
+                'should_filter': False,
+                'reason': f'情绪因子评分异常: {str(e)}',
+                'indicators': {}
+            }
     
     def _score_sentiment(self, ts_code: str, name: str, trade_date: str) -> float:
         """评分舆情分析 (新闻情感)"""

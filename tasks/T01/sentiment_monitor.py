@@ -608,7 +608,7 @@ def get_sentiment_factor(trade_date: str, config: Dict[str, Any] = None) -> Dict
         Dict 包含以下字段:
         - score: 情绪评分 (0-100)
         - status: 市场状态 (extreme_bear/bear/caution/neutral/bull)
-        - factor_value: 因子值 (标准化后的情绪值，范围-1到1)
+        - factor_value: 因子值 (标准化后的情绪值，范围0-1)
         - should_filter: 是否应过滤股票 (极端熊市时为True)
         - reason: 过滤原因说明
         - indicators: 详细指标数据
@@ -635,8 +635,8 @@ def get_sentiment_factor(trade_date: str, config: Dict[str, Any] = None) -> Dict
     status = sentiment_result.get('market_status', 'neutral')
     indicators = sentiment_result.get('indicators', {})
     
-    # 计算因子值 (将0-100评分映射到-1到1)
-    factor_value = (score - 50) / 50.0
+    # 计算因子值 (将0-100评分映射到0-1)
+    factor_value = score / 100.0
     
     # 判断是否需要过滤
     # 极端熊市(score<20或status='extreme_bear')时 should_filter=True
