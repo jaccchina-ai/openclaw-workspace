@@ -2206,6 +2206,146 @@ class LimitUpScoringStrategyV2:
                 'error': str(e)
             }
 
+    def format_report_with_sentiment(self, candidates: List[Dict[str, Any]], 
+                                     t1_results: List[Dict[str, Any]], 
+                                     sentiment_data: Dict[str, Any],
+                                     trade_date: str = None) -> str:
+        """
+        格式化选股报告，包含情绪指标板块
+        
+        Args:
+            candidates: T日候选股票列表
+            t1_results: T+1日竞价推荐结果
+            sentiment_data: 情绪指标数据
+            trade_date: 交易日期
+            
+        Returns:
+            格式化后的报告字符串
+        """
+        if trade_date is None:
+            trade_date = datetime.now().strftime('%Y%m%d')
+        
+        # 获取情绪数据
+        score = sentiment_data.get('score', 50)
+        status = sentiment_data.get('status', 'neutral')
+        should_filter = sentiment_data.get('should_filter', False)
+        reason = sentiment_data.get('reason', '')
+        indicators = sentiment_data.get('indicators', {})
+        
+        # 状态中文映射
+        status_cn = {
+            'extreme_bear': '极端熊市',
+            'bear': '熊市',
+            'caution': '谨慎',
+            'neutral': '中性',
+            'bull': '牛市'
+        }.get(status, status)
+        
+        # 状态表情
+        status_emoji = {
+            'extreme_bear': '🔴🔴🔴',
+            'bear': '🔴🔴',
+            'caution': '🟡',
+            'neutral': '⚪',
+            'bull': '🟢🟢'
+        }.get(status, '⚪')
+        
+        # 获取操作建议
+        position_suggestions = {
+            'extreme_bear': {'position': 0.0, 'action': '清仓观望'},
+            'bear': {'position': 0.2, 'action': '大幅减仓'},
+            'caution': {'position': 0.5, 'action': '谨慎操作'},
+            'neutral': {'position': 0.7, 'action': '正常操作'},
+            'bull': {'position': 1.0, 'action': '积极操作'},
+        }
+        suggestion = position_suggestions.get(status, {'position': 0.5, 'action': '谨慎操作'})
+        
+        # 提取指标数据
+        explosion = indicators.get('explosion_rate', {})
+        consecutive = indicators.get('consecutive_limits', {})
+        ad_ratio = indicators.get('advance_decline_ratio', {})
+        limit_stats = indicators.get('limit_stats', {})
+        premium = indicators.get('yesterday_premium', {})
+        seal = indicators.get('seal_rate', {})
+        
+        # 构建报告
+        report_lines = []
+        report_lines.append("=" * 60)
+        report_lines.append(f"📊 龙头战法选股报告 - {trade_date}")
+        report_lines.append("=" * 60)
+        report_lines.append("")
+        
+        # 候选股票板块
+        report_lines.append("📈 候选股票 (T日评分)")
+        report_lines.append("-" * 60)
+        if candidates:
+            for i, stock in enumerate(candidates[:5], 1):
+                name = stock.get('name', 'N/A')
+                ts_code = stock.get('ts_code', 'N/A')
+                total_score = stock.get('total_score', 0)
+                basic_score = stock.get('basic_score', 0)
+                sentiment_score = stock.get('sentiment_score', 0)
+                pct_chg = stock.get('pct_chg', 0)
+                report_lines.append(f"#{i} {name} ({ts_code}) - 总分: {total_score:.1f}")
+                report_lines.append(f"    基础分: {basic_score:.1f} | 舆情分: {sentiment_score:.1f} | 涨幅: {pct_chg:.2f}%")
+        else:
+            report_lines.append("暂无候选股票")
+        report_lines.append("")
+        
+        # T+1推荐板块
+        report_lines.append("🎯 T+1竞价推荐")
+        report_lines.append("-" * 60)
+        if t1_results:
+            for i, rec in enumerate(t1_results[:3], 1):
+                name = rec.get('name', 'N/A')
+                ts_code = rec.get('ts_code', 'N/A')
+                final_score = rec.get('final_score', 0)
+                recommendation = rec.get('recommendation', {})
+                action = recommendation.get('action', 'N/A')
+                position = recommendation.get('position', 0)
+                confidence = recommendation.get('confidence', 'N/A')
+                report_lines.append(f"#{i} {name} ({ts_code}) - 最终分: {final_score:.1f}")
+                report_lines.append(f"    操作建议: {action} | 仓位: {position*100:.0f}% | 置信度: {confidence}")
+        else:
+            report_lines.append("暂无竞价推荐")
+        report_lines.append("")
+        
+        # 情绪指标板块
+        report_lines.append("📊 情绪指标")
+        report_lines.append("-" * 60)
+        report_lines.append(f"【情绪评分】{score}/100  {status_emoji}")
+        report_lines.append(f"【市场状态】{status_cn} ({status})")
+        report_lines.append(f"【情绪因子得分】{score/10:.1f}/10")
+        report_lines.append("")
+        
+        # 关键情绪指标
+        report_lines.append("关键指标:")
+        explosion_rate = explosion.get('rate', 0) * 100
+        report_lines.append(f"  • 炸板率: {explosion_rate:.1f}% (涨停{explosion.get('total', 0)}家, 炸板{explosion.get('exploded', 0)}家)")
+        report_lines.append(f"  • 连板高度: {consecutive.get('max_consecutive', 0)}板")
+        ad_ratio_val = ad_ratio.get('ratio', 1.0)
+        report_lines.append(f"  • 涨跌比: {ad_ratio_val:.2f} (涨{ad_ratio.get('advance', 0)}/跌{ad_ratio.get('decline', 0)}/平{ad_ratio.get('flat', 0)})")
+        report_lines.append(f"  • 涨停家数: {limit_stats.get('limit_up', 0)}家 | 跌停家数: {limit_stats.get('limit_down', 0)}家")
+        report_lines.append(f"  • 封板率: {seal.get('rate', 0)*100:.1f}% (封板{seal.get('sealed', 0)}家/曾涨停{seal.get('total', 0)}家)")
+        report_lines.append(f"  • 昨日涨停溢价: {premium.get('premium', 0):.2f}%")
+        report_lines.append("")
+        
+        # 操作建议
+        report_lines.append(f"【操作建议】{suggestion['action']} | 建议仓位: {int(suggestion['position'] * 100)}%")
+        report_lines.append("")
+        
+        # 过滤警告
+        if should_filter:
+            report_lines.append("⚠️ 警告")
+            report_lines.append("-" * 60)
+            report_lines.append(f"【极端行情警报】{reason}")
+            report_lines.append("【系统建议】停止选股，清仓观望")
+            report_lines.append("")
+        
+        report_lines.append("=" * 60)
+        
+        return "\n".join(report_lines)
+
 
 if __name__ == "__main__":
     # 测试代码

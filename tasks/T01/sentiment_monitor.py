@@ -7,14 +7,54 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional, Tuple, Callable
 import logging
 import tushare as ts
 import json
 import os
 import sys
+import time
+import hashlib
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 logger = logging.getLogger(__name__)
+
+
+def safe_api_call(func: Callable, *args, max_retries: int = 3, retry_delay: float = 1.0, **kwargs) -> Any:
+    """
+    安全的API调用包装函数，支持自动重试机制
+    
+    Args:
+        func: 要调用的函数
+        *args: 函数的位置参数
+        max_retries: 最大重试次数 (默认3次)
+        retry_delay: 重试间隔秒数 (默认1秒)
+        **kwargs: 函数的关键字参数
+        
+    Returns:
+        函数调用结果
+        
+    Raises:
+        最后一次调用的异常
+    """
+    last_exception = None
+    # 至少尝试一次，即使max_retries=0
+    total_attempts = max(1, max_retries)
+    
+    for attempt in range(1, total_attempts + 1):
+        try:
+            result = func(*args, **kwargs)
+            return result
+        except Exception as e:
+            last_exception = e
+            if attempt < total_attempts:
+                logger.warning(f"API调用失败 (尝试 {attempt}/{total_attempts}): {e}. {retry_delay}秒后重试...")
+                time.sleep(retry_delay)
+            else:
+                logger.error(f"API调用失败，已重试{total_attempts}次，放弃: {e}")
+    
+    # 重试次数用尽，抛出最后一次异常
+    raise last_exception
 
 
 class MarketSentimentMonitor:
@@ -111,7 +151,88 @@ class MarketSentimentMonitor:
             'bull': {'position': 1.0, 'action': '积极操作'},
         }
         
+        # 结果缓存机制
+        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._default_cache_ttl = 300  # 默认缓存TTL: 5分钟 (300秒)
+        
         logger.info("情绪指标预警系统初始化完成")
+    
+    def _get_cache_key(self, method_name: str, args: tuple = None, kwargs: dict = None) -> str:
+        """
+        生成缓存键
+        
+        Args:
+            method_name: 方法名称
+            args: 位置参数
+            kwargs: 关键字参数
+            
+        Returns:
+            缓存键字符串
+        """
+        # 将参数转换为字符串并生成哈希
+        key_parts = [method_name]
+        
+        if args:
+            key_parts.append(str(args))
+        if kwargs:
+            # 排序kwargs确保一致性
+            sorted_kwargs = sorted(kwargs.items())
+            key_parts.append(str(sorted_kwargs))
+        
+        key_string = "|".join(key_parts)
+        return hashlib.md5(key_string.encode()).hexdigest()
+    
+    def _get_cached_result(self, key: str) -> Optional[Any]:
+        """
+        获取缓存结果
+        
+        Args:
+            key: 缓存键
+            
+        Returns:
+            缓存的数据，如果过期或不存在则返回None
+        """
+        try:
+            if key not in self._cache:
+                return None
+            
+            cache_entry = self._cache[key]
+            timestamp = cache_entry.get('timestamp', 0)
+            ttl = cache_entry.get('ttl', self._default_cache_ttl)
+            
+            # 检查是否过期
+            if time.time() - timestamp > ttl:
+                # 删除过期缓存
+                del self._cache[key]
+                return None
+            
+            return cache_entry.get('data')
+        except Exception as e:
+            # 缓存失败时不影响正常功能
+            logger.warning(f"获取缓存失败: {e}")
+            return None
+    
+    def _set_cached_result(self, key: str, data: Any, ttl: int = None) -> None:
+        """
+        设置缓存结果
+        
+        Args:
+            key: 缓存键
+            data: 要缓存的数据
+            ttl: 缓存存活时间（秒），默认使用类默认值
+        """
+        try:
+            if ttl is None:
+                ttl = self._default_cache_ttl
+            
+            self._cache[key] = {
+                'data': data,
+                'timestamp': time.time(),
+                'ttl': ttl
+            }
+        except Exception as e:
+            # 缓存失败时不影响正常功能
+            logger.warning(f"设置缓存失败: {e}")
     
     def get_trade_date(self, date: Optional[str] = None) -> str:
         """获取交易日期"""
@@ -314,6 +435,128 @@ class MarketSentimentMonitor:
             'total': total
         }
     
+    def _get_default_result(self, indicator_name: str) -> Dict[str, Any]:
+        """
+        获取指标的默认结果（当计算失败时使用）
+        
+        Args:
+            indicator_name: 指标名称
+            
+        Returns:
+            默认结果字典
+        """
+        defaults = {
+            'explosion_rate': {'rate': 0, 'total': 0, 'exploded': 0, 'sealed': 0},
+            'consecutive_limits': {'max_consecutive': 0, 'distribution': {}},
+            'advance_decline_ratio': {'ratio': 1.0, 'advance': 0, 'decline': 0, 'flat': 0},
+            'limit_up_down_stats': {'limit_up': 0, 'limit_down': 0, 'strong_up': 0, 'strong_down': 0},
+            'yesterday_limit_up_premium': {'premium': 0, 'avg_open': 0, 'avg_close': 0, 'count': 0},
+        }
+        return defaults.get(indicator_name, {})
+    
+    def analyze_sentiment_parallel(self, trade_date: Optional[str] = None) -> Dict[str, Any]:
+        """
+        并行综合分析市场情绪
+        
+        使用ThreadPoolExecutor并行计算5个情绪指标，提高性能。
+        单个指标计算失败不影响其他指标，失败的指标返回默认值。
+        
+        Args:
+            trade_date: 交易日期 (YYYYMMDD格式)，默认为今天
+            
+        Returns:
+            情绪分析结果字典
+        """
+        trade_date = self.get_trade_date(trade_date)
+        
+        if not self._is_trading_day(trade_date):
+            logger.info(f"{trade_date} 非交易日，跳过情绪分析")
+            return {'is_trading_day': False}
+        
+        logger.info(f"开始并行分析 {trade_date} 市场情绪...")
+        
+        # 定义要并行执行的指标计算任务
+        indicator_tasks = [
+            ('explosion_rate', self.calculate_explosion_rate),
+            ('consecutive_limits', self.calculate_consecutive_limits),
+            ('advance_decline_ratio', self.calculate_advance_decline_ratio),
+            ('limit_up_down_stats', self.calculate_limit_up_down_stats),
+            ('yesterday_limit_up_premium', self.calculate_yesterday_limit_up_premium),
+        ]
+        
+        # 存储结果
+        results = {}
+        
+        # 使用ThreadPoolExecutor并行执行
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            # 提交所有任务
+            future_to_indicator = {
+                executor.submit(task_func, trade_date): indicator_name
+                for indicator_name, task_func in indicator_tasks
+            }
+            
+            # 处理完成的任务
+            for future in as_completed(future_to_indicator):
+                indicator_name = future_to_indicator[future]
+                try:
+                    result = future.result()
+                    results[indicator_name] = result
+                    logger.debug(f"{indicator_name} 计算完成")
+                except Exception as e:
+                    logger.error(f"{indicator_name} 计算失败: {e}")
+                    # 返回默认值
+                    results[indicator_name] = self._get_default_result(indicator_name)
+        
+        # 计算封板率（依赖于炸板率结果）
+        explosion_data = results.get('explosion_rate', self._get_default_result('explosion_rate'))
+        total = explosion_data.get('total', 0)
+        sealed = explosion_data.get('sealed', 0)
+        seal_rate = sealed / total if total > 0 else 0
+        seal_data = {
+            'rate': round(seal_rate, 4),
+            'sealed': sealed,
+            'total': total
+        }
+        
+        # 提取各指标数据
+        explosion_data = results.get('explosion_rate', self._get_default_result('explosion_rate'))
+        consecutive_data = results.get('consecutive_limits', self._get_default_result('consecutive_limits'))
+        ad_ratio_data = results.get('advance_decline_ratio', self._get_default_result('advance_decline_ratio'))
+        limit_stats = results.get('limit_up_down_stats', self._get_default_result('limit_up_down_stats'))
+        premium_data = results.get('yesterday_limit_up_premium', self._get_default_result('yesterday_limit_up_premium'))
+        
+        # 综合评分
+        sentiment_score = self._calculate_sentiment_score(
+            explosion_data, consecutive_data, ad_ratio_data,
+            limit_stats, premium_data, seal_data
+        )
+        
+        # 判断市场状态
+        market_status = self._determine_market_status(
+            explosion_data, consecutive_data, ad_ratio_data,
+            limit_stats, premium_data, seal_data
+        )
+        
+        result = {
+            'trade_date': trade_date,
+            'is_trading_day': True,
+            'sentiment_score': sentiment_score,
+            'market_status': market_status,
+            'position_suggestion': self.position_suggestions.get(market_status, {'position': 0.5, 'action': '谨慎'}),
+            'indicators': {
+                'explosion_rate': explosion_data,
+                'consecutive_limits': consecutive_data,
+                'advance_decline_ratio': ad_ratio_data,
+                'limit_stats': limit_stats,
+                'yesterday_premium': premium_data,
+                'seal_rate': seal_data
+            }
+        }
+        
+        logger.info(f"并行情绪分析完成: 评分={sentiment_score}, 状态={market_status}")
+        
+        return result
+    
     def analyze_sentiment(self, trade_date: Optional[str] = None) -> Dict[str, Any]:
         """
         综合分析市场情绪
@@ -322,6 +565,13 @@ class MarketSentimentMonitor:
             情绪分析结果字典
         """
         trade_date = self.get_trade_date(trade_date)
+        
+        # 检查缓存
+        cache_key = self._get_cache_key('analyze_sentiment', (trade_date,), {})
+        cached_result = self._get_cached_result(cache_key)
+        if cached_result is not None:
+            logger.info(f"使用缓存的情绪分析结果: {trade_date}")
+            return cached_result
         
         if not self._is_trading_day(trade_date):
             logger.info(f"{trade_date} 非交易日，跳过情绪分析")
@@ -364,6 +614,9 @@ class MarketSentimentMonitor:
                 'seal_rate': seal_data
             }
         }
+        
+        # 缓存结果
+        self._set_cached_result(cache_key, result)
         
         logger.info(f"情绪分析完成: 评分={sentiment_score}, 状态={market_status}")
         

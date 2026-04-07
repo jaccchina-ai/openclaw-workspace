@@ -416,11 +416,12 @@ sentiment_monitor:
       extreme_low: 0.5
       low: 0.6
       normal: 0.75
-  schedule:
-    - time: "09:35"
-      description: "开盘情绪监控"
-    - time: "14:55"
-      description: "收盘前情绪监控"
+  # 已改为选股流程集成，取消定时任务
+  # schedule:
+  #   - time: "09:35"
+  #     description: "开盘情绪监控"
+  #   - time: "14:55"
+  #     description: "收盘前情绪监控"
   notification:
     enabled: true
     channels:
