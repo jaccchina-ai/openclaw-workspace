@@ -1,0 +1,28 @@
+{
+  "report_date": "20260408",
+  "generated_at": "2026-04-08T16:10:24.970185",
+  "factors": [
+    {
+      "factor_name": "seal_ratio",
+      "trade_date": "20260408",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    }
+  ],
+  "invalid_factors": [
+    "seal_ratio"
+  ],
+  "warning_factors": [],
+  "summary": {
+    "total_factors": 10,
+    "calculated_factors": 1,
+    "invalid_count": 1,
+    "warning_count": 0,
+    "valid_rate": 0.0
+  }
+}

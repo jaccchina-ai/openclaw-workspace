@@ -1,0 +1,23 @@
+{
+  "seal_ratio": [
+    {
+      "trade_date": "20260408",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260410",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "seal_to_mv": [],
+  "turnover_rate": [],
+  "turnover_20ma_ratio": [],
+  "volume_ratio": [],
+  "first_limit_time": [],
+  "main_net_ratio": [],
+  "medium_net_ratio": [],
+  "dragon_score": [],
+  "is_hot_sector": []
+}

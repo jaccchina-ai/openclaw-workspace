@@ -34,6 +34,9 @@ SyslogIdentifier=t01-scheduler
 # 环境变量
 Environment="PYTHONPATH=/root/.openclaw/workspace/tasks/T01"
 Environment="TZ=Asia/Beijing"
+Environment="FEISHU_APP_ID=cli_a9128d35c2f89bcb"
+Environment="FEISHU_APP_SECRET=8gZA8v0ECMsN345xzXbUA4BTTiPwX5bQ"
+Environment="FEISHU_USER_ID=ou_b8a256a9cb526db6c196cb438d6893a6"
 
 [Install]
 WantedBy=multi-user.target
