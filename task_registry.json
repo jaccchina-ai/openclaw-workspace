@@ -9,12 +9,12 @@
     {
       "id": "T01",
       "name": "龙头战法选股任务",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "description": "基于龙头战法的自动化选股系统，集成API数据获取、技术指标筛选、基本面筛选、龙头股识别，支持多格式输出与告警。",
       "status": "active",
       "location": "tasks/T01",
       "created_date": "2026-02-22",
-      "last_updated": "2026-04-05",
+      "last_updated": "2026-04-17",
       "dependencies": [
         "a-share-short-decision",
         "python>=3.8",

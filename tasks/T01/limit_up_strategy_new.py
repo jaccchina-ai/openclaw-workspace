@@ -1676,7 +1676,10 @@ class LimitUpScoringStrategyV2:
     
     def generate_final_report(self, t_day_results: pd.DataFrame, t1_results: pd.DataFrame) -> Dict[str, Any]:
         """生成最终报告"""
-        top_n = self.strategy_config.get('output', {}).get('final_recommendation_count', 3)
+        output_config = self.strategy_config.get('output', {})
+        top_n = output_config.get('final_recommendation_count', 3)
+        recommendation_mode = output_config.get('final_recommendation_mode', 'fixed')
+        min_total_score = self.strategy_config.get('risk_control', {}).get('min_total_score', 72)
         
         # 从数据中提取交易日期 (假设T日结果中有trade_date字段)
         trade_date = None
@@ -1685,6 +1688,17 @@ class LimitUpScoringStrategyV2:
         elif not t1_results.empty and 't1_date' in t1_results.columns:
             trade_date = t1_results.iloc[0]['t1_date']
         
+        # 自适应选股逻辑：综合判断后选出不超过3只
+        if recommendation_mode == 'adaptive_max_3':
+            # 只选择达到最低分数阈值的股票，最多3只
+            qualified_results = t1_results[t1_results['total_score'] >= min_total_score] if not t1_results.empty else pd.DataFrame()
+            final_recommendations = qualified_results.head(top_n).to_dict('records') if not qualified_results.empty else []
+            selection_logic = f"综合判断模式：评分≥{min_total_score}，最多{top_n}只，实际选出{len(final_recommendations)}只"
+        else:
+            # 固定数量模式
+            final_recommendations = t1_results.head(top_n).to_dict('records') if not t1_results.empty else []
+            selection_logic = f"固定数量模式：选出前{top_n}只"
+        
         report = {
             'generated_at': datetime.now().isoformat(),
             'trade_date': trade_date,
@@ -1692,7 +1706,8 @@ class LimitUpScoringStrategyV2:
                 'total_candidates': len(t_day_results),
                 'top_scores': t_day_results.head(5).to_dict('records') if not t_day_results.empty else []
             },
-            't1_recommendations': t1_results.head(top_n).to_dict('records') if not t1_results.empty else [],
+            't1_recommendations': final_recommendations,
+            'selection_logic': selection_logic,
             'market_condition': self._get_market_condition(trade_date),
             'next_steps': [
                 "监控推荐股票的盘中表现",

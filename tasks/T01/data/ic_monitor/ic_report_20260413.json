@@ -1,0 +1,100 @@
+{
+  "report_date": "20260413",
+  "generated_at": "2026-04-13T20:01:04.517409",
+  "factors": [
+    {
+      "factor_name": "seal_ratio",
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "seal_to_mv",
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "turnover_rate",
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "turnover_20ma_ratio",
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "volume_ratio",
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "first_limit_time",
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "main_net_ratio",
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    }
+  ],
+  "invalid_factors": [
+    "seal_ratio",
+    "seal_to_mv",
+    "turnover_rate",
+    "turnover_20ma_ratio",
+    "volume_ratio",
+    "first_limit_time",
+    "main_net_ratio"
+  ],
+  "warning_factors": [],
+  "summary": {
+    "total_factors": 10,
+    "calculated_factors": 7,
+    "invalid_count": 7,
+    "warning_count": 0,
+    "valid_rate": 0.0
+  }
+}

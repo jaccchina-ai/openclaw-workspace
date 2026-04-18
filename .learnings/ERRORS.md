@@ -93,6 +93,41 @@ macro-monitor skill fails to call web_search via openclaw CLI due to missing com
 - See Also: None
 
 ---
+## [ERR-20260409-001] feishu Bot/User not in chat error
+
+**Logged**: 2026-04-09T10:07:27Z
+**Priority**: medium
+**Status**: pending
+**Area**: integration
+
+### Summary
+飞书消息发送失败，错误码230002 "Bot/User can NOT be out of the chat"，表示机器人不在目标群组中。
+
+### Error
+```
+code: 230002
+msg: 'Bot/User can NOT be out of the chat.'
+log_id: '20260409180727D0E79F80A5344BE724BB'
+```
+
+### Context
+- 首次发现: 2026-04-09 18:07 (北京时间)
+- 重复出现: 4月9日(3次)、4月12日(4次)，累计14次
+- 影响: 飞书消息无法正常发送到目标群组
+- 可能原因: 机器人被移出群组、群组ID变更、或群组权限设置变更
+
+### Suggested Fix
+1. 检查飞书机器人是否仍在目标群组中
+2. 验证群组ID配置是否正确
+3. 重新邀请机器人加入群组
+4. 检查群组权限设置是否允许机器人发送消息
+
+### Metadata
+- Reproducible: yes
+- Related Files: T01 scheduler, T99/T100 notification systems
+- See Also: None
+
+---
 
 ## Entry Format
 
@@ -309,3 +344,38 @@ No further output, process appears to hang indefinitely
 - Reproducible: yes (occurs during daily T99 scan execution)
 - Related Files: skills/a-share-short-decision/scan.log, skills/a-share-short-decision/ engine code
 - See Also: None (new issue)
+
+---
+## [ERR-20260409-001] feishu Bot/User not in chat error
+
+**Logged**: 2026-04-09T10:07:27Z
+**Priority**: medium
+**Status**: pending
+**Area**: integration
+
+### Summary
+飞书消息发送失败，错误码230002 "Bot/User can NOT be out of the chat"，表示机器人不在目标群组中。
+
+### Error
+```
+code: 230002
+msg: 'Bot/User can NOT be out of the chat.'
+log_id: '20260409180727D0E79F80A5344BE724BB'
+```
+
+### Context
+- 首次发现: 2026-04-09 18:07 (北京时间)
+- 重复出现: 4月9日、4月12日，累计12次（今日新增2次：12:00、18:00北京时间）
+- 影响: 飞书消息无法正常发送到目标群组
+- 可能原因: 机器人被移出群组、群组ID变更、或群组权限设置变更
+
+### Suggested Fix
+1. 检查飞书机器人是否仍在目标群组中
+2. 验证群组ID配置是否正确
+3. 重新邀请机器人加入群组
+4. 检查群组权限设置是否允许机器人发送消息
+
+### Metadata
+- Reproducible: yes
+- Related Files: T01 scheduler, T99/T100 notification systems
+- See Also: None

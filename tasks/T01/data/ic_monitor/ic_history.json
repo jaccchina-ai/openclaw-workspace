@@ -9,15 +9,209 @@
       "trade_date": "20260410",
       "ic_value": 0.0,
       "sample_size": 0
+    },
+    {
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
     }
   ],
-  "seal_to_mv": [],
-  "turnover_rate": [],
-  "turnover_20ma_ratio": [],
-  "volume_ratio": [],
-  "first_limit_time": [],
-  "main_net_ratio": [],
-  "medium_net_ratio": [],
-  "dragon_score": [],
-  "is_hot_sector": []
+  "seal_to_mv": [
+    {
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "turnover_rate": [
+    {
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "turnover_20ma_ratio": [
+    {
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "volume_ratio": [
+    {
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "first_limit_time": [
+    {
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "main_net_ratio": [
+    {
+      "trade_date": "20260413",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "medium_net_ratio": [
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "dragon_score": [
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ],
+  "is_hot_sector": [
+    {
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260416",
+      "ic_value": 0.0,
+      "sample_size": 0
+    },
+    {
+      "trade_date": "20260417",
+      "ic_value": 0.0,
+      "sample_size": 0
+    }
+  ]
 }

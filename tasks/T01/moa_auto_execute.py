@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-T01 MoA自动调用机制 - 简化版
-每周五自动调用MoA进行策略深度反思
+T01 MoA自动策略反思 - 简化自动执行版
+每周五自动执行MoA分析，无需确认
 """
 
 import os
 import sys
 import json
-from datetime import datetime, timedelta
 import subprocess
+from datetime import datetime, timedelta
 
 # 添加当前目录到路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -43,31 +43,10 @@ def get_weekly_data():
     
     return data
 
-def save_moa_request(data):
-    """保存MoA分析请求，供后续处理"""
-    request_dir = os.path.join(current_dir, "moa_requests")
-    os.makedirs(request_dir, exist_ok=True)
-    
-    request_file = os.path.join(request_dir, f"moa_request_{datetime.now().strftime('%Y%m%d')}.json")
-    
-    request_data = {
-        "timestamp": datetime.now().isoformat(),
-        "type": "weekly_strategy_review",
-        "status": "auto_execute",  # 改为自动执行状态
-        "auto_execute": True,  # 标记为自动执行
-        "week_data": data,
-        "prompt_template": "t01_weekly_review"
-    }
-    
-    with open(request_file, 'w', encoding='utf-8') as f:
-        json.dump(request_data, f, ensure_ascii=False, indent=2)
-    
-    return request_file
-
-def execute_moa_analysis(data, request_file):
+def execute_moa_analysis(data):
     """自动执行MoA分析"""
     try:
-        print("🚀 自动执行MoA分析...")
+        print("🚀 执行MoA分析...")
         
         # 构建MoA分析提示
         prompt = f"""T01涨停股策略本周表现深度分析
@@ -101,14 +80,6 @@ def execute_moa_analysis(data, request_file):
             
             if result.returncode == 0:
                 print("✅ MoA分析执行成功")
-                # 更新请求文件状态为已完成
-                with open(request_file, 'r', encoding='utf-8') as f:
-                    request_data = json.load(f)
-                request_data['status'] = 'completed'
-                request_data['completed_at'] = datetime.now().isoformat()
-                request_data['auto_executed'] = True
-                with open(request_file, 'w', encoding='utf-8') as f:
-                    json.dump(request_data, f, ensure_ascii=False, indent=2)
                 return True, result.stdout
             else:
                 print(f"❌ MoA分析执行失败: {result.stderr}")
@@ -118,10 +89,32 @@ def execute_moa_analysis(data, request_file):
             return False, "MoA脚本不存在"
             
     except Exception as e:
-        print(f"❌ 自动执行MoA分析失败: {e}")
+        print(f"❌ 执行MoA分析失败: {e}")
         return False, str(e)
 
-def send_notification(data, request_file, moa_success=True, moa_output=""):
+def save_moa_result(data, success, output):
+    """保存MoA分析结果"""
+    request_dir = os.path.join(current_dir, "moa_requests")
+    os.makedirs(request_dir, exist_ok=True)
+    
+    result_file = os.path.join(request_dir, f"moa_result_{datetime.now().strftime('%Y%m%d')}.json")
+    
+    result_data = {
+        "timestamp": datetime.now().isoformat(),
+        "type": "weekly_strategy_review",
+        "status": "completed" if success else "failed",
+        "auto_executed": True,
+        "week_data": data,
+        "output_summary": output[:2000] if output else "",
+        "prompt_template": "t01_weekly_review"
+    }
+    
+    with open(result_file, 'w', encoding='utf-8') as f:
+        json.dump(result_data, f, ensure_ascii=False, indent=2)
+    
+    return result_file
+
+def send_feishu_notification(data, success, output, result_file):
     """发送飞书通知"""
     try:
         env = os.environ.copy()
@@ -130,24 +123,27 @@ def send_notification(data, request_file, moa_success=True, moa_output=""):
             env['PATH'] = node_path + ':' + env.get('PATH', '')
         
         today_str = datetime.now().strftime("%Y年%m月%d日")
+        status_icon = "✅" if success else "❌"
+        status_text = "已完成" if success else "执行失败"
         
-        # 提取MoA输出的关键信息
-        key_findings = ""
-        if moa_success and moa_output:
-            # 简单提取关键行
-            lines = moa_output.split('\n')
+        # 提取关键建议
+        key_points = []
+        if success and output:
+            lines = output.split('\n')
             for line in lines:
-                if any(keyword in line for keyword in ['建议', '风险', '关键', '发现', '候选股', '阈值']):
-                    key_findings += line.strip() + "\n"
+                line = line.strip()
+                if line.startswith(('1.', '2.', '3.', '4.', '5.', '•', '-', '*')) and len(line) > 10:
+                    key_points.append(line[:100])
+                if len(key_points) >= 5:
+                    break
         
-        status_icon = "✅" if moa_success else "❌"
-        status_text = "已完成" if moa_success else "执行失败"
+        key_points_text = '\n'.join(key_points) if key_points else '详见完整报告'
         
         message = f"""🧠 **T01策略MoA反思{status_text}** (自动执行)
 
 **分析时间**: {today_str}
 **数据周期**: {data['week_start']} 至 {data['week_end']}
-**执行模式**: ⚡ 自动执行
+**执行模式**: ⚡ 自动执行（已配置）
 
 **本周数据摘要**:
 • 选股天数: {data['days_with_selection']}天
@@ -156,10 +152,10 @@ def send_notification(data, request_file, moa_success=True, moa_output=""):
 
 **MoA分析状态**: {status_icon} {status_text}
 
-**关键发现摘要**:
-{key_findings[:500] if key_findings else '详见完整报告'}
+**关键建议**:
+{key_points_text}
 
-**📁 完整分析报告**: `{request_file}`
+**📁 完整报告**: `{result_file}`
 
 ---
 *注：根据老板要求，MoA反思已配置为自动执行，不再询问确认。*"""
@@ -181,7 +177,9 @@ def send_notification(data, request_file, moa_success=True, moa_output=""):
 
 def main():
     """主函数"""
-    print("🚀 启动T01 MoA自动策略反思...")
+    print("=" * 60)
+    print("🚀 T01 MoA自动策略反思")
+    print("=" * 60)
     print(f"📅 当前时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     # 检查今天是否是周五
@@ -198,23 +196,25 @@ def main():
     print(f"✅ 本周选股天数: {data['days_with_selection']}")
     print(f"✅ 候选股总数: {data['selection_count']}")
     
-    # 保存MoA请求
-    print("💾 保存MoA分析请求...")
-    request_file = save_moa_request(data)
-    print(f"✅ 请求已保存: {request_file}")
+    # 执行MoA分析
+    print("🧠 执行MoA分析...")
+    success, output = execute_moa_analysis(data)
     
-    # 自动执行MoA分析
-    print("🚀 自动执行MoA分析...")
-    moa_success, moa_output = execute_moa_analysis(data, request_file)
+    # 保存结果
+    print("💾 保存分析结果...")
+    result_file = save_moa_result(data, success, output)
+    print(f"✅ 结果已保存: {result_file}")
     
     # 发送通知
     print("📱 发送飞书通知...")
-    if send_notification(data, request_file, moa_success, moa_output):
+    if send_feishu_notification(data, success, output, result_file):
         print("✅ 通知发送成功")
     else:
         print("❌ 通知发送失败")
     
+    print("=" * 60)
     print("✅ MoA自动策略反思完成")
+    print("=" * 60)
     return 0
 
 if __name__ == "__main__":

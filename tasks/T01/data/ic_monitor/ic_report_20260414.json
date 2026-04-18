@@ -1,0 +1,136 @@
+{
+  "report_date": "20260414",
+  "generated_at": "2026-04-14T23:52:26.485515",
+  "factors": [
+    {
+      "factor_name": "seal_ratio",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "seal_to_mv",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "turnover_rate",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "turnover_20ma_ratio",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "volume_ratio",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "first_limit_time",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "main_net_ratio",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "medium_net_ratio",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "dragon_score",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    },
+    {
+      "factor_name": "is_hot_sector",
+      "trade_date": "20260414",
+      "ic_value": 0.0,
+      "ic_window_20": null,
+      "ic_window_60": null,
+      "is_valid": false,
+      "trend": "stable",
+      "trend_days": 0,
+      "sample_size": 0
+    }
+  ],
+  "invalid_factors": [
+    "seal_ratio",
+    "seal_to_mv",
+    "turnover_rate",
+    "turnover_20ma_ratio",
+    "volume_ratio",
+    "first_limit_time",
+    "main_net_ratio",
+    "medium_net_ratio",
+    "dragon_score",
+    "is_hot_sector"
+  ],
+  "warning_factors": [],
+  "summary": {
+    "total_factors": 10,
+    "calculated_factors": 10,
+    "invalid_count": 10,
+    "warning_count": 0,
+    "valid_rate": 0.0
+  }
+}

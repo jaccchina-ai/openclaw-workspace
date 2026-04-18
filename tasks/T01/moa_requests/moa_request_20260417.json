@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-04-17T14:00:01.501289",
+  "type": "weekly_strategy_review",
+  "status": "completed",
+  "completed_at": "2026-04-17T07:47:00Z",
+  "auto_executed": true,
+  "week_data": {
+    "week_start": "2026-04-10",
+    "week_end": "2026-04-17",
+    "selection_count": 70,
+    "days_with_selection": 7
+  },
+  "prompt_template": "t01_weekly_review",
+  "moa_summary": "候选股数量过多(日均10只)，建议缩减至3-5只；提高评分阈值15-20%；引入动态调整机制",
+  "key_risks": ["交易成本上升", "资金分散化", "过度交易"],
+  "confidence": "中偏低(缺乏核心绩效数据)"
+}

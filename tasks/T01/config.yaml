@@ -210,6 +210,7 @@ scoring:
 strategy:
   output:
     final_recommendation_count: 3
+    final_recommendation_mode: "adaptive_max_3"
     include_position: true
     include_reasons: true
     top_n_candidates: 10
@@ -218,7 +219,7 @@ strategy:
     index_above_5ma_weight: 1.0
     index_below_5ma_weight: 0.7
     max_position_per_stock: 0.2
-    min_total_score: 60
+    min_total_score: 72
   schedule:
     daily_screening_time: '20:30'
     morning_review_time: 09:25
@@ -263,7 +264,7 @@ system_optimization:
     no_selection_days_threshold: 3
     strategy_failure_warning: true
     system_health_warning: true
-version: 1.3.0
+version: 1.3.1
 # T01 Phase 3 配置扩展
 
 # Alpha因子挖掘配置
